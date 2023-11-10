@@ -458,7 +458,7 @@ const navigation = [
     name: "Khách hàng",
     icon: UsersIcon,
     current: false,
-    children: [{ name: "Danh sách khách hàng", href: "#" }],
+    children: [{ name: "Danh sách khách hàng", href: "/admin/home" }],
   },
   { name: "Quản lý đơn hàng", href: "#", icon: FolderIcon, current: false },
   { name: "Chi tiết đơn hàng", href: "#", icon: CalendarIcon, current: false },
