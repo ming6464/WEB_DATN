@@ -417,6 +417,7 @@
 
       <main class="py-10">
         <div class="px-4 sm:px-6 lg:px-8">
+          <router-view></router-view>
           <!-- Your content -->
         </div>
       </main>
