@@ -53,9 +53,9 @@
               </TransitionChild>
               <!-- Sidebar component, swap this element with another sidebar if you like -->
               <div
-                class="flex grow flex-col gap-y-5 overflow-y-auto bg-white px-6 pb-4"
+                class="flex grow flex-col gap-y-5 overflow-y-auto bg-white px-4 pb-2"
               >
-                <div class="flex h-16 shrink-0 items-center">
+                <div class="flex shrink-0 items-center">
                   <img
                     class="h-8 w-auto"
                     src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
@@ -68,6 +68,7 @@
                       <ul role="list" class="-mx-2 space-y-1">
                         <li v-for="item in navigation" :key="item.name">
                           <a
+                            v-if="!item.children"
                             :href="item.href"
                             :class="[
                               item.current
@@ -88,6 +89,51 @@
                             />
                             {{ item.name }}
                           </a>
+                          <Disclosure as="div" v-else v-slot="{ open }">
+                            <DisclosureButton
+                              :class="[
+                                item.current
+                                  ? 'bg-gray-50'
+                                  : 'hover:bg-gray-50',
+                                'flex items-center w-full text-left rounded-md p-2 gap-x-3 text-sm leading-6 font-semibold text-gray-700',
+                              ]"
+                            >
+                              <component
+                                :is="item.icon"
+                                class="h-6 w-6 shrink-0 text-gray-400"
+                                aria-hidden="true"
+                              />
+                              {{ item.name }}
+                              <ChevronRightIcon
+                                :class="[
+                                  open
+                                    ? 'rotate-90 text-gray-500'
+                                    : 'text-gray-400',
+                                  'ml-auto h-5 w-5 shrink-0',
+                                ]"
+                                aria-hidden="true"
+                              />
+                            </DisclosureButton>
+                            <DisclosurePanel as="ul" class="mt-1 px-2">
+                              <li
+                                v-for="subItem in item.children"
+                                :key="subItem.name"
+                              >
+                                <!-- 44px -->
+                                <DisclosureButton
+                                  as="a"
+                                  :href="subItem.href"
+                                  :class="[
+                                    subItem.current
+                                      ? 'bg-gray-50'
+                                      : 'hover:bg-gray-50',
+                                    'block rounded-md py-2 pr-2 pl-9 text-sm leading-6 text-gray-700',
+                                  ]"
+                                  >{{ subItem.name }}</DisclosureButton
+                                >
+                              </li>
+                            </DisclosurePanel>
+                          </Disclosure>
                         </li>
                       </ul>
                     </li>
@@ -343,6 +389,8 @@
 
 <script setup>
 import { ref } from "vue";
+import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/vue";
+import { ChevronRightIcon } from "@heroicons/vue/20/solid";
 import {
   Dialog,
   DialogPanel,
@@ -369,10 +417,25 @@ import { ChevronDownIcon, MagnifyingGlassIcon } from "@heroicons/vue/20/solid";
 
 const navigation = [
   { name: "Trang chủ", href: "#", icon: HomeIcon, current: true },
-  { name: "Khách hàng", href: "#", icon: UsersIcon, current: false },
+  {
+    name: "Khách hàng",
+    icon: UsersIcon,
+    current: false,
+    children: [{ name: "Danh sách khách hàng", href: "#" }],
+  },
   { name: "Quản lý đơn hàng", href: "#", icon: FolderIcon, current: false },
   { name: "Chi tiết đơn hàng", href: "#", icon: CalendarIcon, current: false },
-  { name: "Nhân viên", href: "#", icon: DocumentDuplicateIcon, current: false },
+  {
+    name: "Nhân viên",
+    icon: DocumentDuplicateIcon,
+    current: false,
+    children: [
+      {
+        name: "Tài khoản nhân viên",
+        href: "#",
+      },
+    ],
+  },
   { name: "Thống kê", href: "#", icon: ChartPieIcon, current: false },
 ];
 const teams = [
