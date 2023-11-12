@@ -454,14 +454,39 @@ import {
 import { ChevronDownIcon, MagnifyingGlassIcon } from "@heroicons/vue/20/solid";
 
 const navigation = [
-  { name: "Trang chủ", href: "#", icon: HomeIcon, current: true },
+  { name: "Trang chủ", href: "admin/home", icon: HomeIcon, current: true },
   {
     name: "Khách hàng",
     icon: UsersIcon,
     current: false,
-    children: [{ name: "Danh sách khách hàng", href: "/admin/home" }],
+    children: [{ name: "Danh sách khách hàng", href: "/admin/user" }],
   },
-  { name: "Quản lý đơn hàng", href: "#", icon: FolderIcon, current: false },
+  {
+    name: "Quản lý sản phẩm",
+    icon: FolderIcon,
+    current: false,
+    children: [
+      {
+        name: "Danh mục",
+        href: "/admin/category",
+      },
+      {
+        name: "Danh sách sản phẩm",
+        href: "/admin/product",
+      },
+    ],
+  },
+  {
+    name: "Quản lý đơn hàng",
+    icon: FolderIcon,
+    current: false,
+    children: [
+      {
+        name: "Danh sách đơn hàng",
+        href: "#",
+      },
+    ],
+  },
   { name: "Chi tiết đơn hàng", href: "#", icon: CalendarIcon, current: false },
   {
     name: "Nhân viên",
@@ -470,7 +495,7 @@ const navigation = [
     children: [
       {
         name: "Tài khoản nhân viên",
-        href: "#",
+        href: "/admin/user",
       },
     ],
   },

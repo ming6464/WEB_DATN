@@ -69,6 +69,7 @@
           >
             Đăng nhập
           </button>
+          <Button label="Submit" />
         </div>
       </form>
     </div>

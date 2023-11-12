@@ -9,6 +9,18 @@ const routes = [
         path: 'home',
         component: () => import('../views/HomePage.vue'),
       },
+      {
+        path: 'user',
+        component: () => import('../views/UserList.vue'),
+      },
+      {
+        path: 'product',
+        component: () => import('../views/ListProduct.vue'),
+      },
+      {
+        path: 'category',
+        component: () => import('../views/Category.vue'),
+      },
     ],
   },
   {
