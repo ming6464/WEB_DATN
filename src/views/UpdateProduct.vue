@@ -1,58 +1,73 @@
 <template>
     <form>
         <div class="space-y-12">
-            <div class="border-b border-gray-900/10 pb-12">
-                <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                    <div class="sm:col-span-3">
-                        <label for="productName" class="block text-sm font-medium leading-6 text-gray-900">Tên sản
-                            phẩm</label>
-                        <div class=" mt-2 flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 sm:max-w-md">
-                            <input type="text" name="productName" id="productName" autocomplete="productName"
-                                class="block flex-1 border-0 bg-transparent py-1.5 pl-2 text-gray-900 rounded-md focus:ring-2 focus:ring-inset focus:ring-indigo-600
-                                                                             placeholder:text-gray-400 sm:text-sm sm:leading-6" placeholder="Áo ...." />
-                        </div>
-                    </div>
 
-                    <!-- thể loại -->
-                    <div class="sm:col-span-3">
-                        <Combobox as="div" v-model="categoryProduct">
-                            <ComboboxLabel class="block text-sm font-medium leading-6 text-gray-900">Thể loại
-                            </ComboboxLabel>
-                            <div class="relative mt-2">
-                                <ComboboxInput
-                                    class="w-full  rounded-md border-0 bg-white py-1.5 pl-2 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                    @change="query = $event.target.value" :display-value="(product) => product?.name" />
-                                <ComboboxButton
-                                    class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
-                                    <ChevronUpDownIcon class="h-5 w-5 text-gray-400" aria-hidden="true" />
-                                </ComboboxButton>
-
-                                <ComboboxOptions v-if="filteredProduct.length > 0"
-                                    class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                                    <ComboboxOption v-for="product in filteredProduct" :key="product.id" :value="product"
-                                        as="template" v-slot="{ active, selected }">
-                                        <li
-                                            :class="['relative cursor-default select-none py-2 pl-2 pr-9', active ? 'bg-indigo-600 text-white' : 'text-gray-900']">
-                                            <span :class="['block truncate', selected && 'font-semibold']">
-                                                {{ product.name }}
-                                            </span>
-
-                                            <span v-if="selected"
-                                                :class="['absolute inset-y-0 right-0 flex items-center pr-4', active ? 'text-white' : 'text-indigo-600']">
-                                                <CheckIcon class="h-5 w-5" aria-hidden="true" />
-                                            </span>
-                                        </li>
-                                    </ComboboxOption>
-                                </ComboboxOptions>
+            <!-- Thông tin cơ bản -->
+            <div>
+                <h1 class="font-medium text-xl">Thông tin cơ bản</h1>
+                <div class="mt-5 mx-2">
+                    <div class="grid grid-cols-1 gap-x-6 sm:grid-cols-6">
+                        <div class="sm:col-span-3">
+                            <label for="productName" class="block text-sm font-medium leading-6 text-gray-900">Tên sản
+                                phẩm</label>
+                            <div class=" mt-1 flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 sm:max-w-md">
+                                <input type="text" name="productName" id="productName" autocomplete="productName"
+                                    class="block flex-1 border-0 bg-transparent py-1.5 pl-2 text-gray-900 rounded-md focus:ring-2 focus:ring-inset focus:ring-indigo-600
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             placeholder:text-gray-400 sm:text-sm sm:leading-6"
+                                    placeholder="Áo ...." />
                             </div>
-                        </Combobox>
-                    </div>
-                    <!-- thể loại -->
+                        </div>
 
+                        <!-- thể loại -->
+                        <div class="sm:col-span-3">
+                            <Combobox as="div" v-model="categoryProduct">
+                                <ComboboxLabel class="block text-sm font-medium leading-6 text-gray-900">Thể loại
+                                </ComboboxLabel>
+                                <div class="relative mt-1">
+                                    <ComboboxInput
+                                        class="w-full  rounded-md border-0 bg-white py-1.5 pl-2 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                        @change="query = $event.target.value" :display-value="(product) => product?.name" />
+                                    <ComboboxButton
+                                        class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
+                                        <ChevronUpDownIcon class="h-5 w-5 text-gray-400" aria-hidden="true" />
+                                    </ComboboxButton>
+
+                                    <ComboboxOptions v-if="filteredProduct.length > 0"
+                                        class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                                        <ComboboxOption v-for="product in filteredProduct" :key="product.id"
+                                            :value="product" as="template" v-slot="{ active, selected }">
+                                            <li
+                                                :class="['relative cursor-default select-none py-2 pl-2 pr-9', active ? 'bg-indigo-600 text-white' : 'text-gray-900']">
+                                                <span :class="['block truncate', selected && 'font-semibold']">
+                                                    {{ product.name }}
+                                                </span>
+
+                                                <span v-if="selected"
+                                                    :class="['absolute inset-y-0 right-0 flex items-center pr-4', active ? 'text-white' : 'text-indigo-600']">
+                                                    <CheckIcon class="h-5 w-5" aria-hidden="true" />
+                                                </span>
+                                            </li>
+                                        </ComboboxOption>
+                                    </ComboboxOptions>
+                                </div>
+                            </Combobox>
+                        </div>
+                        <!-- thể loại -->
+                    </div>
+                </div>
+            </div>
+            <!-- Thông tin cơ bản -->
+
+
+            <!-- Chi tiết Sản phẩm -->
+            <div>
+                <h1 class="font-medium text-xl">Chi tiết Sản phẩm</h1>
+                <div class="mt-5 mx-2">
                     <!-- thêm ảnh -->
                     <div class="col-span-full">
-                        <label for="cover-photo" class="block text-sm font-medium leading-6 text-gray-900">Ảnh bìa</label>
-                        <div class="mt-2 flex justify-center flex-col items-center rounded-lg border border-dashed border-gray-900/25 px-32 py-10"
+                        <label for="cover-photo" class="block text-sm font-medium leading-6 text-gray-900">Ảnh sản
+                            phẩm</label>
+                        <div class="mt-1 flex justify-center flex-col items-center rounded-lg border border-dashed border-gray-900/25 px-32 py-10"
                             @dragenter="handleDragEnter" @dragleave="handleDragLeave" @dragover.prevent @drop="handleDrop"
                             :class="{ 'border-indigo-600': isDragging }">
                             <div class="text-center" :class="{ 'hidden': selectedImages.length > 0 }">
@@ -66,7 +81,9 @@
                                     </label>
                                     <p class="pl-2">hoặc kéo và thả</p>
                                 </div>
-                                <p v-if="selectedImages.length === 0" class="text-xs leading-5 text-gray-600 mt-4">PNG, JPG,
+                                <p v-if="selectedImages.length === 0" class="text-xs leading-5 text-gray-600 mt-4">
+                                    PNG,
+                                    JPG,
                                     GIF lên đến 10MB</p>
                             </div>
                             <div v-if="selectedImages.length > 0" class="mt-4 flex flex-wrap justify-center">
@@ -94,154 +111,274 @@
                         </div>
                     </div>
                     <!-- thêm ảnh -->
+
+                    <!-- Mô tả sản phẩm -->
+                    <div class="mt-6">
+                        <label for="cover-photo" class="block text-sm font-medium leading-6 text-gray-900">Mô tả sản phẩm
+                            sản phẩm</label>
+                        <textarea id="myTextarea" placeholder="Thông tin sản phẩm ..."
+                            class="w-full mt-1 h-32 p-2 text-base rounded-lg border border-solid border-gray-900/25 focus:outline-none focus:border-indigo-500"></textarea>
+                    </div>
+                    <!-- Mô tả sản phẩm -->
                 </div>
             </div>
+            <!-- Chi tiết Sản phẩm -->
 
-            <div class="border-b border-gray-900/10 pb-12">
-                <!-- <h2 class="font-bold text-2xl leading-7 text-gray-900">Thông tin bán hàng</h2> -->
 
-                <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                    <div class="sm:col-span-full">
-                        <label for="first-name" class="block text-sm font-medium leading-6 text-gray-900">Giá bán lẻ</label>
-                        <div class="mt-2">
-                            <input type="text" name="first-name" id="first-name" autocomplete="given-name"
-                                class="block w-full pl-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+            <!-- thông tin bán hàng -->
+            <div>
+                <h1 class="font-medium text-xl">Thông tin Bán hàng</h1>
+                <div class="mt-5 mx-2">
+                    <div class="grid grid-cols-1 gap-x-6 sm:grid-cols-6">
+                        <!-- Giá bán lẻ -->
+                        <div class="sm:col-span-full">
+                            <label for="first-name" class="block text-sm font-medium leading-6 text-gray-900">Giá bán
+                                lẻ</label>
+                            <div class="mt-1">
+                                <input type="text" name="first-name" id="first-name" autocomplete="given-name"
+                                    class="block w-full pl-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                            </div>
                         </div>
-                    </div>
+                        <!-- Giá bán lẻ -->
 
-                    <div class="sm:col-span-3">
-                        <label for="last-name" class="block text-sm font-medium leading-6 text-gray-900">Last name</label>
-                        <div class="mt-2">
-                            <input type="text" name="last-name" id="last-name" autocomplete="family-name"
-                                class="block w-full pl-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                        <!-- thêm kích cỡ -->
+                        <div class="sm:col-span-full">
+                            <div v-if="!isShowSizeList">
+                                <button @click="changeShowSizeList" type="button"
+                                    class="px-2 py-2 font-semibold text-green-700 rounded-md hover:bg-gray-200">
+                                    +Thêm kích cỡ mới
+                                </button>
+                            </div>
+                            <div class="mt-2" v-else>
+                                <h2 class="font-medium text-sm text-gray-900 leading-6">Kích cỡ</h2>
+                                <div class="mt-1">
+                                    <div class="flex items-center justify-center">
+                                        <input v-model="inputTextSize" type="text" name="inputTextSize" id="inputTextSize"
+                                            placeholder="Kích cỡ mới"
+                                            class="flex-grow px-2 py-1.5 rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+
+                                        <button @click="addSize" type="button"
+                                            class="ml-2 px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                            Thêm
+                                        </button>
+                                        <button @click="changeShowSizeList" type="button"
+                                            class="ml-2 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                            Huỷ
+                                        </button>
+                                    </div>
+
+                                    <div class="flex flex-wrap gap-2 justify-center">
+                                        <div v-for="(text, index) in sizeList" :key="index" class="p-1">
+                                            <div class="flex items-center h-10 border-2 border-red-600 rounded-md">
+                                                <span class="flex-grow h-full flex items-center px-2">
+                                                    {{ text }}
+                                                </span>
+                                                <button @click="deleteSize(index)" type="button"
+                                                    class="h-full  text-white rounded-r-md hover:bg-red-700">
+                                                    <img src="/Delete.svg " class="max-h-[20px]" />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
+                        <!-- thêm kích cỡ -->
 
-                    <div class="sm:col-span-4">
-                        <label for="email" class="block text-sm font-medium leading-6 text-gray-900">Email address</label>
-                        <div class="mt-2">
-                            <input id="email" name="email" type="email" autocomplete="email"
-                                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                        <!-- thêm màu sắc -->
+                        <div class="sm:col-span-full">
+
+                            <div v-if="!isShowColorList" class="mb-2">
+                                <button @click="changeShowColorList" type="button"
+                                    class="px-2 py-2 font-semibold text-green-700 rounded-md hover:bg-gray-200">
+                                    +Thêm màu mới
+                                </button>
+                            </div>
+
+                            <div class="mt-2" v-show="isShowColorList">
+                                <h2 class="font-medium text-sm text-gray-900 leading-6">Màu sắc</h2>
+                                <div class="mt-1">
+                                    <div class="flex items-center justify-center">
+                                        <input v-model="inputTextColor" type="text" name="inputTextColor"
+                                            id="inputTextColor" placeholder="Màu mới"
+                                            class="flex-grow px-2 py-1.5 rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+
+                                        <button @click="addColor" type="button"
+                                            class="ml-2 px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                            Thêm
+                                        </button>
+                                        <button @click="changeShowColorList" type="button"
+                                            class="ml-2 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                            Huỷ
+                                        </button>
+                                    </div>
+
+                                    <div class="flex flex-wrap gap-2 justify-center">
+                                        <div v-for="(text, index) in colorList" :key="index" class="p-1">
+                                            <div class="flex items-center h-10 border-2 border-red-600 rounded-md">
+                                                <span class="flex-grow h-full flex items-center px-2">
+                                                    {{ text }}
+                                                </span>
+                                                <button @click="deleteColor(index)" type="button"
+                                                    class="h-full  text-white rounded-r-md hover:bg-red-700">
+                                                    <img src="/Delete.svg " class="max-h-[20px]" />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
-                    </div>
+                        <!-- thêm màu sắc -->
 
-                    <div class="sm:col-span-3">
-                        <label for="country" class="block text-sm font-medium leading-6 text-gray-900">Country</label>
-                        <div class="mt-2">
-                            <select id="country" name="country" autocomplete="country-name"
-                                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6">
-                                <option>United States</option>
-                                <option>Canada</option>
-                                <option>Mexico</option>
-                            </select>
+
+                        <!-- thêm số lượng sản phẩm -->
+                        <div class="sm:col-span-full">
+                            <div v-if="colorList.length == 0 && sizeList.length == 0">
+                                <label for="countProduct" class="block text-sm font-medium leading-6 text-gray-900">Số lượng
+                                    sản phẩm</label>
+                                <div class="mt-1">
+                                    <input type="text" name="countProduct" id="countProduct" autocomplete="countProduct"
+                                        class="block w-full pl-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                </div>
+                            </div>
+                            <div class="px-1 mt-3" v-else>
+                                <div class="sm:flex sm:items-center">
+                                </div>
+                                <div class="flow-root">
+                                    <div class="overflow-x-auto sm:-mx-6 lg:-mx-8">
+                                        <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+                                            <table class="min-w-full border-collapse border-2 border-slate-500">
+                                                <thead>
+                                                    <tr>
+                                                        <th scope="col" colspan="1"
+                                                            class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 border border-slate-600"
+                                                            v-if="sizeList.length != 0">
+                                                            Kích cỡ</th>
+                                                        <th scope="col" colspan="1"
+                                                            class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 border border-slate-600"
+                                                            v-if="colorList.length != 0">
+                                                            Màu sắc</th>
+                                                        <th scope="col" colspan="1"
+                                                            class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 border border-slate-600">
+                                                            Số lượng</th>
+                                                    </tr>
+                                                </thead>
+
+                                                <tbody class=" bg-white"
+                                                    v-if="!(sizeList.length == 0 && colorList.length == 0) && !(sizeList.length != 0 && colorList.length != 0)">
+                                                    <tr v-for="(text, index) in sizeList.length != 0 ? sizeList : colorList"
+                                                        :key="index">
+                                                        <td colspan="1"
+                                                            class="whitespace-nowrap px-3 py-5 text-sm text-gray-500 border-r border-slate-600">
+                                                            <div class="text-gray-900">{{ text }}</div>
+                                                        </td>
+                                                        <td colspan="1"
+                                                            class="whitespace-nowrap px-3 py-5 text-sm text-gray-500 ">
+                                                            <input type="text"
+                                                                class="w-full pl-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+
+                                                <tbody class=" bg-white" v-for="(size, index) in sizeList" :key="index">
+                                                    <tr v-for="(color, index1) in colorList" :key="index1">
+                                                        <td colspan="1"
+                                                            class="whitespace-nowrap px-3 py-5 text-sm text-gray-500 border-r border-slate-600">
+                                                            <div class="text-gray-900">{{ size }}</div>
+                                                        </td>
+                                                        <td colspan="1"
+                                                            class="whitespace-nowrap px-3 py-5 text-sm text-gray-500 border-r border-slate-600">
+                                                            <div class="text-gray-900">{{ color }}</div>
+                                                        </td>
+                                                        <td colspan="1"
+                                                            class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
+                                                            <input type="text"
+                                                                class="w-full pl-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
+                        <!-- thêm số lượng sản phẩm -->
                     </div>
+                </div>
+            </div>
+            <!-- thông tin bán hàng -->
 
+
+            <!-- Vận chuyển -->
+            <div>
+                <h1 class="font-medium text-xl">Vận chuyển</h1>
+                <div class="mt-5 mx-2">
+                    <!-- Khối lượng sản phẩm -->
                     <div class="col-span-full">
-                        <label for="street-address" class="block text-sm font-medium leading-6 text-gray-900">Street
-                            address</label>
-                        <div class="mt-2">
-                            <input type="text" name="street-address" id="street-address" autocomplete="street-address"
-                                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                        <label for="productWeight" class="block text-sm font-semibold leading-6 text-gray-900">Trọng lượng
+                            sản phẩm</label>
+                        <div class="relative mt-1">
+                            <div class="absolute inset-y-0 left-0 flex items-center">
+                                <select name="weightSelected"
+                                    class="h-full rounded-md border-0 bg-transparent bg-none py-0 pl-4 pr-9 text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm">
+                                    <option>Gram (g)</option>
+                                    <option>Kilogram (kg)</option>
+                                </select>
+                                <ChevronDownIcon class="pointer-events-none absolute right-3 top-0 h-full w-5 text-gray-400"
+                                    aria-hidden="true" />
+                            </div>
+                            <input type="tel" name="productWeight" id="productWeight" autocomplete="tel"
+                                class="block w-full rounded-md border-0 px-3.5 py-1.5 pl-28 text-gray-900 
+                                                                                                                                        shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 
+                                                                                                                                        focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
                         </div>
                     </div>
+                    <!-- Khối lượng sản phẩm -->
 
-                    <div class="sm:col-span-2 sm:col-start-1">
-                        <label for="city" class="block text-sm font-medium leading-6 text-gray-900">City</label>
-                        <div class="mt-2">
-                            <input type="text" name="city" id="city" autocomplete="address-level2"
-                                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
-                        </div>
-                    </div>
 
-                    <div class="sm:col-span-2">
-                        <label for="region" class="block text-sm font-medium leading-6 text-gray-900">State /
-                            Province</label>
-                        <div class="mt-2">
-                            <input type="text" name="region" id="region" autocomplete="address-level1"
-                                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
-                        </div>
-                    </div>
+                    <div class="col-span-full mt-3">
+                        <label for="country" class="block text-sm font-medium leading-6 text-gray-900">Kích thước Sản
+                            phẩm</label>
+                        <div class="mt-1">
+                            <div class="container mx-auto">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                                    <!-- Input 1 -->
+                                    <div class="relative">
+                                        <input type="text"
+                                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                                            placeholder="Chiều cao" />
+                                        <span
+                                            class="absolute inset-y-0 right-0 flex items-center pr-2 text-gray-500">cm</span>
+                                    </div>
 
-                    <div class="sm:col-span-2">
-                        <label for="postal-code" class="block text-sm font-medium leading-6 text-gray-900">ZIP / Postal
-                            code</label>
-                        <div class="mt-2">
-                            <input type="text" name="postal-code" id="postal-code" autocomplete="postal-code"
-                                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                    <!-- Input 2 -->
+                                    <div class="relative">
+                                        <input type="text"
+                                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                                            placeholder="Chiều rộng" />
+                                        <span
+                                            class="absolute inset-y-0 right-0 flex items-center pr-2 text-gray-500">cm</span>
+                                    </div>
+
+                                    <!-- Input 3 -->
+                                    <div class="relative">
+                                        <input type="text"
+                                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                                            placeholder="Chiều dài" />
+                                        <span
+                                            class="absolute inset-y-0 right-0 flex items-center pr-2 text-gray-500">cm</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
+            <!-- Vận chuyển -->
 
-            <div class="border-b border-gray-900/10 pb-12">
-                <h2 class="text-base font-semibold leading-7 text-gray-900">Notifications</h2>
-                <p class="mt-1 text-sm leading-6 text-gray-600">We'll always let you know about important changes, but you
-                    pick what else you want to hear about.</p>
-
-                <div class="mt-10 space-y-10">
-                    <fieldset>
-                        <legend class="text-sm font-semibold leading-6 text-gray-900">By Email</legend>
-                        <div class="mt-6 space-y-6">
-                            <div class="relative flex gap-x-3">
-                                <div class="flex h-6 items-center">
-                                    <input id="comments" name="comments" type="checkbox"
-                                        class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
-                                </div>
-                                <div class="text-sm leading-6">
-                                    <label for="comments" class="font-medium text-gray-900">Comments</label>
-                                    <p class="text-gray-500">Get notified when someones posts a comment on a posting.</p>
-                                </div>
-                            </div>
-                            <div class="relative flex gap-x-3">
-                                <div class="flex h-6 items-center">
-                                    <input id="candidates" name="candidates" type="checkbox"
-                                        class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
-                                </div>
-                                <div class="text-sm leading-6">
-                                    <label for="candidates" class="font-medium text-gray-900">Candidates</label>
-                                    <p class="text-gray-500">Get notified when a candidate applies for a job.</p>
-                                </div>
-                            </div>
-                            <div class="relative flex gap-x-3">
-                                <div class="flex h-6 items-center">
-                                    <input id="offers" name="offers" type="checkbox"
-                                        class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
-                                </div>
-                                <div class="text-sm leading-6">
-                                    <label for="offers" class="font-medium text-gray-900">Offers</label>
-                                    <p class="text-gray-500">Get notified when a candidate accepts or rejects an offer.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </fieldset>
-                    <fieldset>
-                        <legend class="text-sm font-semibold leading-6 text-gray-900">Push Notifications</legend>
-                        <p class="mt-1 text-sm leading-6 text-gray-600">These are delivered via SMS to your mobile phone.
-                        </p>
-                        <div class="mt-6 space-y-6">
-                            <div class="flex items-center gap-x-3">
-                                <input id="push-everything" name="push-notifications" type="radio"
-                                    class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600" />
-                                <label for="push-everything"
-                                    class="block text-sm font-medium leading-6 text-gray-900">Everything</label>
-                            </div>
-                            <div class="flex items-center gap-x-3">
-                                <input id="push-email" name="push-notifications" type="radio"
-                                    class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600" />
-                                <label for="push-email" class="block text-sm font-medium leading-6 text-gray-900">Same as
-                                    email</label>
-                            </div>
-                            <div class="flex items-center gap-x-3">
-                                <input id="push-nothing" name="push-notifications" type="radio"
-                                    class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600" />
-                                <label for="push-nothing" class="block text-sm font-medium leading-6 text-gray-900">No push
-                                    notifications</label>
-                            </div>
-                        </div>
-                    </fieldset>
-                </div>
-            </div>
         </div>
 
         <div class="mt-6 flex items-center justify-end gap-x-6">
@@ -285,6 +422,73 @@ const filteredProduct = computed(() =>
             return product.name.toLowerCase().includes(query.value.toLowerCase())
         })
 )
+
+// thông tin bán hàng
+//{chọn màu
+const inputTextColor = ref('');
+const colorList = ref([]);
+const isShowColorList = ref(false);
+
+const addColor = () => {
+    if (inputTextColor.value !== '') {
+
+        colorList.value.push(inputTextColor.value);
+        inputTextColor.value = '';
+    }
+};
+
+const deleteColor = (index) => {
+    try {
+        colorList.value.splice(index, 1);
+    } catch (error) { }
+}
+const changeShowColorList = () => {
+    isShowColorList.value = !isShowColorList.value;
+    if (!isShowColorList.value) {
+        colorList.value = [];
+    }
+    console.log("Change color list: " + isShowColorList.value + " size : " + colorList.value.length)
+}
+
+//chọn màu}
+//----------------------------------------------------------------
+//chọn size{
+
+const inputTextSize = ref('');
+const sizeList = ref([]);
+const isShowSizeList = ref(false);
+const addSize = () => {
+    if (inputTextSize.value !== '') {
+
+        sizeList.value.push(inputTextSize.value);
+        inputTextSize.value = '';
+    }
+};
+
+const deleteSize = (index) => {
+    try {
+        sizeList.value.splice(index, 1);
+    } catch (error) {
+
+    }
+}
+const changeShowSizeList = () => {
+    isShowSizeList.value = !isShowSizeList.value;
+    if (!isShowSizeList.value) {
+        sizeList.value = [];
+    }
+
+    console.log("Change size list: " + isShowSizeList.value + " size : " + sizeList.value.length)
+}
+//chọn size}
+
+//chọn số lương{
+
+
+
+//chọn số lương}
+
+//thông tin bán hàng
 
 
 //photo
