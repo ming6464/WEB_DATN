@@ -21,6 +21,10 @@ const routes = [
         path: 'category',
         component: () => import('../views/Category.vue'),
       },
+      {
+        path: 'account_staff',
+        component: () => import('../views/AccountStaff.vue'),
+      },
     ],
   },
   {
