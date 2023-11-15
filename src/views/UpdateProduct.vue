@@ -1,7 +1,6 @@
 <template>
     <form>
         <div class="space-y-12">
-
             <!-- Thông tin cơ bản -->
             <div>
                 <h1 class="font-medium text-xl">Thông tin cơ bản</h1>
@@ -10,10 +9,9 @@
                         <div class="sm:col-span-3">
                             <label for="productName" class="block text-sm font-medium leading-6 text-gray-900">Tên sản
                                 phẩm</label>
-                            <div class=" mt-1 flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 sm:max-w-md">
+                            <div class="mt-1 flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 sm:max-w-md">
                                 <input required type="text" name="productName" id="productName" autocomplete="productName"
-                                    class="block flex-1 border-0 bg-transparent py-1.5 pl-2 text-gray-900 rounded-md focus:ring-2 focus:ring-inset focus:ring-indigo-600
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+                                    class="block flex-1 border-0 bg-transparent py-1.5 pl-2 text-gray-900 rounded-md focus:ring-2 focus:ring-inset focus:ring-indigo-600 placeholder:text-gray-400 sm:text-sm sm:leading-6"
                                     placeholder="Áo ...." />
                             </div>
                         </div>
@@ -25,7 +23,7 @@
                                 </ComboboxLabel>
                                 <div class="relative mt-1">
                                     <ComboboxInput
-                                        class="w-full  rounded-md border-0 bg-white py-1.5 pl-2 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                        class="w-full rounded-md border-0 bg-white py-1.5 pl-2 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                         @change="query = $event.target.value" :display-value="(product) => product?.name" />
                                     <ComboboxButton
                                         class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
@@ -36,14 +34,21 @@
                                         class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                                         <ComboboxOption v-for="product in filteredProduct" :key="product.id"
                                             :value="product" as="template" v-slot="{ active, selected }">
-                                            <li
-                                                :class="['relative cursor-default select-none py-2 pl-2 pr-9', active ? 'bg-indigo-600 text-white' : 'text-gray-900']">
-                                                <span :class="['block truncate', selected && 'font-semibold']">
+                                            <li :class="[
+                                                'relative cursor-default select-none py-2 pl-2 pr-9',
+                                                active ? 'bg-indigo-600 text-white' : 'text-gray-900',
+                                            ]">
+                                                <span :class="[
+                                                    'block truncate',
+                                                    selected && 'font-semibold',
+                                                ]">
                                                     {{ product.name }}
                                                 </span>
 
-                                                <span v-if="selected"
-                                                    :class="['absolute inset-y-0 right-0 flex items-center pr-4', active ? 'text-white' : 'text-indigo-600']">
+                                                <span v-if="selected" :class="[
+                                                    'absolute inset-y-0 right-0 flex items-center pr-4',
+                                                    active ? 'text-white' : 'text-indigo-600',
+                                                ]">
                                                     <CheckIcon class="h-5 w-5" aria-hidden="true" />
                                                 </span>
                                             </li>
@@ -58,7 +63,6 @@
             </div>
             <!-- Thông tin cơ bản -->
 
-
             <!-- Chi tiết Sản phẩm -->
             <div>
                 <h1 class="font-medium text-xl">Chi tiết Sản phẩm</h1>
@@ -70,7 +74,7 @@
                         <div class="mt-1 flex justify-center flex-col items-center rounded-lg border border-dashed border-gray-900/25 px-32 py-10"
                             @dragenter="handleDragEnter" @dragleave="handleDragLeave" @dragover.prevent @drop="handleDrop"
                             :class="{ 'border-indigo-600': isDragging }">
-                            <div class="text-center" :class="{ 'hidden': selectedImages.length > 0 }">
+                            <div class="text-center" :class="{ hidden: selectedImages.length > 0 }">
                                 <PhotoIcon class="mx-auto h-12 w-12 text-gray-300" aria-hidden="true" />
                                 <div class="mt-4 flex text-sm leading-6 text-gray-600">
                                     <label for="file-upload"
@@ -82,20 +86,27 @@
                                     <p class="pl-2">hoặc kéo và thả</p>
                                 </div>
                                 <p v-if="selectedImages.length === 0" class="text-xs leading-5 text-gray-600 mt-4">
-                                    PNG,
-                                    JPG,
-                                    GIF lên đến 10MB</p>
+                                    PNG, JPG, GIF lên đến 10MB
+                                </p>
                             </div>
                             <div v-if="selectedImages.length > 0" class="mt-4 flex flex-wrap justify-center">
                                 <div v-for="(image, index) in selectedImages.slice(0, 10)" :key="index" class="relative">
                                     <div @mouseenter="showDeleteButton(index)" @mouseleave="hideDeleteButton(index)">
-                                        <div
-                                            :class="{ 'border-dashed  border-2 border-sky-500': selectedImages.length > 0, 'border-dashed  border-2 border-sky-500 mr-2 mt-2': selectedImages.length > 1 }">
-                                            <img :src="image" :alt="'Preview ' + (index + 1)"
-                                                :class="{ 'h-[170px] w-[170px] object-cover': selectedImages.length <= 3, 'h-[100px] w-[100px] mt-4 object-cover': selectedImages.length > 3 }" />
+                                        <div :class="{
+                                            'border-dashed  border-2 border-sky-500':
+                                                selectedImages.length > 0,
+                                            'border-dashed  border-2 border-sky-500 mr-2 mt-2':
+                                                selectedImages.length > 1,
+                                        }">
+                                            <img :src="image" :alt="'Preview ' + (index + 1)" :class="{
+                                                'h-[170px] w-[170px] object-cover':
+                                                    selectedImages.length <= 3,
+                                                'h-[100px] w-[100px] mt-4 object-cover':
+                                                    selectedImages.length > 3,
+                                            }" />
                                         </div>
                                         <button v-if="deleteButtons[index]" @click="deleteImage(index)"
-                                            class="absolute top-2 right-2  border-solid border-2 p-1 border-red-500 rounded-full cursor-pointer">
+                                            class="absolute top-2 right-2 border-solid border-2 p-1 border-red-500 rounded-full cursor-pointer">
                                             <img src="/Delete.svg " class="max-h-[20px]" />
                                         </button>
                                     </div>
@@ -124,7 +135,6 @@
             </div>
             <!-- Chi tiết Sản phẩm -->
 
-
             <!-- thông tin bán hàng -->
             <div>
                 <h1 class="font-medium text-xl">Thông tin Bán hàng</h1>
@@ -135,7 +145,7 @@
                             <label for="first-name" class="block text-sm font-medium leading-6 text-gray-900">Giá bán
                                 lẻ</label>
                             <div class="mt-1">
-                                <input required type="number" min='0' name="first-name" id="first-name"
+                                <input required type="number" min="0" name="first-name" id="first-name"
                                     autocomplete="given-name"
                                     class="block w-full pl-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
                             </div>
@@ -159,9 +169,13 @@
                                             <td class="py-2 px-4 border-b">
                                                 <div class="relative">
                                                     <select v-model="item.size"
-                                                        class="block appearance-none w-full bg-white border border-gray-300 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:ring-2 focus:ring-inset focus:ring-indigo-600">
+                                                        @change="ChooseCombobox(false, index, $event.target.value)" class="block appearance-none w-full bg-white border border-gray-300
+                                                                         hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:ring-2 
+                                                                         focus:ring-inset focus:ring-indigo-600">
                                                         <option v-for="(size, sizeIndex) in sizeOptions" :key="sizeIndex"
-                                                            :value="size">{{ size }}</option>
+                                                            :value="size">
+                                                            {{ size }}
+                                                        </option>
                                                     </select>
                                                     <div
                                                         class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
@@ -173,9 +187,12 @@
                                             <td class="py-2 px-4 border-b">
                                                 <div class="relative">
                                                     <select v-model="item.color"
+                                                        @change="ChooseCombobox(true, index, $event.target.value)"
                                                         class="block appearance-none w-full bg-white border border-gray-300 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:ring-2 focus:ring-inset focus:ring-indigo-600">
                                                         <option v-for="(color, colorIndex) in colorOptions"
-                                                            :key="colorIndex" :value="color">{{ color }}</option>
+                                                            :key="colorIndex" :value="color">
+                                                            {{ color }}
+                                                        </option>
                                                     </select>
                                                     <div
                                                         class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
@@ -190,23 +207,25 @@
                                                     class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-inset focus:ring-indigo-600" />
                                             </td>
                                             <td v-if="index > 0" class="py-2 px-4 border-b">
-                                                <button @click="removeItem(index)"
-                                                    class="bg-red-500 hover:bg-red-600 text-white py-1 px-2 rounded text-xs md:text-base">Xoá</button>
+                                                <button @click="removeItem(index)" type="button"
+                                                    class="bg-red-500 hover:bg-red-600 text-white py-1 px-2 rounded text-xs md:text-base">
+                                                    Xoá
+                                                </button>
                                             </td>
                                         </tr>
                                     </tbody>
                                 </table>
                             </div>
-                            <button @click="addItem"
-                                class="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded">Thêm thành
-                                phần</button>
+                            <button @click="addItem" type="button"
+                                class="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded">
+                                Thêm thành phần
+                            </button>
                         </div>
                         <!-- thêm số lượng sản phẩm -->
                     </div>
                 </div>
             </div>
             <!-- thông tin bán hàng -->
-
 
             <!-- Vận chuyển -->
             <div hidden>
@@ -227,13 +246,10 @@
                                     aria-hidden="true" />
                             </div>
                             <input type="tel" name="productWeight" id="productWeight" autocomplete="tel"
-                                class="block w-full rounded-md border-0 px-3.5 py-1.5 pl-28 text-gray-900 
-                                                                                                                                                                                                                                                            shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 
-                                                                                                                                                                                                                                                            focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                class="block w-full rounded-md border-0 px-3.5 py-1.5 pl-28 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
                         </div>
                     </div>
                     <!-- Khối lượng sản phẩm -->
-
 
                     <div class="col-span-full mt-3">
                         <label for="country" class="block text-sm font-medium leading-6 text-gray-900">Kích thước Sản
@@ -274,25 +290,25 @@
                 </div>
             </div>
             <!-- Vận chuyển -->
-
         </div>
 
         <div class="mt-6 flex items-center justify-end gap-x-6">
             <button type="button" @click="onUpdateList"
-                class="rounded-md
-                                                                                                                             bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm 
-                                                                                                                             hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 
-                                                                                                                             focus-visible:outline-red-600">Cancel</button>
+                class="rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600">
+                Cancel
+            </button>
             <button type="submit"
-                class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Save</button>
+                class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                Save
+            </button>
         </div>
     </form>
 </template>
 
 <script setup>
-import { PhotoIcon, UserCircleIcon } from '@heroicons/vue/24/solid'
-import { computed, ref } from 'vue'
-import { CheckIcon, ChevronUpDownIcon } from '@heroicons/vue/20/solid'
+import { PhotoIcon, UserCircleIcon } from "@heroicons/vue/24/solid";
+import { computed, ref } from "vue";
+import { CheckIcon, ChevronUpDownIcon } from "@heroicons/vue/20/solid";
 import {
     Combobox,
     ComboboxButton,
@@ -300,42 +316,38 @@ import {
     ComboboxLabel,
     ComboboxOption,
     ComboboxOptions,
-} from '@headlessui/vue'
+} from "@headlessui/vue";
 
-import { useRouter } from 'vue-router';
+import { useRouter } from "vue-router";
 
 const router = useRouter();
 
 const Product = [
-    { id: 1, name: 'Áo polo' },
-    { id: 2, name: 'Áo thun' },
-    { id: 3, name: 'Áo sơ mi' },
-    { id: 4, name: 'Áo khoác' },
-    { id: 5, name: 'Áo vest' },
-    { id: 6, name: 'Áo len' },
-    { id: 7, name: 'Áo hoodie' },
+    { id: 1, name: "Áo polo" },
+    { id: 2, name: "Áo thun" },
+    { id: 3, name: "Áo sơ mi" },
+    { id: 4, name: "Áo khoác" },
+    { id: 5, name: "Áo vest" },
+    { id: 6, name: "Áo len" },
+    { id: 7, name: "Áo hoodie" },
+];
 
-]
-
-const query = ref('')
-const categoryProduct = ref(null)
+const query = ref("");
+const categoryProduct = ref(null);
 const filteredProduct = computed(() =>
-    query.value === ''
+    query.value === ""
         ? Product
         : Product.filter((product) => {
-            return product.name.toLowerCase().includes(query.value.toLowerCase())
+            return product.name.toLowerCase().includes(query.value.toLowerCase());
         })
-)
+);
 
 // thông tin bán hàng
 
+const items = ref([{ size: "", color: "", quantity: 0 }]);
 
-const items = ref([
-    { size: '', color: '', quantity: 0 },
-]);
-
-const sizeOptions = ref(['Size 1', 'Size 2', 'Size 3']);
-const colorOptions = ref(['Màu 1', 'Màu 2', 'Màu 3']);
+const sizeOptions = ref(["Size 1", "Size 2", "Size 3"]);
+const colorOptions = ref(["Màu 1", "Màu 2", "Màu 3"]);
 
 const validateQuantity = (index) => {
     if (items.value[index].quantity < 0) {
@@ -348,11 +360,29 @@ const removeItem = (index) => {
 };
 
 const addItem = () => {
-    items.value.push({ size: '', color: '', quantity: 0 });
+    items.value.push({ size: "", color: "", quantity: 0 });
+};
+
+const ChooseCombobox = (isColor, index, value) => {
+    if ((items.value[index].size.length == 0 && isColor) || (items.value[index].color.length == 0 && !isColor)) return;
+    const c = isColor ? value : items.value[index].size;
+    const s = isColor ? items.value[index].size : value;
+    for (let i = 0; i < items.value.length; i++) {
+        if (i == index) continue;
+        let itemF = items.value[i];
+        if (itemF.size == s && itemF.color == c) {
+            console.log(" Lỗi ");
+            if (isColor) {
+                items.value[index].color = '';
+            } else {
+                items.value[index].size = '';
+            }
+            return;
+        }
+    }
 };
 
 //thông tin bán hàng
-
 
 //photo
 const selectedImages = ref([]);
@@ -364,10 +394,10 @@ const handleFileChange = (event) => {
     if (files) {
         for (let i = 0; i < files.length; i++) {
             const file = files[i];
-            if (file.type.startsWith('image/')) {
+            if (file.type.startsWith("image/")) {
                 previewImage(file);
             } else {
-                alert('Please select a valid image file.');
+                alert("Please select a valid image file.");
             }
         }
     }
@@ -400,7 +430,7 @@ const handleDrop = (event) => {
 };
 
 const openFileUploader = () => {
-    document.getElementById('file-upload').click();
+    document.getElementById("file-upload").click();
 };
 
 const showDeleteButton = (index) => {
@@ -414,16 +444,18 @@ const hideDeleteButton = (index) => {
 const deleteImage = (index) => {
     selectedImages.value.splice(index, 1);
     deleteButtons.value.splice(index, 1);
-    console.log("index remvoe: ", index, "selectedImages : ", selectedImages.length);
+    console.log(
+        "index remvoe: ",
+        index,
+        "selectedImages : ",
+        selectedImages.length
+    );
 };
 //photo
 
-
 const onUpdateList = (isUpdate) => {
     if (isUpdate) {
-
     }
     router.push("/admin/product");
-}
-
+};
 </script>
