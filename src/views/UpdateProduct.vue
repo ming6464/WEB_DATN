@@ -170,8 +170,8 @@
                                                 <div class="relative">
                                                     <select v-model="item.size"
                                                         @change="ChooseCombobox(false, index, $event.target.value)" class="block appearance-none w-full bg-white border border-gray-300
-                                                                         hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:ring-2 
-                                                                         focus:ring-inset focus:ring-indigo-600">
+                                                                                 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:ring-2 
+                                                                                 focus:ring-inset focus:ring-indigo-600">
                                                         <option v-for="(size, sizeIndex) in sizeOptions" :key="sizeIndex"
                                                             :value="size">
                                                             {{ size }}
@@ -365,7 +365,7 @@ const addItem = () => {
 
 const ChooseCombobox = (isColor, index, value) => {
     if ((items.value[index].size.length == 0 && isColor) || (items.value[index].color.length == 0 && !isColor)) return;
-    const c = isColor ? value : items.value[index].size;
+    const c = isColor ? value : items.value[index].color;
     const s = isColor ? items.value[index].size : value;
     for (let i = 0; i < items.value.length; i++) {
         if (i == index) continue;
