@@ -25,12 +25,16 @@ const routes = [
         path: 'account_staff',
         component: () => import('../views/AccountStaff.vue'),
       },
+      {
+        path: 'updateProduct',
+        component: () => import('../views/UpdateProduct.vue'),
+      }
     ],
   },
   {
     path: '/',
     component: () => import('../components/Login.vue')
-  }
+  },
 ]
 
 const router = createRouter({
