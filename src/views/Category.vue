@@ -48,7 +48,7 @@
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-200 bg-white">
-              <tr v-for="person in people" :key="person.name">
+              <tr v-for="(person, index) in people" :key="person.name">
                 <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
                   <div class="font-medium text-gray-900">{{ person.stt }}</div>
                 </td>
@@ -65,10 +65,15 @@
                 <td
                   class="relative whitespace-nowrap py-5 pl-3 pr-4 text-right text-sm font-medium sm:pr-0 flex flex-row"
                 >
-                  <a href="#" class="text-indigo-600 hover:text-indigo-900 mx-3"
+                  <a
+                    @click="openEditModal(index)"
+                    class="text-indigo-600 hover:text-indigo-900 mx-3"
                     >Edit<span class="sr-only">, {{ person.name }}</span></a
                   >
-                  <a href="#" class="text-red-700 hover:text-indigo-900"
+                  <a
+                    @click="deletePerson()"
+                    href="#"
+                    class="text-red-700 hover:text-indigo-900"
                     >Delete<span class="sr-only">, {{ person.name }}</span></a
                   >
                 </td>
@@ -79,9 +84,71 @@
       </div>
     </div>
   </div>
+  <!-- Edit Modal -->
+  <div v-if="isEditModalOpen" class="fixed inset-0 overflow-y-auto">
+    <div class="flex items-center justify-center min-h-screen">
+      <div class="fixed inset-0 bg-gray-500 bg-opacity-75"></div>
+
+      <div class="relative bg-white p-8 rounded-lg w-96">
+        <h3 class="text-lg font-semibold mb-4 text-center">Edit Person</h3>
+
+        <!-- Form for editing person details -->
+        <form @submit.prevent="submitEditForm">
+          <div class="mb-4">
+            <label
+              for="editedName"
+              class="block text-sm font-medium text-gray-700"
+            >
+              Name
+            </label>
+            <input
+              v-model="editedPerson.name"
+              type="text"
+              id="editedName"
+              name="editedName"
+              class="mt-1 p-2 w-full border rounded-md"
+            />
+          </div>
+
+          <div class="mb-4">
+            <label
+              for="editedImage"
+              class="block text-sm font-medium text-gray-700"
+            >
+              Image URL
+            </label>
+            <input
+              v-model="editedPerson.image"
+              type="text"
+              id="editedImage"
+              name="editedImage"
+              class="mt-1 p-2 w-full border rounded-md"
+            />
+          </div>
+
+          <div class="flex justify-end">
+            <button
+              type="button"
+              class="mr-2 text-gray-500 hover:text-gray-700 mx-3"
+              @click="closeEditModal"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-500"
+            >
+              Save
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup>
+import { ref } from "vue";
 const people = [
   {
     stt: "1",
@@ -120,4 +187,49 @@ const people = [
       "https://image.uniqlo.com/UQ/ST3/AsianCommon/imagesgoods/450195/sub/goods_450195_sub14.jpg?width=750",
   },
 ];
+const isEditModalOpen = ref(false);
+const isDeleteModalOpen = ref(false);
+let selectedIndex = null;
+
+function deletePerson() {
+  console.log("Deleting person at index:", selectedIndex);
+  people.splice(selectedIndex, 1);
+  console.log("People after deletion:", people);
+  isDeleteModalOpen.value = false;
+}
+// function confirmDelete(index) {
+//   selectedIndex = index;
+//   isDeleteModalOpen.value = true;
+// }
+
+// function cancelDelete() {
+//   isDeleteModalOpen.value = false;
+// }
+
+// function deletePerson() {
+//   people.splice(selectedIndex, 1);
+//   isDeleteModalOpen.value = false;
+// }
+
+const editedPerson = ref({
+  stt: "",
+  name: "",
+  image: "",
+});
+
+function openEditModal(index) {
+  selectedIndex = index;
+  editedPerson.value = { ...people[index] };
+  isEditModalOpen.value = true;
+}
+
+function submitEditForm() {
+  // Perform update logic
+  people.splice(selectedIndex, 1, editedPerson.value);
+  isEditModalOpen.value = false;
+}
+
+function closeEditModal() {
+  isEditModalOpen.value = false;
+}
 </script>
