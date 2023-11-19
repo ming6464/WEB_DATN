@@ -1,12 +1,24 @@
 <template>
   <div class="px-4 sm:px-6 lg:px-8">
-    <div class="sm:flex sm:items-center">
-      <div class="sm:flex-auto"></div>
-      <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-        <button type="button" @click="openModal(-1)"
-          class="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-          Add user
-        </button>
+    <div class="px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center border-gray-300 py-4">
+        <div class="flex items-center space-x-4 flex-grow">
+          <input type="text" v-model="searchTerm" placeholder="Tìm kiếm ..."
+            class="rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring focus:border-indigo-500 flex-grow" />
+
+          <!-- Dropdown filter -->
+          <select v-model="selectedFilter"
+            class="rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring focus:border-indigo-500">
+            <option value="id">ID</option>
+            <option value="name">Tên</option>
+            <option value="email">Email</option>
+          </select>
+
+          <button type="button" @click="openModal(-1)"
+            class="block rounded-md border border-indigo-600 bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+            Thêm tài khoản
+          </button>
+        </div>
       </div>
     </div>
     <div class="mt-8 flow-root">
@@ -15,19 +27,20 @@
           <table class="min-w-full divide-y divide-gray-300">
             <thead>
               <tr>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                <th scope="col" class="py-3.5 text-left text-sm font-semibold text-gray-900">
                   Id
                 </th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                <th scope="col" class="py-3.5 text-left text-sm font-semibold text-gray-900">
                   Tên
                 </th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                  Số điện thoại
-                </th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+
+                <th scope="col" class="py-3.5 text-left text-sm font-semibold text-gray-900">
                   Email
                 </th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                <th scope="col" class="py-3.5 text-left text-sm font-semibold text-gray-900">
+                  Số điện thoại
+                </th>
+                <th scope="col" class="px-3.5 py-3.5 text-left text-sm font-semibold text-gray-900">
                   Chức vụ cao nhất
                 </th>
                 <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-0">
@@ -36,7 +49,7 @@
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-200 bg-white">
-              <tr v-for="(person, index) in staffs" :key="index">
+              <tr v-for="(person, index) in filteredStaffs" :key="index">
                 <td class="px-3 py-4 text-sm text-gray-500">
                   <div class="font-medium text-gray-900">{{ person.id }}</div>
                 </td>
@@ -112,25 +125,20 @@
       <div class="flex items-center justify-center min-h-screen">
         <div class="fixed inset-0 bg-gray-500 bg-opacity-50" @click="closeEditModal"></div>
         <div class="relative bg-white p-6 rounded-lg max-w-5xl max-h-[600px] overflow-y-auto overflow-hidden">
-          <h3 class="text-lg font-semibold mb-4 text-center">
+          <h1 class="text-xl font-bold mb-4 text-center">
             {{
               selectedIndex >= 0 ? "Sửa thông tin người dùng" : "Thêm tài khoản"
             }}
-          </h3>
+          </h1>
           <!-- Form for editing person details -->
           <form @submit.prevent="submitEditForm" class="mx-auto mt-8 sm:max-w-xl sm:mt-7">
             <div class="grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2">
               <div class="col-span-full flex items-center gap-x-8">
-                <img :src="staffEdit.image" alt="" class="h-24 w-24 flex-none rounded-lg bg-gray-800 object-cover" />
-                <div>
-                  <button type="button"
-                    class="rounded-md bg-blue px-3 py-2 text-sm font-semibold text-black shadow-sm hover:bg-blue">
-                    Đổi ảnh đại diện
-                  </button>
-                  <p class="mt-2 text-xs leading-5 text-gray-400">
-                    JPG, GIF hoặc PNG. Tối đa 1MB.
-                  </p>
-                </div>
+                <label for="image-upload" class="cursor-pointer">
+                  <img :src="staffEdit.image" alt="" class="h-24 w-24 flex-none rounded-lg bg-gray-800 object-cover" />
+                </label>
+                <input type="file" id="image-upload" @change="handleImageUpload" accept="image/*" class="hidden">
+
               </div>
               <div>
                 <label for="last-name" class="block text-sm font-semibold leading-6 text-gray-900">Họ</label>
@@ -299,8 +307,9 @@
   </div>
 </template>
 
+
 <script setup>
-import { ref } from "vue";
+import { ref, watch, computed } from "vue";
 import { Switch, SwitchDescription, SwitchGroup, SwitchLabel } from '@headlessui/vue'
 const staffs = ref([
   {
@@ -368,10 +377,14 @@ const openModal = async (index) => {
 const submitEditForm = () => {
   isAnySwitchOn.value = staffEdit.value.isShiper || staffEdit.value.isStaff || staffEdit.value.isAdmin;
   if (isAnySwitchOn.value == false) return;
+  if (staffEdit.value.image.length == 0) {
+    staffEdit.value.image = "https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80";
+  }
   if (selectedIndex.value >= 0) {
     staffs.value.splice(selectedIndex.value, 1, staffEdit.value);
   } else {
     if (staffEdit.value.password == password2.value) {
+      staffEdit.value.id = staffs.value.length;
       staffs.value.push(staffEdit.value);
     } else {
       console.log("Sai password");
@@ -408,6 +421,50 @@ const closeEditModal = async () => {
 };
 
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const handleImageUpload = (event) => {
+  const file = event.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      staffEdit.value.image = reader.result;
+    };
+    reader.readAsDataURL(file);
+  }
+};
+//search
+
+
+const selectedFilter = ref("id"); // Giá trị mặc định của bộ lọc
+
+const searchTerm = ref('');
+
+watch(selectedFilter, (newVal, oldVal) => {
+  console.log("Bộ lọc được chọn:", newVal);
+});
+
+
+const filteredStaffs = computed(() => {
+  const term = searchTerm.value.toLowerCase().trim();
+
+  switch (selectedFilter.value.toLowerCase()) {
+    case "id":
+      return staffs.value.filter(person =>
+        person.id.toLowerCase().includes(term)
+      );
+    case "name":
+      return staffs.value.filter(person =>
+        person.last_name.toLowerCase().includes(term) ||
+        person.first_name.toLowerCase().includes(term)
+      );
+    case "email":
+      return staffs.value.filter(person =>
+        person.email.toLowerCase().includes(term)
+      );
+  }
+});
+
+//search
 
 // modal
 </script>
