@@ -6,11 +6,12 @@
           Danh mục
         </h1>
       </div>
-      <div class="mt-2 sm:ml-16 sm:mt-0 sm:flex-none">
+      <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
         <button
           type="button"
-          class="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+          class="inline-flex items-center gap-x-1.5 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
         >
+          <PlusIcon class="h-5 w-5" aria-hidden="true" />
           Thêm danh mục
         </button>
       </div>
@@ -39,18 +40,18 @@
                 >
                   Tên Sản Phẩm
                 </th>
-                <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-0">
-                  <span class="sr-only">Edit</span>
-                </th>
-                <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-0">
-                  <span class="sr-only">Delete</span>
+                <th
+                  scope="col"
+                  class="py-3 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
+                >
+                  Hoạt động
                 </th>
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-200 bg-white">
-              <tr v-for="(person, index) in people" :key="person.name">
+              <tr v-for="(person, index) in people" :key="person.id">
                 <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
-                  <div class="font-medium text-gray-900">{{ person.stt }}</div>
+                  <div class="font-medium text-gray-900">{{ person.id }}</div>
                 </td>
                 <td class="whitespace-nowrap py-5 pl-4 pr-3 text-sm sm:pl-0">
                   <div class="flex items-center">
@@ -62,20 +63,23 @@
                 <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
                   <div class="font-medium text-gray-900">{{ person.name }}</div>
                 </td>
-                <td
-                  class="relative whitespace-nowrap py-5 pl-3 pr-4 text-right text-sm font-medium sm:pr-0 flex flex-row"
-                >
-                  <a
-                    @click="openEditModal(index)"
-                    class="text-indigo-600 hover:text-indigo-900 mx-3"
-                    >Edit<span class="sr-only">, {{ person.name }}</span></a
-                  >
-                  <a
-                    @click="deletePerson()"
-                    href="#"
-                    class="text-red-700 hover:text-indigo-900"
-                    >Delete<span class="sr-only">, {{ person.name }}</span></a
-                  >
+                <td>
+                  <div class="mx-4 space-x-3">
+                    <button
+                      @click="openEditModal(person)"
+                      class="text-indigo-600 hover:text-indigo-900"
+                    >
+                      <PencilIcon class="h-5 w-5" aria-hidden="true" />
+                      <span class="sr-only">{{ person.id }},</span>
+                    </button>
+                    <button
+                      @click="deletePerson(index)"
+                      class="text-red-700 hover:text-indigo-900"
+                    >
+                      <TrashIcon class="h-5 w-5" aria-hidden="true" />
+                      <span class="sr-only">, {{ person.id }}</span>
+                    </button>
+                  </div>
                 </td>
               </tr>
             </tbody>
@@ -126,6 +130,8 @@
             />
           </div>
 
+          <!-- ... other fields ... -->
+
           <div class="flex justify-end">
             <button
               type="button"
@@ -149,84 +155,74 @@
 
 <script setup>
 import { ref } from "vue";
-const people = [
+import { PlusIcon } from "@heroicons/vue/20/solid";
+import { PencilIcon } from "@heroicons/vue/20/solid";
+import { TrashIcon } from "@heroicons/vue/20/solid";
+
+const people = ref([
   {
-    stt: "1",
+    id: "1",
     name: "Áo len",
     image:
       "https://image.uniqlo.com/UQ/ST3/AsianCommon/imagesgoods/460950/sub/goods_460950_sub14.jpg?width=750",
   },
   {
-    stt: "2",
+    id: "2",
     name: "Áo thun",
     image:
       "https://media.coolmate.me/cdn-cgi/image/quality=80,format=auto/uploads/April2023/Ao_thun_oversize_basic_84RISINGshawdo4.jpg",
   },
   {
-    stt: "3",
+    id: "3",
     name: "Áo sơ mi",
     image:
       "https://image.uniqlo.com/UQ/ST3/AsianCommon/imagesgoods/462384/sub/goods_462384_sub14.jpg?width=750",
   },
   {
-    stt: "4",
+    id: "4",
     name: "Áo nỉ",
     image:
       "https://image.uniqlo.com/UQ/ST3/AsianCommon/imagesgoods/460322/item/goods_31_460322.jpg?width=750",
   },
   {
-    stt: "5",
+    id: "5",
     name: "Áo Polo",
     image:
       "https://image.uniqlo.com/UQ/ST3/AsianCommon/imagesgoods/433041/item/goods_69_433041.jpg?width=750",
   },
   {
-    stt: "6",
+    id: "6",
     name: "Áo khoác",
     image:
       "https://image.uniqlo.com/UQ/ST3/AsianCommon/imagesgoods/450195/sub/goods_450195_sub14.jpg?width=750",
   },
-];
+]);
 const isEditModalOpen = ref(false);
-const isDeleteModalOpen = ref(false);
-let selectedIndex = null;
-
-function deletePerson() {
-  console.log("Deleting person at index:", selectedIndex);
-  people.splice(selectedIndex, 1);
-  console.log("People after deletion:", people);
-  isDeleteModalOpen.value = false;
-}
-// function confirmDelete(index) {
-//   selectedIndex = index;
-//   isDeleteModalOpen.value = true;
-// }
-
-// function cancelDelete() {
-//   isDeleteModalOpen.value = false;
-// }
-
-// function deletePerson() {
-//   people.splice(selectedIndex, 1);
-//   isDeleteModalOpen.value = false;
-// }
-
+const selectedIndex = ref(null);
 const editedPerson = ref({
-  stt: "",
+  id: "",
   name: "",
   image: "",
 });
 
-function openEditModal(index) {
-  selectedIndex = index;
-  editedPerson.value = { ...people[index] };
+function deletePerson(index) {
+  console.log("Deleting person at index:", index);
+  people.value.splice(index, 1);
+  console.log("People after deletion:", people.value);
+}
+
+function openEditModal(person) {
+  editedPerson.value = { ...person };
+  selectedIndex.value = people.value.indexOf(person);
   isEditModalOpen.value = true;
 }
 
 function submitEditForm() {
-  // Perform update logic
-  people.splice(selectedIndex, 1, editedPerson.value);
-  isEditModalOpen.value = false;
+  if (editedPerson.value) {
+    // Update the person in the array
+    people.value.splice(selectedIndex.value, 1, { ...editedPerson.value });
+    isEditModalOpen.value = false;
+  }
 }
 
 function closeEditModal() {

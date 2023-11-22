@@ -6,12 +6,13 @@
           Danh sách sản phẩm
         </h1>
       </div>
-      <div class="mt-2 sm:ml-16 sm:mt-0 sm:flex-none">
+      <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
         <button
           type="button"
           @click="goToListUpdateProduct"
-          class="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+          class="inline-flex items-center gap-x-1.5 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
         >
+          <PlusIcon class="h-5 w-5" aria-hidden="true" />
           Thêm sản phẩm
         </button>
       </div>
@@ -43,9 +44,9 @@
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-200 bg-white">
-              <tr v-for="person in people" :key="person.email">
+              <tr v-for="person in people" :key="person.id">
                 <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
-                  <div class="text-gray-900">{{ person.stt }}</div>
+                  <div class="text-gray-900">{{ person.id }}</div>
                 </td>
                 <td class="whitespace-nowrap py-5 pl-4 pr-3 text-sm sm:pl-0">
                   <div class="flex items-center">
@@ -68,22 +69,15 @@
 
 <script setup>
 import { useRouter } from "vue-router";
-
+import { PlusIcon } from "@heroicons/vue/20/solid";
 const router = useRouter();
 
 const people = [
   {
-    stt: "1",
+    id: "1",
     name: "Áo khoác",
     image:
       "https://image.uniqlo.com/UQ/ST3/AsianCommon/imagesgoods/450195/sub/goods_450195_sub14.jpg?width=750",
   },
-  // More people...
 ];
-
-const goToListUpdateProduct = (isEdit, index) => {
-  if (isEdit) {
-  }
-  router.push("/admin/updateProduct");
-};
 </script>
