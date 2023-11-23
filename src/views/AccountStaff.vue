@@ -168,7 +168,8 @@
               <div class="sm:col-span-2">
                 <label for="phone" class="block text-sm font-semibold leading-6 text-gray-900">Số điện thoại</label>
                 <div class="mt-2.5">
-                  <input type="text" name="phone" required v-model="staffEdit.phone" id="phone" autocomplete="phone"
+                  <input type="text" name="phone" @input="handlePhoneNumberInput" required v-model="staffEdit.phone"
+                    id="phone" autocomplete="phone"
                     class="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
                 </div>
               </div>
@@ -192,9 +193,6 @@
               </div>
 
               <div class="sm:col-span-2">
-                <label class="block text-sm font-semibold leading-6 text-gray-900"> Chức vụ
-                  <span v-if="!isAnySwitchOn" class="ml-1 text-xs leading-5 text-red-500">không được thiếu</span>
-                </label>
                 <div class="sm:col-span-2">
                   <div>
                     <SwitchGroup as="div" class="flex items-center justify-between">
@@ -291,6 +289,11 @@
               </div>
             </div>
             <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+
+              <div v-if="showError" class="ml-4 p-2 bg-red-100 text-red-500 text-sm rounded">
+                Tên không hợp lệ. Vui lòng kiểm tra lại.
+              </div>
+
               <button type="button" @click="deleteStaff"
                 class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto">
                 Xoá
@@ -312,6 +315,8 @@
 import { ref, watch, computed } from "vue";
 import { Switch, SwitchDescription, SwitchGroup, SwitchLabel } from '@headlessui/vue'
 import * as CheckRegex from '../assets/validate';
+import Toastify from "toastify-js";
+import "toastify-js/src/toastify.css";
 const staffs = ref([
   {
     id: "md0001",
@@ -341,6 +346,9 @@ const staffs = ref([
       "https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
   },
 ]);
+
+
+const showError = ref(false);
 
 // modal
 const isOpenModal = ref(false);
@@ -375,13 +383,36 @@ const openModal = async (index) => {
   isShowModal.value = true;
 };
 
+const handlePhoneNumberInput = () => {
+  // Loại bỏ các ký tự không phải số khỏi chuỗi số điện thoại
+  staffEdit.value.phone = staffEdit.value.phone.replace(/\D/g, "");
+};
+
 const submitEditForm = () => {
-  if (!CheckRegex.CheckNameRegex(staffEdit.value.last_name) || !CheckRegex.CheckNameRegex(staffEdit.value.first_name)) {
-    console.log("tên bị sai");
+  if (!CheckRegex.CheckNameRegex(staffEdit.value.last_name)) {
+    showError.value = true; // Hiển thị thông báo lỗi
+    showErrorMessage("Tên không hợp lệ. Vui lòng kiểm tra lại.");
     return;
   }
+
+  if (!CheckRegex.CheckNameRegex(staffEdit.value.first_name)) {
+    showError.value = true; // Hiển thị thông báo lỗi
+    showErrorMessage("Họ không hợp lệ. Vui lòng kiểm tra lại.");
+    return;
+  }
+
+  if (!CheckRegex.CheckPhoneNumberRegex(staffEdit.value.phone)) {
+    showError.value = true; // Hiển thị thông báo lỗi
+    showErrorMessage("Số điện thoại chưa đúng định dạng. Vui lòng kiểm tra lại.");
+    return;
+  }
+
   isAnySwitchOn.value = staffEdit.value.isShiper || staffEdit.value.isStaff || staffEdit.value.isAdmin;
-  if (isAnySwitchOn.value == false) return;
+  if (isAnySwitchOn.value == false) {
+    showError.value = true; // Hiển thị thông báo lỗi
+    showErrorMessage("Tài khoản phải có ít nhất 1 quyền");
+    return;
+  }
   if (staffEdit.value.image.length == 0) {
     staffEdit.value.image = "https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80";
   }
@@ -419,6 +450,7 @@ const closeDeleteModal = async () => {
 };
 
 const closeEditModal = async () => {
+  showError.value = false;
   isShowModal.value = false;
   await delay(500);
   isOpenModal.value = false;
@@ -470,6 +502,18 @@ const filteredStaffs = computed(() => {
 });
 
 //search
+
+const showErrorMessage = (message) => {
+  Toastify({
+    text: message,
+    duration: 2000,
+    close: true,
+    backgroundColor: "linear-gradient(to right, #ff4b2b, #ff416c)",
+    className: "rounded-tl-md rounded-tr-md rounded-br-md",
+    gravity: "bottom", // `top` or `bottom`
+    position: "right",
+  }).showToast();
+};
 
 // modal
 </script>
