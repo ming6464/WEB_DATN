@@ -311,6 +311,7 @@
 <script setup>
 import { ref, watch, computed } from "vue";
 import { Switch, SwitchDescription, SwitchGroup, SwitchLabel } from '@headlessui/vue'
+import * as CheckRegex from '../assets/validate';
 const staffs = ref([
   {
     id: "md0001",
@@ -375,6 +376,10 @@ const openModal = async (index) => {
 };
 
 const submitEditForm = () => {
+  if (!CheckRegex.CheckNameRegex(staffEdit.value.last_name) || !CheckRegex.CheckNameRegex(staffEdit.value.first_name)) {
+    console.log("tên bị sai");
+    return;
+  }
   isAnySwitchOn.value = staffEdit.value.isShiper || staffEdit.value.isStaff || staffEdit.value.isAdmin;
   if (isAnySwitchOn.value == false) return;
   if (staffEdit.value.image.length == 0) {
@@ -445,21 +450,21 @@ watch(selectedFilter, (newVal, oldVal) => {
 
 
 const filteredStaffs = computed(() => {
-  const term = searchTerm.value.toLowerCase().trim();
+  const term = searchTerm.value.toString().toLowerCase().trim();
 
   switch (selectedFilter.value.toLowerCase()) {
     case "id":
       return staffs.value.filter(person =>
-        person.id.toLowerCase().includes(term)
+        person.id.toString().toLowerCase().includes(term)
       );
     case "name":
       return staffs.value.filter(person =>
-        person.last_name.toLowerCase().includes(term) ||
-        person.first_name.toLowerCase().includes(term)
+        person.last_name.toString().toLowerCase().includes(term) ||
+        person.first_name.toString().toLowerCase().includes(term)
       );
     case "email":
       return staffs.value.filter(person =>
-        person.email.toLowerCase().includes(term)
+        person.email.toString().toLowerCase().includes(term)
       );
   }
 });
