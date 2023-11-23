@@ -275,7 +275,7 @@ const navigation = [
   },
   {
     name: "Quản lý đơn hàng",
-    icon: FolderIcon,
+    icon: CalendarIcon,
     current: false,
     children: [
       {
@@ -284,7 +284,6 @@ const navigation = [
       },
     ],
   },
-  { name: "Chi tiết đơn hàng", href: "#", icon: CalendarIcon, current: false },
   {
     name: "Nhân viên",
     icon: DocumentDuplicateIcon,

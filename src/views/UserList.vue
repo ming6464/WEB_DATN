@@ -9,9 +9,10 @@
       <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
         <button
           type="button"
-          class="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+          class="inline-flex items-center gap-x-1.5 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
         >
-          Add user
+          <PlusIcon class="h-5 w-5" aria-hidden="true" />
+          Thêm khách hàng
         </button>
       </div>
     </div>
@@ -51,25 +52,18 @@
                 >
                   Email
                 </th>
-
                 <th
                   scope="col"
                   class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
                 >
-                  Chi tiết
-                </th>
-                <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-0">
-                  <span class="sr-only">Edit</span>
-                </th>
-                <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-0">
-                  <span class="sr-only">Delete</span>
+                  Hoạt động
                 </th>
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-200 bg-white">
-              <tr v-for="person in people" :key="person.email">
+              <tr v-for="person in people" :key="person.id">
                 <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
-                  <div class="text-gray-900">{{ person.stt }}</div>
+                  <div class="text-gray-900">{{ person.id }}</div>
                 </td>
                 <td class="whitespace-nowrap py-5 pl-4 pr-3 text-sm sm:pl-0">
                   <div class="flex items-center">
@@ -91,18 +85,23 @@
                 <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
                   <div class="text-gray-900">{{ person.email }}</div>
                 </td>
-                <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
-                  <div class="text-gray-900">{{ person.role }}</div>
-                </td>
-                <td
-                  class="relative whitespace-nowrap py-5 pl-3 pr-4 text-right text-sm font-medium sm:pr-0 flex-row"
-                >
-                  <a href="#" class="text-indigo-600 hover:text-indigo-900 mx-3"
-                    >Edit<span class="sr-only">, {{ person.name }}</span></a
-                  >
-                  <a href="#" class="text-red-700 hover:text-indigo-900"
-                    >Delete<span class="sr-only">, {{ person.name }}</span></a
-                  >
+                <td>
+                  <div class="mx-4 space-x-3">
+                    <button
+                      @click="openEditModal(person)"
+                      class="text-indigo-600 hover:text-indigo-900"
+                    >
+                      <PencilIcon class="h-5 w-5" aria-hidden="true" />
+                      <span class="sr-only">Edit, {{ person.id }}</span>
+                    </button>
+                    <button
+                      @click="deletePerson(person.id)"
+                      class="text-red-700 hover:text-indigo-900"
+                    >
+                      <TrashIcon class="h-5 w-5" aria-hidden="true" />
+                      <span class="sr-only">Delete, {{ person.id }}</span>
+                    </button>
+                  </div>
                 </td>
               </tr>
             </tbody>
@@ -111,19 +110,155 @@
       </div>
     </div>
   </div>
-</template>
 
+  <!-- Edit Modal -->
+  <div v-if="isEditModalOpen" class="fixed inset-0 overflow-y-auto">
+    <div class="flex items-center justify-center min-h-screen">
+      <div class="fixed inset-0 bg-gray-500 bg-opacity-75"></div>
+
+      <div class="relative bg-white p-8 rounded-lg w-96">
+        <h3 class="text-lg font-semibold mb-4 text-center">Edit Person</h3>
+
+        <!-- Form for editing person details -->
+        <form @submit.prevent="submitEditForm">
+          <div class="mb-4">
+            <label
+              for="editedName"
+              class="block text-sm font-medium text-gray-700"
+            >
+              Name
+            </label>
+            <input
+              v-model="editedPerson.name"
+              type="text"
+              id="editedName"
+              name="editedName"
+              class="mt-1 p-2 w-full border rounded-md"
+            />
+          </div>
+
+          <div class="mb-4">
+            <label
+              for="editedImage"
+              class="block text-sm font-medium text-gray-700"
+            >
+              Image URL
+            </label>
+            <input
+              v-model="editedPerson.image"
+              type="text"
+              id="editedImage"
+              name="editedImage"
+              class="mt-1 p-2 w-full border rounded-md"
+            />
+          </div>
+
+          <div class="mb-4">
+            <label
+              for="editedPhone"
+              class="block text-sm font-medium text-gray-700"
+            >
+              Phone
+            </label>
+            <input
+              v-model="editedPerson.phone"
+              type="text"
+              id="editedPhone"
+              name="editedPhone"
+              class="mt-1 p-2 w-full border rounded-md"
+            />
+          </div>
+
+          <div class="mb-4">
+            <label
+              for="editedEmail"
+              class="block text-sm font-medium text-gray-700"
+            >
+              Email
+            </label>
+            <input
+              v-model="editedPerson.email"
+              type="text"
+              id="editedEmail"
+              name="editedEmail"
+              class="mt-1 p-2 w-full border rounded-md"
+            />
+          </div>
+
+          <div class="flex justify-end">
+            <button
+              type="button"
+              class="mr-2 text-gray-500 hover:text-gray-700 mx-3"
+              @click="closeEditModal"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-500"
+            >
+              Save
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</template>
 <script setup>
-const people = [
+import { ref } from "vue";
+import { PlusIcon } from "@heroicons/vue/20/solid";
+import { PencilIcon } from "@heroicons/vue/20/solid";
+import { TrashIcon } from "@heroicons/vue/20/solid";
+const people = ref([
   {
-    stt: "1",
-    name: "Lindsay Walton",
-    phone: "Front-end Developer",
-    email: "lindsay.walton@example.com",
-    role: "Member",
+    id: "1",
+    name: "Linh",
+    phone: "045643953",
+    email: "linnn@gmail.com",
     image:
       "https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
   },
-  // More people...
-];
+]);
+const isEditModalOpen = ref(false);
+const selectedIndex = ref(null);
+const editedPerson = ref({
+  id: "",
+  name: "",
+  image: "",
+  phone: "",
+  email: "",
+});
+
+function openEditModal(person) {
+  // Clone the person object to avoid modifying the original data
+  editedPerson.value = { ...person };
+  isEditModalOpen.value = true;
+}
+
+function submitEditForm() {
+  if (editedPerson.value) {
+    // Find the index of the editing person in the array
+    const index = people.value.findIndex(
+      (person) => person.id === editedPerson.value.id
+    );
+
+    if (index !== -1) {
+      // Update the person in the array
+      people.value[index] = { ...editedPerson.value };
+      isEditModalOpen.value = false;
+    }
+  }
+}
+function deletePerson(personId) {
+  const index = people.value.findIndex((person) => person.id === personId);
+
+  if (index !== -1) {
+    people.value.splice(index, 1);
+  }
+}
+function closeEditModal() {
+  isEditModalOpen.value = false;
+  editedPerson.value = null;
+}
 </script>
