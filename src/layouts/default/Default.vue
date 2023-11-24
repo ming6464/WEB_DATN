@@ -251,7 +251,7 @@ import {
 import { ChevronDownIcon, MagnifyingGlassIcon } from "@heroicons/vue/20/solid";
 
 const navigation = [
-  { name: "Trang chủ", href: "admin/home", icon: HomeIcon, current: true },
+  { name: "Trang chủ", href: "/admin/home", icon: HomeIcon, current: true },
   {
     name: "Khách hàng",
     icon: UsersIcon,
