@@ -5,6 +5,10 @@ export default defineConfig({
   plugins: [vue()],
   define: { 'process.env' : {
     VITE_API : process.env.VITE_API
-  }}
-
+  }},
+  resolve: {
+    alias: {
+      '@': '/src',
+    },
+  },
 })
