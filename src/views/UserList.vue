@@ -13,22 +13,40 @@
           <table class="min-w-full divide-y divide-gray-300">
             <thead>
               <tr>
-                <th scope="col" class="py-4 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
+                <th
+                  scope="col"
+                  class="py-4 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
+                >
                   STT
                 </th>
-                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-4">
+                <th
+                  scope="col"
+                  class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-4"
+                >
                   Ảnh
                 </th>
-                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
+                <th
+                  scope="col"
+                  class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
+                >
                   Họ và Tên
                 </th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                <th
+                  scope="col"
+                  class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                >
                   Số điện thoại
                 </th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                <th
+                  scope="col"
+                  class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                >
                   Email
                 </th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                <th
+                  scope="col"
+                  class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                >
                   Hoạt động
                 </th>
               </tr>
@@ -41,7 +59,11 @@
                 <td class="whitespace-nowrap py-5 pl-4 pr-3 text-sm sm:pl-0">
                   <div class="flex items-center">
                     <div class="h-20 w-20 flex-shrink-0">
-                      <img class="h-18 w-20 rounded-full" :src="person.image" alt="" />
+                      <img
+                        class="h-18 w-20 rounded-full"
+                        :src="person.image"
+                        alt=""
+                      />
                     </div>
                   </div>
                 </td>
@@ -56,11 +78,17 @@
                 </td>
                 <td>
                   <div class="mx-4 space-x-3">
-                    <button @click="openEditModal(person)" class="text-indigo-600 hover:text-indigo-900">
+                    <button
+                      @click="openEditModal(person)"
+                      class="text-indigo-600 hover:text-indigo-900"
+                    >
                       <PencilIcon class="h-5 w-5" aria-hidden="true" />
                       <span class="sr-only">Edit, {{ person.id }}</span>
                     </button>
-                    <button @click="deletePerson(person.id)" class="text-red-700 hover:text-indigo-900">
+                    <button
+                      @click="deletePerson(person.id)"
+                      class="text-red-700 hover:text-indigo-900"
+                    >
                       <TrashIcon class="h-5 w-5" aria-hidden="true" />
                       <span class="sr-only">Delete, {{ person.id }}</span>
                     </button>
@@ -80,47 +108,93 @@
       <div class="fixed inset-0 bg-gray-500 bg-opacity-75"></div>
 
       <div class="relative bg-white p-8 rounded-lg w-96">
-        <h3 class="text-lg font-semibold mb-4 text-center">Edit Person</h3>
+        <h3 class="text-lg font-semibold mb-4 text-center">
+          Chỉnh sửa khách hàng
+        </h3>
 
         <!-- Form for editing person details -->
         <form @submit.prevent="submitEditForm">
           <div class="mb-4">
-            <label for="editedName" class="block text-sm font-medium text-gray-700">
+            <label
+              for="editedName"
+              class="block text-sm font-medium text-gray-700"
+            >
               Name
             </label>
-            <input v-model="editedPerson.name" type="text" id="editedName" name="editedName"
-              class="mt-1 p-2 w-full border rounded-md" />
+            <input
+              v-model="editedPerson.name"
+              type="text"
+              id="editedName"
+              name="editedName"
+              class="mt-1 p-2 w-full border rounded-md"
+            />
           </div>
 
           <div class="mb-4">
-            <label for="editedImage" class="block text-sm font-medium text-gray-700">
-              Image URL
+            <label
+              for="image-upload"
+              class="block text-sm font-medium text-gray-700"
+            >
+              <img
+                :src="editedPerson.image"
+                alt=""
+                class="h-18 w-20 rounded-full object-cover"
+              />
             </label>
-            <input v-model="editedPerson.image" type="text" id="editedImage" name="editedImage"
-              class="mt-1 p-2 w-full border rounded-md" />
+            <input
+              type="file"
+              id="image-upload"
+              ref="imageInputRef"
+              @change="handleImageUpload"
+              accept="image/*"
+              class="hidden"
+            />
           </div>
 
           <div class="mb-4">
-            <label for="editedPhone" class="block text-sm font-medium text-gray-700">
+            <label
+              for="editedPhone"
+              class="block text-sm font-medium text-gray-700"
+            >
               Phone
             </label>
-            <input v-model="editedPerson.phone" type="text" id="editedPhone" name="editedPhone"
-              class="mt-1 p-2 w-full border rounded-md" />
+            <input
+              v-model="editedPerson.phone"
+              type="text"
+              id="editedPhone"
+              name="editedPhone"
+              class="mt-1 p-2 w-full border rounded-md"
+            />
           </div>
 
           <div class="mb-4">
-            <label for="editedEmail" class="block text-sm font-medium text-gray-700">
+            <label
+              for="editedEmail"
+              class="block text-sm font-medium text-gray-700"
+            >
               Email
             </label>
-            <input v-model="editedPerson.email" type="text" id="editedEmail" name="editedEmail"
-              class="mt-1 p-2 w-full border rounded-md" />
+            <input
+              v-model="editedPerson.email"
+              type="text"
+              id="editedEmail"
+              name="editedEmail"
+              class="mt-1 p-2 w-full border rounded-md"
+            />
           </div>
 
           <div class="flex justify-end">
-            <button type="button" class="mr-2 text-gray-500 hover:text-gray-700 mx-3" @click="closeEditModal">
+            <button
+              type="button"
+              class="mr-2 text-gray-500 hover:text-gray-700 mx-3"
+              @click="closeEditModal"
+            >
               Cancel
             </button>
-            <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-500">
+            <button
+              type="submit"
+              class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-500"
+            >
               Save
             </button>
           </div>
@@ -145,14 +219,14 @@ const people = ref([
   },
 ]);
 const isEditModalOpen = ref(false);
-const selectedIndex = ref(null);
 const editedPerson = ref({
-  id: "",
+  id: null,
   name: "",
   image: "",
   phone: "",
   email: "",
 });
+const imageInputRef = ref(null);
 
 function openEditModal(person) {
   // Clone the person object to avoid modifying the original data
@@ -184,5 +258,19 @@ function deletePerson(personId) {
 function closeEditModal() {
   isEditModalOpen.value = false;
   editedPerson.value = null;
+  imageInputRef.value.value = null;
+}
+
+function handleImageUpload() {
+  const file = imageInputRef.value.files[0];
+
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      // Directly assign the new value to trigger reactivity
+      editedPerson.value.image = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
 }
 </script>
