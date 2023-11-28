@@ -73,7 +73,7 @@
                       @click="openEditModal(person)"
                       class="text-indigo-600 hover:text-indigo-900"
                     >
-                      <PencilIcon class="h-5 w-5" aria-hidden="true" />
+                      <PencilSquareIcon class="h-5 w-5" aria-hidden="true" />
                       <span class="sr-only">Edit, {{ person.id }}</span>
                     </button>
                     <button
@@ -110,7 +110,7 @@
               for="editedName"
               class="block text-sm font-medium text-gray-700"
             >
-              Name
+              Tên Khách Hàng
             </label>
             <input
               v-model="editedPerson.name"
@@ -126,6 +126,7 @@
               for="image-upload"
               class="block text-sm font-medium text-gray-700"
             >
+              Hình ảnh
               <img
                 :src="editedPerson.image"
                 alt=""
@@ -163,13 +164,13 @@
               class="mr-2 text-gray-500 hover:text-gray-700 mx-3"
               @click="closeEditModal"
             >
-              Cancel
+              Thoát
             </button>
             <button
               type="submit"
               class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-500"
             >
-              Save
+              Lưu
             </button>
           </div>
         </form>
@@ -180,7 +181,7 @@
 <script setup>
 import { ref } from "vue";
 import { PlusIcon } from "@heroicons/vue/20/solid";
-import { PencilIcon } from "@heroicons/vue/20/solid";
+import { PencilSquareIcon } from "@heroicons/vue/20/solid";
 import { TrashIcon } from "@heroicons/vue/20/solid";
 const people = ref([
   {
