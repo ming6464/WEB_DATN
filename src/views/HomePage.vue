@@ -1,24 +1,51 @@
 <template>
   <div class="max-w-sm">
-    <VueDatePicker v-model="date" :max-date="new Date()" range multi-calendars :format="'dd/MM/yyyy'" :clearable="false"
+    <VueDatePicker v-model="date" :max-date="new Date()" range multi-calendars
+      :format="filterMode == 'day' ? 'dd/MM/yyyy' : filterMode == 'month' ? 'MM/yyyy' : 'yyyy'" :clearable="false"
       @update:model-value="handleDate" />
+  </div>
+
+  <div class="m-3 ml-0 flex flex-row">
+    <h2 class="text-sm font-medium text-center pr-3 py-2">Chế độ lọc : </h2>
+    <div>
+      <button @click="On_Click_FilterModel('day')" type="button"
+        class="rounded-md mr-2 px-3 py-2 border-2 text-sm font-semibold shadow-sm hover:bg-indigo-500 hover:border-indigo-500 hover:text-white focus-visible:outline 
+                                                                                                                                                                                                                          focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+        :class="{ 'bg-indigo-600 text-white border-indigo-600': filterMode == 'day', 'border-gray-400': filterMode != 'day' }">Ngày</button>
+
+      <button @click="On_Click_FilterModel('month')" type="button"
+        class="rounded-md mr-2 px-3 py-2 border-2 text-sm font-semibold shadow-sm hover:bg-indigo-500 hover:border-indigo-500 hover:text-white focus-visible:outline 
+                                                                                                                                                                                                                          focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+        :class="{ 'bg-indigo-600 text-white border-indigo-600': filterMode == 'month', 'border-gray-400': filterMode != 'month' }">Tháng</button>
+
+      <button type="button" @click="On_Click_FilterModel('year')"
+        class="rounded-md px-3 py-2 border-2 text-sm font-semibold shadow-sm hover:bg-indigo-500 hover:border-indigo-500 hover:text-white focus-visible:outline 
+                                                                                                                                                                                                                                                    focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+        :class="{ 'bg-indigo-600 text-white border-indigo-600': filterMode == 'year', 'border-gray-400': filterMode != 'year' }">Năm
+      </button>
+    </div>
   </div>
 
   <div class="mt-3">
     <div class="max-w-full border-2 border-gray-300 rounded-md p-4">
       <h3 class="text-sm font-medium text-center">Tổng doanh thu</h3>
       <div id="chart-timeline">
-        <apexchart type="area" height="350" ref="chart" :options="chartOptions" :series="series"></apexchart>
+        <apexchart type="area" height="350" ref="chart_totalRevenue"
+          :options="filterMode == 'day' ? chartOptions_day : filterMode == 'month' ? chartOptions_month : chartOptions_year"
+          :series="series_total">
+        </apexchart>
       </div>
     </div>
 
     <!-- Không được xoá -->
-    <!-- <div class="mt-10 flex flex-row">
+    <div class="mt-10 flex flex-row">
       <div class="w-1/2 mr-2">
         <div class="max-w-full border-2 border-gray-300 rounded-md p-3">
           <h3 class="text-sm font-medium text-center">Doanh thu các mặt hàng</h3>
           <div id="chart-timeline">
-            <apexchart type="area" height="350" ref="chart" :options="chartOptions" :series="series_category"></apexchart>
+            <apexchart type="area" height="350" ref="chart_categoryRevenue"
+              :options="filterMode == 'day' ? chartOptions_day : filterMode == 'month' ? chartOptions_month : chartOptions_year"
+              :series="series_categoryRevenue"></apexchart>
           </div>
         </div>
       </div>
@@ -26,11 +53,13 @@
         <div class="max-w-full border-2 border-gray-300 rounded-md p-3">
           <h3 class="text-sm font-medium text-center">Số lượng bán các mặt hàng</h3>
           <div id="chart-timeline">
-            <apexchart type="area" height="350" ref="chart" :options="chartOptions" :series="series"></apexchart>
+            <apexchart type="area" height="350" ref="chart_categoryCount"
+              :options="filterMode == 'day' ? chartOptions_day : filterMode == 'month' ? chartOptions_month : chartOptions_year"
+              :series="series_categoryCount"></apexchart>
           </div>
         </div>
       </div>
-    </div> -->
+    </div>
 
   </div>
 </template>
@@ -38,9 +67,15 @@
 <script setup>
 import VueApexCharts from "vue3-apexcharts";
 import { watch, ref, onMounted } from 'vue';
+const chart_totalRevenue = ref(null);
+const chart_categoryRevenue = ref(null);
+const chart_categoryCount = ref(null);
+const filterMode = ref('');
 
-const series = [
+
+const _series_total = [
   {
+    name: "total",
     data: [
       [1356994800000, 30.95],
       [1357081200000, 31.34],
@@ -276,12 +311,11 @@ const series = [
       [1385672400000, 37.53],
       [1385845200000, 37.55],
       [1385931600000, 37.30],
-      [new Date('12//26/2013 12:30:45').getTime(), 37.30],
     ]
   }
 ]
 
-const series_category = [
+const _series_categoryRevenue = [
   {
     name: 'Áo phông',
     data: [
@@ -636,12 +670,392 @@ const series_category = [
       [1385672400000, 37.53],
       [1385845200000, 37.55],
       [1385931600000, 37.30],
-      [new Date('12//26/2013 12:30:45').getTime(), 37.30],
     ]
   },
 ]
 
-const chartOptions = {
+const _series_categoryCount = [
+  {
+    name: 'Áo phông',
+    data: [
+      [1356994800000, 30.95],
+      [1357081200000, 31.34],
+      [1357167600000, 31.18],
+      [1357254000000, 31.05],
+      [1357513200000, 31.00],
+      [1357599600000, 30.95],
+      [1357686000000, 31.24],
+      [1357772400000, 31.29],
+      [1357858800000, 31.85],
+      [1358118000000, 31.86],
+      [1358204400000, 32.28],
+      [1358290800000, 32.10],
+      [1358377200000, 32.65],
+      [1358463600000, 32.21],
+      [1358520000000, 32.35],
+      [1358606400000, 32.44],
+      [1358692800000, 32.46],
+      [1358779200000, 32.86],
+      [1358865600000, 32.75],
+      [1359124800000, 32.54],
+      [1359211200000, 32.33],
+      [1359297600000, 32.97],
+      [1359384000000, 33.41],
+      [1359643200000, 33.27],
+      [1359729600000, 33.27],
+      [1359816000000, 32.89],
+      [1359902400000, 33.10],
+      [1359988800000, 33.73],
+      [1360248000000, 33.22],
+      [1360334400000, 31.99],
+      [1360420800000, 32.41],
+      [1360507200000, 33.05],
+      [1360593600000, 33.64],
+      [1360852800000, 33.56],
+      [1360939200000, 34.22],
+      [1361025600000, 33.77],
+      [1361112000000, 34.17],
+      [1361198400000, 33.82],
+      [1361457600000, 34.51],
+      [1361544000000, 33.16],
+      [1361630400000, 33.56],
+      [1361716800000, 33.71],
+      [1361803200000, 33.81],
+      [1362062400000, 34.40],
+      [1362148800000, 34.63],
+      [1362235200000, 34.46],
+      [1362321600000, 34.48],
+      [1362408000000, 34.31],
+      [1362667200000, 34.70],
+      [1362753600000, 34.31],
+      [1362840000000, 33.46],
+      [1362926400000, 33.59],
+      [1363281600000, 33.22],
+      [1363368000000, 32.61],
+      [1363454400000, 33.01],
+      [1363540800000, 33.55],
+      [1363627200000, 33.18],
+      [1363886400000, 32.84],
+      [1363972800000, 33.84],
+      [1364059200000, 33.39],
+      [1364145600000, 32.91],
+      [1364232000000, 33.06],
+      [1364491200000, 32.62],
+      [1364577600000, 32.40],
+      [1364664000000, 33.13],
+      [1364750400000, 33.26],
+      [1364836800000, 33.58],
+      [1365096000000, 33.55],
+      [1365182400000, 33.77],
+      [1365268800000, 33.76],
+      [1365355200000, 33.32],
+      [1365441600000, 32.61],
+      [1365700800000, 32.52],
+      [1365787200000, 32.67],
+      [1365873600000, 32.52],
+      [1365960000000, 31.92],
+      [1366046400000, 32.20],
+      [1366305600000, 32.23],
+      [1366392000000, 32.33],
+      [1366478400000, 32.36],
+      [1366564800000, 32.01],
+      [1366651200000, 31.31],
+      [1366910400000, 32.01],
+      [1366996800000, 32.01],
+      [1367083200000, 32.18],
+      [1367169600000, 31.54],
+      [1367256000000, 31.60],
+      [1367601600000, 32.05],
+      [1367688000000, 31.29],
+      [1367774400000, 31.05],
+      [1367860800000, 29.82],
+      [1368120000000, 30.31],
+      [1368206400000, 30.70],
+      [1368292800000, 31.69],
+      [1368379200000, 31.32],
+      [1368465600000, 31.65],
+      [1368724800000, 31.13],
+      [1368811200000, 31.77],
+      [1368897600000, 31.79],
+      [1368984000000, 31.67],
+      [1369070400000, 32.39],
+      [1369329600000, 32.63],
+      [1369416000000, 32.89],
+      [1369502400000, 31.99],
+      [1369588800000, 31.23],
+      [1369675200000, 31.57],
+      [1369934400000, 30.84],
+      [1370020800000, 31.07],
+      [1370107200000, 31.41],
+      [1370193600000, 31.17],
+      [1370280000000, 32.37],
+      [1370539200000, 32.19],
+      [1370625600000, 32.51],
+      [1370798400000, 32.53],
+      [1370884800000, 31.37],
+      [1371144000000, 30.43],
+      [1371230400000, 30.44],
+      [1371316800000, 30.20],
+      [1371403200000, 30.14],
+      [1371489600000, 30.65],
+      [1371748800000, 30.40],
+      [1371835200000, 30.65],
+      [1371921600000, 31.43],
+      [1372008000000, 31.89],
+      [1372094400000, 31.38],
+      [1372353600000, 30.64],
+      [1372440000000, 30.02],
+      [1372526400000, 30.33],
+      [1372612800000, 30.95],
+      [1372699200000, 31.89],
+      [1372958400000, 31.01],
+      [1373044800000, 30.88],
+      [1373131200000, 30.69],
+      [1373217600000, 30.58],
+      [1373304000000, 32.02],
+      [1373563200000, 32.14],
+      [1373649600000, 32.37],
+      [1373736000000, 32.51],
+      [1373822400000, 32.65],
+      [1373908800000, 32.64],
+      [1374168000000, 32.27],
+      [1374254400000, 32.10],
+      [1374340800000, 32.91],
+      [1374427200000, 33.65],
+      [1374513600000, 33.80],
+      [1374772800000, 33.92],
+      [1374859200000, 33.75],
+      [1374945600000, 33.84],
+      [1375032000000, 33.50],
+      [1375118400000, 32.26],
+      [1375377600000, 32.32],
+      [1375464000000, 32.06],
+      [1375550400000, 31.96],
+      [1375636800000, 31.46],
+      [1375723200000, 31.27],
+      [1376078400000, 31.43],
+      [1376164800000, 32.26],
+      [1376251200000, 32.79],
+      [1376337600000, 32.46],
+      [1376596800000, 32.13],
+      [1376683200000, 32.43],
+      [1376769600000, 32.42],
+      [1376856000000, 32.81],
+      [1376942400000, 33.34],
+      [1377201600000, 33.41],
+
+    ]
+  },
+  {
+    name: 'Áo Khoác',
+    data: [
+      [1356994800000, 30.95],
+      [1357167600000, 31.18],
+      [1357254000000, 31.05],
+      [1357513200000, 31.00],
+      [1357599600000, 30.95],
+      [1357686000000, 31.24],
+      [1357772400000, 31.29],
+      [1357858800000, 31.85],
+      [1358118000000, 31.86],
+      [1358290800000, 32.10],
+      [1358463600000, 32.21],
+      [1358520000000, 32.35],
+      [1358692800000, 32.46],
+      [1358779200000, 32.86],
+      [1358865600000, 32.75],
+      [1359211200000, 32.33],
+      [1359297600000, 32.97],
+      [1359384000000, 33.41],
+      [1359643200000, 33.27],
+      [1359729600000, 33.27],
+      [1359902400000, 33.10],
+      [1360248000000, 33.22],
+      [1360334400000, 31.99],
+      [1360420800000, 32.41],
+      [1360507200000, 33.05],
+      [1360593600000, 33.64],
+      [1360852800000, 33.56],
+      [1361112000000, 34.17],
+      [1361198400000, 33.82],
+      [1361457600000, 34.51],
+      [1361630400000, 33.56],
+      [1361716800000, 33.71],
+      [1362062400000, 34.40],
+      [1362148800000, 34.63],
+      [1362235200000, 34.46],
+      [1362321600000, 34.48],
+      [1362667200000, 34.70],
+      [1362753600000, 34.31],
+      [1362840000000, 33.46],
+      [1362926400000, 33.59],
+      [1363281600000, 33.22],
+      [1363368000000, 32.61],
+      [1363454400000, 33.01],
+      [1363540800000, 33.55],
+      [1363627200000, 33.18],
+      [1363886400000, 32.84],
+      [1363972800000, 33.84],
+      [1364059200000, 33.39],
+      [1364145600000, 32.91],
+      [1364232000000, 33.06],
+      [1364491200000, 32.62],
+      [1364577600000, 32.40],
+      [1364664000000, 33.13],
+      [1364750400000, 33.26],
+      [1364836800000, 33.58],
+      [1365096000000, 33.55],
+      [1365182400000, 33.77],
+      [1365268800000, 33.76],
+      [1365355200000, 33.32],
+      [1365441600000, 32.61],
+      [1365700800000, 32.52],
+      [1365787200000, 32.67],
+      [1365873600000, 32.52],
+      [1365960000000, 31.92],
+      [1366046400000, 32.20],
+      [1366305600000, 32.23],
+      [1366392000000, 32.33],
+      [1366478400000, 32.36],
+      [1366564800000, 32.01],
+      [1366651200000, 31.31],
+      [1366910400000, 32.01],
+      [1366996800000, 32.01],
+      [1367083200000, 32.18],
+      [1367169600000, 31.54],
+      [1367256000000, 31.60],
+      [1367601600000, 32.05],
+      [1367688000000, 31.29],
+      [1367774400000, 31.05],
+      [1367860800000, 29.82],
+      [1368120000000, 30.31],
+      [1368206400000, 30.70],
+      [1368292800000, 31.69],
+      [1368379200000, 31.32],
+      [1368465600000, 31.65],
+      [1368724800000, 31.13],
+      [1368811200000, 31.77],
+      [1368897600000, 31.79],
+      [1368984000000, 31.67],
+      [1369070400000, 32.39],
+      [1369329600000, 32.63],
+      [1369416000000, 32.89],
+      [1369502400000, 31.99],
+      [1369588800000, 31.23],
+      [1369675200000, 31.57],
+      [1369934400000, 30.84],
+      [1370020800000, 31.07],
+      [1370107200000, 31.41],
+      [1370193600000, 31.17],
+      [1370280000000, 32.37],
+      [1370539200000, 32.19],
+      [1370625600000, 32.51],
+      [1370798400000, 32.53],
+      [1370884800000, 31.37],
+      [1371144000000, 30.43],
+      [1371230400000, 30.44],
+      [1371316800000, 30.20],
+      [1371403200000, 30.14],
+      [1371489600000, 30.65],
+      [1371748800000, 30.40],
+      [1371835200000, 30.65],
+      [1371921600000, 31.43],
+      [1372008000000, 31.89],
+      [1372094400000, 31.38],
+      [1372353600000, 30.64],
+      [1372440000000, 30.02],
+      [1372526400000, 30.33],
+      [1372699200000, 31.89],
+      [1372958400000, 31.01],
+      [1373044800000, 30.88],
+      [1373131200000, 30.69],
+      [1373217600000, 30.58],
+      [1373304000000, 32.02],
+      [1373736000000, 22.51],
+      [1373822400000, 12.65],
+      [1373908800000, 32.64],
+      [1374168000000, 22.27],
+      [1374254400000, 22.10],
+      [1374340800000, 22.91],
+      [1374427200000, 33.65],
+      [1374513600000, 63.80],
+      [1374772800000, 53.92],
+      [1374945600000, 33.84],
+      [1375032000000, 13.50],
+      [1375118400000, 22.26],
+      [1375377600000, 32.32],
+      [1375464000000, 33.06],
+      [1375550400000, 39.96],
+      [1375636800000, 39.46],
+      [1375723200000, 37.27],
+      [1376078400000, 36.43],
+      [1376164800000, 39.26],
+      [1376251200000, 39.79],
+      [1376337600000, 38.46],
+      [1376596800000, 38.13],
+      [1376683200000, 36.43],
+      [1376769600000, 34.42],
+      [1376856000000, 33.81],
+      [1376942400000, 32.34],
+      [1377201600000, 35.41],
+      [1377288000000, 32.57],
+      [1377374400000, 33.12],
+      [1377460800000, 34.53],
+      [1377547200000, 33.83],
+      [1381611600000, 33.47],
+      [1381698000000, 32.98],
+      [1381784400000, 32.90],
+      [1382043600000, 32.70],
+      [1382130000000, 32.54],
+      [1382216400000, 32.23],
+      [1382389200000, 32.65],
+      [1382648400000, 32.92],
+      [1382734800000, 32.64],
+      [1382821200000, 32.84],
+      [1382994000000, 33.40],
+      [1383253200000, 33.30],
+      [1383426000000, 33.88],
+      [1383512400000, 34.09],
+      [1383598800000, 34.61],
+      [1383858000000, 34.70],
+      [1384203600000, 35.48],
+      [1384462800000, 35.75],
+      [1384549200000, 35.54],
+      [1384635600000, 35.96],
+      [1385154000000, 37.49],
+      [1385240400000, 38.09],
+      [1385326800000, 37.87],
+      [1385413200000, 37.71],
+      [1385672400000, 37.53],
+      [1385845200000, 37.55],
+      [1385931600000, 37.30],
+    ]
+  },
+]
+
+const series_total = ref([
+  {
+    name: "",
+    data: []
+  }
+]);
+
+const series_categoryRevenue = ref([
+  {
+    name: "",
+    data: []
+  }
+]);
+
+const series_categoryCount = ref([
+  {
+    name: "",
+    data: []
+  }
+]);
+
+
+const chartOptions_day = {
   chart: {
     id: 'area-datetime',
     type: 'area',
@@ -678,16 +1092,7 @@ const chartOptions = {
   annotations: {
     yaxis: [
       {
-        y: 30,
-        borderColor: '#999',
-        label: {
-          show: true,
-          text: 'Support',
-          style: {
-            color: '#fff',
-            background: '#00E396',
-          },
-        },
+        y: -1000,
       },
     ],
     xaxis: [
@@ -716,10 +1121,18 @@ const chartOptions = {
     type: 'datetime',
     max: new Date().getTime(),
     tickAmount: 20,
+    labels: {
+      datetimeFormatter: {
+        year: 'yyyy',
+        month: "MM/yyyy",
+        day: 'dd/MM',
+        hour: 'HH:mm',
+      },
+    }
   },
   tooltip: {
     x: {
-      format: 'dd MMM yyyy',
+      format: 'dd/MM/yyyy',
     },
   },
   fill: {
@@ -733,36 +1146,242 @@ const chartOptions = {
   },
 };
 
+const chartOptions_month = {
+  chart: {
+    id: 'area-datetime',
+    type: 'area',
+    height: 350,
+    toolbar: {
+      show: false,
+      tools: {
+        download: false,
+        selection: false,
+        zoom: false,
+        zoomin: false,
+        zoomout: false,
+        pan: false,
+      }
+    },
+    zoom: {
+      enabled: true,
+      type: 'x',
+      autoScaleYaxis: false,
+      zoomedArea: {
+        fill: {
+          color: '#90CAF9',
+          opacity: 0.4
+        },
+        stroke: {
+          curve: 'smooth',
+          color: '#0D47A1',
+          opacity: 0.4,
+          width: 1
+        }
+      }
+    }
+  },
+  annotations: {
+    yaxis: [
+      {
+        y: -1000,
+      },
+    ],
+    xaxis: [
+      {
+        borderColor: '#999',
+        yAxisIndex: 0,
+        label: {
+          show: true,
+          text: 'Rally',
+          style: {
+            color: '#fff',
+            background: '#775DD0',
+          },
+        },
+      },
+    ],
+  },
+  dataLabels: {
+    enabled: false,
+  },
+  markers: {
+    size: 0,
+    style: 'hollow',
+  },
+  xaxis: {
+    type: 'datetime',
+    max: new Date().getTime(),
+    tickAmount: 20,
+    labels: {
+      datetimeFormatter: {
+        year: 'yyyy',
+        month: "MM/yyyy",
+        day: 'dd/MM',
+        hour: 'HH:mm',
+      },
+    }
+  },
+  tooltip: {
+    x: {
+      format: 'MM/yyyy',
+    },
+  },
+  fill: {
+    type: 'gradient',
+    gradient: {
+      shadeIntensity: 1,
+      opacityFrom: 0.7,
+      opacityTo: 0.9,
+      stops: [0, 100],
+    },
+  },
+};
 
-const chart = ref(null);
+const chartOptions_year = {
+  chart: {
+    id: 'area-datetime',
+    type: 'area',
+    height: 350,
+    toolbar: {
+      show: false,
+      tools: {
+        download: false,
+        selection: false,
+        zoom: false,
+        zoomin: false,
+        zoomout: false,
+        pan: false,
+      }
+    },
+    zoom: {
+      enabled: true,
+      type: 'x',
+      autoScaleYaxis: false,
+      zoomedArea: {
+        fill: {
+          color: '#90CAF9',
+          opacity: 0.4
+        },
+        stroke: {
+          curve: 'smooth',
+          color: '#0D47A1',
+          opacity: 0.4,
+          width: 1
+        }
+      }
+    }
+  },
+  annotations: {
+    yaxis: [
+      {
+        y: -1000,
+      },
+    ],
+    xaxis: [
+      {
+        borderColor: '#999',
+        yAxisIndex: 0,
+        label: {
+          show: true,
+          text: 'Rally',
+          style: {
+            color: '#fff',
+            background: '#775DD0',
+          },
+        },
+      },
+    ],
+  },
+  dataLabels: {
+    enabled: false,
+  },
+  markers: {
+    size: 0,
+    style: 'hollow',
+  },
+  xaxis: {
+    type: 'datetime',
+    max: new Date().getTime(),
+    tickAmount: 20,
+    labels: {
+      datetimeFormatter: {
+        year: 'yyyy',
+        month: "MM/yyyy",
+        day: 'dd/MM',
+        hour: 'HH:mm',
+      },
+    }
+  },
+  tooltip: {
+    x: {
+      format: 'yyyy',
+    },
+  },
+  fill: {
+    type: 'gradient',
+    gradient: {
+      shadeIntensity: 1,
+      opacityFrom: 0.7,
+      opacityTo: 0.9,
+      stops: [0, 100],
+    },
+  },
+};
 const date = ref();
 // Set default date range to yesterday to today on component mount
 onMounted(() => {
-  const today = new Date();
+  const lastMonth = new Date();
 
-  // Tạo một bản sao của ngày hiện tại
-  const yesterday = new Date(today);
+  if (lastMonth.getMonth() == 0) {
+    lastMonth.setMonth(11);
+  } else {
+    lastMonth.setMonth(lastMonth.getMonth() - 1);
+  }
+  lastMonth.setDate(1);
+  lastMonth.setHours(0, 0, 0, 0)
 
-  // Giảm đi một ngày
-  yesterday.setDate(today.getDate() - 1);
+  const curMonth = new Date();
 
-  date.value = [yesterday, today];
+  date.value = [lastMonth, curMonth];
 
-  updateData(true);
+  On_Click_FilterModel('month');
 
 });
 
 // Define the updateData function
-const updateData = async (isMounted) => {
-  if (isMounted) {
-    await delay(100);
+const updateData = () => {
+  let time1 = new Date(date.value[0]);
+  let time2 = new Date(date.value[1]);
+  let zoom = time2;
+  if (time1.getTime() > time2.getTime()) {
+    time2 = time1;
+    time1 = zoom;
   }
 
-  chart.value.zoomX(
-    date.value[0].getTime(),
-    date.value[1].getTime()
-  );
+  time1.setHours(0, 0, 0, 0);
+  if (filterMode.value != 'day') {
+    time1.setDate(1);
+    if (filterMode.value == 'year') {
+      time1.setMonth(0);
+    }
+  }
+  ZoomXAll(time1, time2);
 };
+
+const ZoomXAll = (time1, time2) => {
+  chart_totalRevenue.value.zoomX(
+    time1.getTime(),
+    time2.getTime()
+  );
+  chart_categoryRevenue.value.zoomX(
+    time1.getTime(),
+    time2.getTime()
+  );
+  chart_categoryCount.value.zoomX(
+    time1.getTime(),
+    time2.getTime()
+  );
+}
 
 const handleDate = (modelData) => {
   if (modelData.length < 2) return;
@@ -771,5 +1390,78 @@ const handleDate = (modelData) => {
 }
 
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const On_Click_FilterModel = async (modelData) => {
+  if (modelData == filterMode.value) return;
+  filterMode.value = modelData;
+
+  series_total.value = [...FilterArr(_series_total)];
+
+  series_categoryRevenue.value = [...FilterArr(_series_categoryRevenue)];
+
+  series_categoryCount.value = [...FilterArr(_series_categoryCount)];
+  await delay(300);
+  updateData();
+};
+
+const FilterArr = (arr) => {
+  let _series = [];
+  let timeMin;
+  if (filterMode.value == 'day') {
+    _series = [...arr];
+    for (let i = 0; i < arr.length; i++) {
+      const ObjectFilter = arr[i];
+      timeMin = new Date(ObjectFilter.data[0][0]);
+      timeMin.setHours(0, 0, 0, 10);
+      _series[i].data.unshift([timeMin, 0]);
+    }
+  } else {
+    let group = [];
+    for (let i = 0; i < arr.length; i++) {
+      const ObjectFilter = arr[i];
+      timeMin = new Date(ObjectFilter.data[0][0]);
+      group.push({});
+      _series.push({ name: ObjectFilter.name, data: [] });
+      ObjectFilter.data.forEach(([time, value]) => {
+        let dateFilter = new Date(time);
+        if (filterMode.value == 'year') {
+          dateFilter.setMonth(6);
+        }
+        dateFilter.setDate(15);
+        dateFilter.setHours(0, 0, 0, 0);
+        const key = dateFilter.getTime().toString();
+        if (!group[i].hasOwnProperty(key)) {
+          group[i][key] = Object.keys(group[i]).length;
+          _series[i].data.push([]);
+          _series[i].data[group[i][key]].push(dateFilter.getTime());
+          _series[i].data[group[i][key]].push(0);
+        }
+        _series[i].data[group[i][key]][1] += value;
+      });
+      if (filterMode.value == 'year') {
+        timeMin.setMonth(6);
+      }
+      timeMin.setDate(14);
+      timeMin.setHours(23, 59, 59, 10);
+      _series[i].data.unshift([timeMin, 0]);
+    }
+  }
+  return _series;
+};
+
+const formatLog = (currentDate) => {
+  const day = currentDate.getDate().toString().padStart(2, '0');
+  const month = (currentDate.getMonth() + 1).toString().padStart(2, '0');
+  const year = currentDate.getFullYear();
+
+  const hours = currentDate.getHours().toString().padStart(2, '0');
+  const minutes = currentDate.getMinutes().toString().padStart(2, '0');
+  const seconds = currentDate.getSeconds().toString().padStart(2, '0');
+
+  const formattedDateTime = `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+
+  return formattedDateTime;
+
+}
 
 </script>
