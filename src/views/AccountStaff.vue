@@ -142,14 +142,15 @@
                     @click="openModal(index)"
                     class="text-indigo-600 hover:text-indigo-900 mr-1"
                   >
-                    Edit
+                    <PencilSquareIcon class="h-5 w-5" aria-hidden="true" />
+                    <span class="sr-only">Edit, {{ person.id }}</span>
                   </button>
                   <button
                     type="button"
                     @click="showDeleteModal(index)"
                     class="text-red-600 hover:text-red-900 ml-1"
                   >
-                    Delete
+                    <TrashIcon class="h-5 w-5" aria-hidden="true" />
                   </button>
                 </td>
               </tr>
@@ -525,6 +526,8 @@
 </template>
 
 <script setup>
+import { PencilSquareIcon } from "@heroicons/vue/20/solid";
+import { TrashIcon } from "@heroicons/vue/20/solid";
 import { ref, watch, computed } from "vue";
 import {
   Switch,

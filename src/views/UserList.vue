@@ -35,12 +35,6 @@
                   scope="col"
                   class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
                 >
-                  Số điện thoại
-                </th>
-                <th
-                  scope="col"
-                  class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                >
                   Email
                 </th>
                 <th
@@ -71,9 +65,6 @@
                   <div class="text-gray-900">{{ person.name }}</div>
                 </td>
                 <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
-                  {{ person.phone }}
-                </td>
-                <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
                   <div class="text-gray-900">{{ person.email }}</div>
                 </td>
                 <td>
@@ -82,7 +73,7 @@
                       @click="openEditModal(person)"
                       class="text-indigo-600 hover:text-indigo-900"
                     >
-                      <PencilIcon class="h-5 w-5" aria-hidden="true" />
+                      <PencilSquareIcon class="h-5 w-5" aria-hidden="true" />
                       <span class="sr-only">Edit, {{ person.id }}</span>
                     </button>
                     <button
@@ -119,7 +110,7 @@
               for="editedName"
               class="block text-sm font-medium text-gray-700"
             >
-              Name
+              Tên Khách Hàng
             </label>
             <input
               v-model="editedPerson.name"
@@ -135,6 +126,7 @@
               for="image-upload"
               class="block text-sm font-medium text-gray-700"
             >
+              Hình ảnh
               <img
                 :src="editedPerson.image"
                 alt=""
@@ -150,23 +142,6 @@
               class="hidden"
             />
           </div>
-
-          <div class="mb-4">
-            <label
-              for="editedPhone"
-              class="block text-sm font-medium text-gray-700"
-            >
-              Phone
-            </label>
-            <input
-              v-model="editedPerson.phone"
-              type="text"
-              id="editedPhone"
-              name="editedPhone"
-              class="mt-1 p-2 w-full border rounded-md"
-            />
-          </div>
-
           <div class="mb-4">
             <label
               for="editedEmail"
@@ -189,13 +164,13 @@
               class="mr-2 text-gray-500 hover:text-gray-700 mx-3"
               @click="closeEditModal"
             >
-              Cancel
+              Thoát
             </button>
             <button
               type="submit"
               class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-500"
             >
-              Save
+              Lưu
             </button>
           </div>
         </form>
@@ -206,13 +181,12 @@
 <script setup>
 import { ref } from "vue";
 import { PlusIcon } from "@heroicons/vue/20/solid";
-import { PencilIcon } from "@heroicons/vue/20/solid";
+import { PencilSquareIcon } from "@heroicons/vue/20/solid";
 import { TrashIcon } from "@heroicons/vue/20/solid";
 const people = ref([
   {
     id: "1",
     name: "Linh",
-    phone: "045643953",
     email: "linnn@gmail.com",
     image:
       "https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
@@ -223,7 +197,6 @@ const editedPerson = ref({
   id: null,
   name: "",
   image: "",
-  phone: "",
   email: "",
 });
 const imageInputRef = ref(null);

@@ -7,8 +7,11 @@
         </h1>
       </div>
       <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-        <button @click="openAddModal" type="button"
-          class="inline-flex items-center gap-x-1.5 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+        <button
+          @click="openAddModal"
+          type="button"
+          class="inline-flex items-center gap-x-1.5 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+        >
           <PlusIcon class="h-5 w-5" aria-hidden="true" />
           Thêm danh mục
         </button>
@@ -26,28 +29,56 @@
             <!-- Form for adding a new product -->
             <form @submit.prevent="addNewProduct">
               <div class="mb-4">
-                <label for="newProductName" class="block text-sm font-medium text-gray-700">
+                <label
+                  for="newProductName"
+                  class="block text-sm font-medium text-gray-700"
+                >
                   Tên sản phẩm
                 </label>
-                <input v-model="newProduct.name" type="text" id="newProductName" name="newProductName"
-                  class="mt-1 p-2 w-full border rounded-md" />
+                <input
+                  v-model="newProduct.name"
+                  type="text"
+                  id="newProductName"
+                  name="newProductName"
+                  class="mt-1 p-2 w-full border rounded-md"
+                />
               </div>
               <div class="mb-4">
                 Ảnh Sản Phẩm
-                <label for="image-upload" class="block text-sm font-medium text-gray-700">
-                  <img :src="newProduct.image" alt="" class="h-20 w-24 object-cover" />
+                <label
+                  for="image-upload"
+                  class="block text-sm font-medium text-gray-700"
+                >
+                  <img
+                    :src="newProduct.image"
+                    alt=""
+                    class="h-20 w-24 object-cover"
+                  />
                 </label>
-                <input type="file" id="image-upload" ref="imageInputRef" style="display: none"
-                  @change="handleImageUploadADD" accept="image/*" />
+                <input
+                  type="file"
+                  id="image-upload"
+                  ref="imageInputRef"
+                  style="display: none"
+                  @change="handleImageUploadADD"
+                  accept="image/*"
+                />
               </div>
 
               <!-- ... other fields ... -->
 
               <div class="flex justify-end">
-                <button type="button" class="mr-2 text-gray-500 hover:text-gray-700 mx-6" @click="closeAddModal">
+                <button
+                  type="button"
+                  class="mr-2 text-gray-500 hover:text-gray-700 mx-6"
+                  @click="closeAddModal"
+                >
                   Hủy
                 </button>
-                <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-500">
+                <button
+                  type="submit"
+                  class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-500"
+                >
                   Thêm
                 </button>
               </div>
@@ -64,16 +95,28 @@
         <table class="min-w-full divide-y divide-gray-300">
           <thead>
             <tr>
-              <th scope="col" class="py-3 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
+              <th
+                scope="col"
+                class="py-3 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
+              >
                 STT
               </th>
-              <th scope="col" class="py-3.5 pl-6 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-4">
+              <th
+                scope="col"
+                class="py-3.5 pl-6 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-4"
+              >
                 Ảnh
               </th>
-              <th scope="col" class="py-3 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
+              <th
+                scope="col"
+                class="py-3 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
+              >
                 Tên Sản Phẩm
               </th>
-              <th scope="col" class="py-3 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
+              <th
+                scope="col"
+                class="py-3 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
+              >
                 Hoạt động
               </th>
             </tr>
@@ -95,11 +138,17 @@
               </td>
               <td>
                 <div class="mx-4 space-x-3">
-                  <button @click="openEditModal(person)" class="text-indigo-600 hover:text-indigo-900">
-                    <PencilIcon class="h-5 w-5" aria-hidden="true" />
+                  <button
+                    @click="openEditModal(person)"
+                    class="text-indigo-600 hover:text-indigo-900"
+                  >
+                    <PencilSquareIcon class="h-5 w-5" aria-hidden="true" />
                     <span class="sr-only">{{ person.id }},</span>
                   </button>
-                  <button @click="deletePerson(index)" class="text-red-700 hover:text-indigo-900">
+                  <button
+                    @click="deletePerson(index)"
+                    class="text-red-700 hover:text-indigo-900"
+                  >
                     <TrashIcon class="h-5 w-5" aria-hidden="true" />
                     <span class="sr-only">, {{ person.id }}</span>
                   </button>
@@ -122,27 +171,56 @@
         <!-- Form for editing person details -->
         <form @submit.prevent="submitEditForm">
           <div class="mb-4">
-            <label for="editedName" class="block text-sm font-medium text-gray-700">
-              Name
+            <label
+              for="editedName"
+              class="block text-sm font-medium text-gray-700"
+            >
+              Tên Sản Phẩm
             </label>
-            <input v-model="editedPerson.name" type="text" id="editedName" name="editedName"
-              class="mt-1 p-2 w-full border rounded-md" />
+            <input
+              v-model="editedPerson.name"
+              type="text"
+              id="editedName"
+              name="editedName"
+              class="mt-1 p-2 w-full border rounded-md"
+            />
           </div>
           <div class="mb-4">
-            <label for="image-upload" class="block text-sm font-medium text-gray-700">
-              <img :src="editedPerson.image" alt="" class="h-20 w-24 object-cover" />
+            <label
+              for="image-upload"
+              class="block text-sm font-medium text-gray-700"
+            >
+              Ảnh Sản Phẩm
+              <img
+                :src="editedPerson.image"
+                alt=""
+                class="h-20 w-24 object-cover"
+              />
             </label>
-            <input type="file" id="image-upload" ref="imageInputRef" @change="handleImageUpload" accept="image/*"
-              class="hidden" />
+            <input
+              type="file"
+              id="image-upload"
+              ref="imageInputRef"
+              @change="handleImageUpload"
+              accept="image/*"
+              class="hidden"
+            />
           </div>
           <!-- ... other fields ... -->
 
           <div class="flex justify-end">
-            <button type="button" class="mr-2 text-gray-500 hover:text-gray-700 mx-3" @click="closeEditModal">
-              Cancel
+            <button
+              type="button"
+              class="mr-2 text-gray-500 hover:text-gray-700 mx-3"
+              @click="closeEditModal"
+            >
+              Thoát
             </button>
-            <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-500">
-              Save
+            <button
+              type="submit"
+              class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-500"
+            >
+              Lưu
             </button>
           </div>
         </form>
@@ -154,7 +232,7 @@
 <script setup>
 import { ref } from "vue";
 import { PlusIcon } from "@heroicons/vue/20/solid";
-import { PencilIcon } from "@heroicons/vue/20/solid";
+import { PencilSquareIcon } from "@heroicons/vue/20/solid";
 import { TrashIcon } from "@heroicons/vue/20/solid";
 
 const people = ref([
