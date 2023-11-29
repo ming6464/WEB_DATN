@@ -7,11 +7,8 @@
         </h1>
       </div>
       <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-        <button
-          @click="openAddModal"
-          type="button"
-          class="inline-flex items-center gap-x-1.5 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-        >
+        <button @click="openAddModal" type="button"
+          class="inline-flex items-center gap-x-1.5 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
           <PlusIcon class="h-5 w-5" aria-hidden="true" />
           Thêm danh mục
         </button>
@@ -29,56 +26,28 @@
             <!-- Form for adding a new product -->
             <form @submit.prevent="addNewProduct">
               <div class="mb-4">
-                <label
-                  for="newProductName"
-                  class="block text-sm font-medium text-gray-700"
-                >
+                <label for="newProductName" class="block text-sm font-medium text-gray-700">
                   Tên sản phẩm
                 </label>
-                <input
-                  v-model="newProduct.name"
-                  type="text"
-                  id="newProductName"
-                  name="newProductName"
-                  class="mt-1 p-2 w-full border rounded-md"
-                />
+                <input v-model="newProduct.name" type="text" id="newProductName" name="newProductName"
+                  class="mt-1 p-2 w-full border rounded-md" />
               </div>
               <div class="mb-4">
                 Ảnh Sản Phẩm
-                <label
-                  for="image-upload"
-                  class="block text-sm font-medium text-gray-700"
-                >
-                  <img
-                    :src="newProduct.image"
-                    alt=""
-                    class="h-20 w-24 object-cover"
-                  />
+                <label for="image-upload" class="block text-sm font-medium text-gray-700">
+                  <img :src="newProduct.image" alt="" class="h-20 w-24 object-cover" />
                 </label>
-                <input
-                  type="file"
-                  id="image-upload"
-                  ref="imageInputRef"
-                  style="display: none"
-                  @change="handleImageUploadADD"
-                  accept="image/*"
-                />
+                <input type="file" id="image-upload" ref="imageInputRef" style="display: none"
+                  @change="handleImageUploadADD" accept="image/*" />
               </div>
 
               <!-- ... other fields ... -->
 
               <div class="flex justify-end">
-                <button
-                  type="button"
-                  class="mr-2 text-gray-500 hover:text-gray-700 mx-6"
-                  @click="closeAddModal"
-                >
+                <button type="button" class="mr-2 text-gray-500 hover:text-gray-700 mx-6" @click="closeAddModal">
                   Hủy
                 </button>
-                <button
-                  type="submit"
-                  class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-500"
-                >
+                <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-500">
                   Thêm
                 </button>
               </div>
@@ -95,34 +64,22 @@
         <table class="min-w-full divide-y divide-gray-300">
           <thead>
             <tr>
-              <th
-                scope="col"
-                class="py-3 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
-              >
+              <th scope="col" class="py-3 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
                 STT
               </th>
-              <th
-                scope="col"
-                class="py-3.5 pl-6 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-4"
-              >
+              <th scope="col" class="py-3.5 pl-6 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-4">
                 Ảnh
               </th>
-              <th
-                scope="col"
-                class="py-3 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
-              >
+              <th scope="col" class="py-3 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
                 Tên Sản Phẩm
               </th>
-              <th
-                scope="col"
-                class="py-3 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
-              >
+              <th scope="col" class="py-3 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
                 Hoạt động
               </th>
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-200 bg-white">
-            <tr v-for="(person, index) in people" :key="person.id">
+            <tr v-for="(person, index) in categories" :key="person.id">
               <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
                 <div class="font-medium text-gray-900">{{ person.id }}</div>
               </td>
@@ -138,17 +95,11 @@
               </td>
               <td>
                 <div class="mx-4 space-x-3">
-                  <button
-                    @click="openEditModal(person)"
-                    class="text-indigo-600 hover:text-indigo-900"
-                  >
+                  <button @click="openEditModal(person)" class="text-indigo-600 hover:text-indigo-900">
                     <PencilSquareIcon class="h-5 w-5" aria-hidden="true" />
                     <span class="sr-only">{{ person.id }},</span>
                   </button>
-                  <button
-                    @click="deletePerson(index)"
-                    class="text-red-700 hover:text-indigo-900"
-                  >
+                  <button @click="deletePerson(index)" class="text-red-700 hover:text-indigo-900">
                     <TrashIcon class="h-5 w-5" aria-hidden="true" />
                     <span class="sr-only">, {{ person.id }}</span>
                   </button>
@@ -171,55 +122,27 @@
         <!-- Form for editing person details -->
         <form @submit.prevent="submitEditForm">
           <div class="mb-4">
-            <label
-              for="editedName"
-              class="block text-sm font-medium text-gray-700"
-            >
+            <label for="editedName" class="block text-sm font-medium text-gray-700">
               Tên Sản Phẩm
             </label>
-            <input
-              v-model="editedPerson.name"
-              type="text"
-              id="editedName"
-              name="editedName"
-              class="mt-1 p-2 w-full border rounded-md"
-            />
+            <input v-model="editedPerson.name" type="text" id="editedName" name="editedName"
+              class="mt-1 p-2 w-full border rounded-md" />
           </div>
           <div class="mb-4">
-            <label
-              for="image-upload"
-              class="block text-sm font-medium text-gray-700"
-            >
+            <label for="image-upload" class="block text-sm font-medium text-gray-700">
               Ảnh Sản Phẩm
-              <img
-                :src="editedPerson.image"
-                alt=""
-                class="h-20 w-24 object-cover"
-              />
+              <img :src="editedPerson.image" alt="" class="h-20 w-24 object-cover" />
             </label>
-            <input
-              type="file"
-              id="image-upload"
-              ref="imageInputRef"
-              @change="handleImageUpload"
-              accept="image/*"
-              class="hidden"
-            />
+            <input type="file" id="image-upload" ref="imageInputRef" @change="handleImageUpload" accept="image/*"
+              class="hidden" />
           </div>
           <!-- ... other fields ... -->
 
           <div class="flex justify-end">
-            <button
-              type="button"
-              class="mr-2 text-gray-500 hover:text-gray-700 mx-3"
-              @click="closeEditModal"
-            >
+            <button type="button" class="mr-2 text-gray-500 hover:text-gray-700 mx-3" @click="closeEditModal">
               Thoát
             </button>
-            <button
-              type="submit"
-              class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-500"
-            >
+            <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-500">
               Lưu
             </button>
           </div>
@@ -230,12 +153,13 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { PlusIcon } from "@heroicons/vue/20/solid";
 import { PencilSquareIcon } from "@heroicons/vue/20/solid";
 import { TrashIcon } from "@heroicons/vue/20/solid";
-
-const people = ref([
+import axios from "axios";
+import * as API from "../assets/API";
+const categories = ref([
   {
     id: "1",
     name: "Áo len",
@@ -281,24 +205,45 @@ const editedPerson = ref({
   image: "",
 });
 
+onMounted(() => {
+  updateCategories();
+});
+
+const updateCategories = () => {
+  axios.get(API.GetCategories).then(res => {
+    categories.value = res.data.data;
+  }).catch(err => console.log(err));
+}
+
 const imageInputRef = ref(null);
 function deletePerson(index) {
-  console.log("Deleting person at index:", index);
-  people.value.splice(index, 1);
-  console.log("People after deletion:", people.value);
+  // console.log("Deleting person at index:", index);
+  // console.log("People after deletion:", categories.value);
+  axios.delete(`${API.DELCategories}/${categories.value[index].id}`)
+    .then(res => {
+      categories.value.splice(index, 1);
+    })
+    .catch(err => console.log(err));
 }
 
 function openEditModal(person) {
   editedPerson.value = { ...person };
-  selectedIndex.value = people.value.indexOf(person);
+  selectedIndex.value = categories.value.indexOf(person);
   isEditModalOpen.value = true;
 }
 
 function submitEditForm() {
   if (editedPerson.value) {
     // Update the person in the array
-    people.value.splice(selectedIndex.value, 1, { ...editedPerson.value });
-    isEditModalOpen.value = false;
+    axios.put(`${API.PUTCategories}/${editedPerson.value.id}`, editedPerson.value)
+      .then(res => {
+        categories.value.splice(selectedIndex.value, 1, { ...editedPerson.value });
+        isEditModalOpen.value = false;
+      })
+      .catch(err => {
+        isEditModalOpen.value = false;
+        console.error(err);
+      });
   }
 }
 
@@ -344,16 +289,39 @@ const closeAddModal = () => {
 
 const addNewProduct = () => {
   // Ensure a unique ID is assigned to the new product
-  newProduct.value.id = String(people.value.length + 1);
-  people.value.push({ ...newProduct.value });
+  newProduct.value.id = String(categories.value.length + 1);
+  categories.value.push({ ...newProduct.value });
   // Reset newProduct to clear the form
   newProduct.value = {
     id: null,
     name: "",
     image: "",
   };
-
   closeAddModal();
+
+  // axios.post(API.POSTAddCategories, newProduct.value)
+  //   .then((res) => {
+  //     categories.value.push(res.data);
+  //     newProduct.value = {
+  //       id: null,
+  //       name: "",
+  //       image: "",
+  //     };
+  //     closeAddModal();
+  //   })
+  //   .catch(err => {
+  //     newProduct.value = {
+  //       id: null,
+  //       name: "",
+  //       image: "",
+  //     };
+  //     closeAddModal();
+  //     console.error(err);
+  //   })
+
+
+
+
 };
 const handleImageUploadADD = (event) => {
   const fileInput = event.target;
