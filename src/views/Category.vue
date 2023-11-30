@@ -261,8 +261,8 @@ onMounted(() => {
   updateCategories();
 });
 
-const updateCategories = () => {
-  axios.get(API.GetCategories).then(res => {
+const updateCategories = async () => {
+  await axios.get(API.GetCategories).then(res => {
     categories.value = res.data.data;
   }).catch(err => console.log(err));
 }
