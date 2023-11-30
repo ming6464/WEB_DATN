@@ -613,9 +613,9 @@
 
 <script setup>
 import { PlusIcon } from "@heroicons/vue/20/solid";
-import { PencilSquareIcon } from "@heroicons/vue/20/solid";
-import { TrashIcon } from "@heroicons/vue/20/solid";
 
+import { TrashIcon } from "@heroicons/vue/20/solid";
+import { PencilSquareIcon } from "@heroicons/vue/20/solid";
 import { PhotoIcon, UserCircleIcon } from "@heroicons/vue/24/solid";
 import { computed, ref } from "vue";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/vue/20/solid";

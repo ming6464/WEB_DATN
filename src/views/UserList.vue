@@ -47,7 +47,7 @@
             </thead>
             <tbody class="divide-y divide-gray-200 bg-white">
               <tr v-for="person in people" :key="person.id">
-                <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
+                <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-900">
                   <div class="text-gray-900">{{ person.id }}</div>
                 </td>
                 <td class="whitespace-nowrap py-5 pl-4 pr-3 text-sm sm:pl-0">
@@ -61,10 +61,10 @@
                     </div>
                   </div>
                 </td>
-                <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
+                <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-900">
                   <div class="text-gray-900">{{ person.name }}</div>
                 </td>
-                <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
+                <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-900">
                   <div class="text-gray-900">{{ person.email }}</div>
                 </td>
                 <td>
@@ -77,7 +77,7 @@
                       <span class="sr-only">Edit, {{ person.id }}</span>
                     </button>
                     <button
-                      @click="deletePerson(person.id)"
+                      @click="openDeleteModal(index)"
                       class="text-red-700 hover:text-indigo-900"
                     >
                       <TrashIcon class="h-5 w-5" aria-hidden="true" />
@@ -177,11 +177,50 @@
       </div>
     </div>
   </div>
+  <!-- Delete Confirmation Modal -->
+  <div v-if="isDeleteModalOpen" class="fixed inset-0 overflow-y-auto">
+    <div class="flex items-center justify-center min-h-screen">
+      <div class="fixed inset-0 bg-gray-500 bg-opacity-75"></div>
+      <div class="relative bg-white p-8 rounded-lg w-96">
+        <div class="flex flex-row">
+          <ExclamationTriangleIcon
+            class="h-7 w-7 text-red-500 mx-2"
+            aria-hidden="true"
+          />
+          <h3 class="text-lg font-semibold mb-2">Xác nhận xóa</h3>
+        </div>
+
+        <p class="mb-6 text-gray-500 text-center">
+          Bạn có chắc chắn muốn xóa khách hàng này?
+        </p>
+
+        <div class="flex justify-end">
+          <button
+            type="button"
+            class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
+            @click="closeDeleteModal"
+          >
+            Hủy
+          </button>
+          <button
+            type="button"
+            class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
+            @click="confirmDelete"
+          >
+            Xóa
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 <script setup>
 import { ref } from "vue";
 import { PlusIcon } from "@heroicons/vue/20/solid";
-import { PencilSquareIcon } from "@heroicons/vue/20/solid";
+import {
+  PencilSquareIcon,
+  ExclamationTriangleIcon,
+} from "@heroicons/vue/20/solid";
 import { TrashIcon } from "@heroicons/vue/20/solid";
 const people = ref([
   {
@@ -246,4 +285,25 @@ function handleImageUpload() {
     reader.readAsDataURL(file);
   }
 }
+//delete
+const isDeleteModalOpen = ref(false);
+let deleteIndex = null;
+
+function openDeleteModal(index) {
+  deleteIndex = index;
+  isDeleteModalOpen.value = true;
+}
+
+function closeDeleteModal() {
+  deleteIndex = null;
+  isDeleteModalOpen.value = false;
+}
+
+function confirmDelete() {
+  if (deleteIndex !== null) {
+    deletePerson(deleteIndex);
+    closeDeleteModal();
+  }
+}
+//delete
 </script>

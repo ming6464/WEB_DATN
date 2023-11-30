@@ -1,10 +1,5 @@
 <template>
   <div class="px-4 sm:px-6 lg:px-8">
-    <h1
-      class="text-center text-3xl font-semibold relative leading-4 text-gray-900"
-    >
-      Danh Mục
-    </h1>
     <div class="sm:flex sm:items-center mt-4">
       <div class="flex items-center space-x-4 flex-grow">
         <input
@@ -28,7 +23,7 @@
           class="inline-flex items-center gap-x-1.5 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
         >
           <PlusIcon class="h-5 w-5" aria-hidden="true" />
-          Thêm danh mục
+          Thêm đơn hàng
         </button>
       </div>
       <!-- Add Modal -->
@@ -48,7 +43,7 @@
                   for="newProductName"
                   class="block text-sm font-medium text-gray-700"
                 >
-                  Tên sản phẩm
+                  Tên khách hàng
                 </label>
                 <input
                   v-model="newProduct.name"
@@ -59,24 +54,63 @@
                 />
               </div>
               <div class="mb-4">
-                Ảnh Sản Phẩm
                 <label
-                  for="image-upload"
+                  for="newProductName"
                   class="block text-sm font-medium text-gray-700"
                 >
-                  <img
-                    :src="newProduct.image"
-                    alt=""
-                    class="h-20 w-24 object-cover"
-                  />
+                  Ngày đặt
                 </label>
                 <input
-                  type="file"
-                  id="image-upload"
-                  ref="imageInputRef"
-                  style="display: none"
-                  @change="handleImageUploadADD"
-                  accept="image/*"
+                  v-model="newProduct.datetime"
+                  type="text"
+                  id="newProductName"
+                  name="newProductName"
+                  class="mt-1 p-2 w-full border rounded-md"
+                />
+              </div>
+              <div class="mb-4">
+                <label
+                  for="newProductName"
+                  class="block text-sm font-medium text-gray-700"
+                >
+                  Địa chỉ
+                </label>
+                <input
+                  v-model="newProduct.address"
+                  type="text"
+                  id="newProductName"
+                  name="newProductName"
+                  class="mt-1 p-2 w-full border rounded-md"
+                />
+              </div>
+              <div class="mb-4">
+                <label
+                  for="newProductName"
+                  class="block text-sm font-medium text-gray-700"
+                >
+                  Số lượng
+                </label>
+                <input
+                  v-model="newProduct.number"
+                  type="text"
+                  id="newProductName"
+                  name="newProductName"
+                  class="mt-1 p-2 w-full border rounded-md"
+                />
+              </div>
+              <div class="mb-4">
+                <label
+                  for="newProductName"
+                  class="block text-sm font-medium text-gray-700"
+                >
+                  Trạng thái
+                </label>
+                <input
+                  v-model="newProduct.number"
+                  type="text"
+                  id="newProductName"
+                  name="newProductName"
+                  class="mt-1 p-2 w-full border rounded-md"
                 />
               </div>
 
@@ -104,52 +138,87 @@
     </div>
   </div>
   <!-- ... (existing code) ... -->
-  <div class="mt-4 flow-root">
-    <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-4 lg:-mx-6">
-      <div class="inline-block min-w-full py-2 align-middle sm:px-4 lg:px-6">
+  <div class="mt-8 flow-root">
+    <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-7 lg:-mx-4">
+      <div class="inline-block min-w-full py-2 align-middle">
         <table class="min-w-full divide-y divide-gray-300">
           <thead>
             <tr>
               <th
                 scope="col"
-                class="py-3 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
+                class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
               >
-                STT
+                Mã đơn
               </th>
               <th
                 scope="col"
-                class="py-3.5 pl-6 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-4"
+                class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:pl-0"
               >
-                Ảnh
+                Tên Khách hàng
               </th>
               <th
                 scope="col"
-                class="py-3 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
+                class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:pl-0"
               >
-                Tên Sản Phẩm
+                Ngày đặt
               </th>
               <th
                 scope="col"
-                class="py-3 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
+                class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:pl-0"
+              >
+                Địa chỉ
+              </th>
+              <th
+                scope="col"
+                class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:pl-0"
+              >
+                Tổng số lượng
+              </th>
+              <th
+                scope="col"
+                class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:pl-0"
+              >
+                Trạng thái
+              </th>
+              <th
+                scope="col"
+                class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:pl-0"
               >
                 Hoạt động
               </th>
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-200 bg-white">
-            <tr v-for="(person, index) in people" :key="person.id">
-              <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-900">
-                <div class="font-medium text-gray-900">{{ person.id }}</div>
+            <tr v-for="person in people" :key="person.id">
+              <td
+                class="whitespace-nowrap px-3 py-5 text-sm text-gray-900 sm:pl-2"
+              >
+                <div class="text-gray-900">{{ person.id }}</div>
               </td>
-              <td class="whitespace-nowrap py-5 pl-4 pr-3 text-sm sm:pl-0">
-                <div class="flex items-center">
-                  <div class="h-20 w-20 flex-shrink-0">
-                    <img class="h-20 w-24" :src="person.image" alt="" />
-                  </div>
-                </div>
+              <td
+                class="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-gray-900 sm:pl-0"
+              >
+                {{ person.name }}
               </td>
-              <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-900">
-                <div class="font-medium text-gray-900">{{ person.name }}</div>
+              <td
+                class="whitespace-nowrap px-3 py-4 text-sm text-gray-900 sm:pl-0"
+              >
+                {{ person.datetime }}
+              </td>
+              <td
+                class="whitespace-nowrap px-3 py-4 text-sm text-gray-900 sm:pl-0"
+              >
+                {{ person.address }}
+              </td>
+              <td
+                class="whitespace-nowrap px-3 py-4 text-sm text-gray-900 sm:pl-0"
+              >
+                {{ person.number }}
+              </td>
+              <td
+                class="whitespace-nowrap px-3 py-4 text-sm text-gray-900 sm:pl-0"
+              >
+                {{ person.status }}
               </td>
               <td>
                 <div class="mx-4 space-x-3">
@@ -158,14 +227,14 @@
                     class="text-indigo-600 hover:text-indigo-900"
                   >
                     <PencilSquareIcon class="h-5 w-5" aria-hidden="true" />
-                    <span class="sr-only">{{ person.id }},</span>
+                    <span class="sr-only">Edit, {{ person.id }}</span>
                   </button>
                   <button
                     @click="openDeleteModal(index)"
                     class="text-red-700 hover:text-indigo-900"
                   >
                     <TrashIcon class="h-5 w-5" aria-hidden="true" />
-                    <span class="sr-only">, {{ person.id }}</span>
+                    <span class="sr-only">Delete, {{ person.id }}</span>
                   </button>
                 </div>
               </td>
@@ -181,8 +250,9 @@
       <div class="fixed inset-0 bg-gray-500 bg-opacity-75"></div>
 
       <div class="relative bg-white p-8 rounded-lg w-96">
-        <h3 class="text-lg font-semibold mb-4 text-center">Chỉnh sửa</h3>
-
+        <h3 class="text-lg font-semibold mb-4 text-center">
+          Chỉnh sửa đơn hàng
+        </h3>
         <!-- Form for editing person details -->
         <form @submit.prevent="submitEditForm">
           <div class="mb-4">
@@ -190,7 +260,7 @@
               for="editedName"
               class="block text-sm font-medium text-gray-700"
             >
-              Tên Sản Phẩm
+              Tên Khách Hàng
             </label>
             <input
               v-model="editedPerson.name"
@@ -202,27 +272,64 @@
           </div>
           <div class="mb-4">
             <label
-              for="image-upload"
+              for="editedEmail"
               class="block text-sm font-medium text-gray-700"
             >
-              Ảnh Sản Phẩm
-              <img
-                :src="editedPerson.image"
-                alt=""
-                class="h-20 w-24 object-cover"
-              />
+              Ngày đặt
             </label>
             <input
-              type="file"
-              id="image-upload"
-              ref="imageInputRef"
-              @change="handleImageUpload"
-              accept="image/*"
-              class="hidden"
+              v-model="editedPerson.datetime"
+              type="text"
+              id="editedEmail"
+              name="editedEmail"
+              class="mt-1 p-2 w-full border rounded-md"
             />
           </div>
-          <!-- ... other fields ... -->
-
+          <div class="mb-4">
+            <label
+              for="editedEmail"
+              class="block text-sm font-medium text-gray-700"
+            >
+              Địa chỉ
+            </label>
+            <input
+              v-model="editedPerson.address"
+              type="text"
+              id="editedEmail"
+              name="editedEmail"
+              class="mt-1 p-2 w-full border rounded-md"
+            />
+          </div>
+          <div class="mb-4">
+            <label
+              for="editedEmail"
+              class="block text-sm font-medium text-gray-700"
+            >
+              Số lượng
+            </label>
+            <input
+              v-model="editedPerson.number"
+              type="text"
+              id="editedEmail"
+              name="editedEmail"
+              class="mt-1 p-2 w-full border rounded-md"
+            />
+          </div>
+          <div class="mb-4">
+            <label
+              for="editedEmail"
+              class="block text-sm font-medium text-gray-700"
+            >
+              Trạng thái
+            </label>
+            <input
+              v-model="editedPerson.status"
+              type="text"
+              id="editedEmail"
+              name="editedEmail"
+              class="mt-1 p-2 w-full border rounded-md"
+            />
+          </div>
           <div class="flex justify-end">
             <button
               type="button"
@@ -256,7 +363,7 @@
         </div>
 
         <p class="mb-6 text-gray-500 text-center">
-          Bạn có chắc chắn muốn xóa sản phẩm này?
+          Bạn có chắc chắn muốn xóa khách hàng này?
         </p>
 
         <div class="flex justify-end">
@@ -282,133 +389,63 @@
 
 <script setup>
 import { ref } from "vue";
-import { PlusIcon, ExclamationTriangleIcon } from "@heroicons/vue/20/solid";
-import { PencilSquareIcon } from "@heroicons/vue/20/solid";
+import { PlusIcon } from "@heroicons/vue/20/solid";
+import {
+  PencilSquareIcon,
+  ExclamationTriangleIcon,
+} from "@heroicons/vue/20/solid";
 import { TrashIcon } from "@heroicons/vue/20/solid";
-import { watch } from "vue";
-import { computed } from "vue";
-const people = ref([
+const people = [
   {
     id: "1",
-    name: "Áo len",
-    image:
-      "https://image.uniqlo.com/UQ/ST3/AsianCommon/imagesgoods/460950/sub/goods_460950_sub14.jpg?width=750",
+    name: "Lindsay",
+    datetime: "12:35:35 19/04/2023",
+    address: "Nam Từ Liêm - Hà Nội",
+    number: "12",
+    status: "đã xác nhận",
   },
-  {
-    id: "2",
-    name: "Áo thun",
-    image:
-      "https://media.coolmate.me/cdn-cgi/image/quality=80,format=auto/uploads/April2023/Ao_thun_oversize_basic_84RISINGshawdo4.jpg",
-  },
-  {
-    id: "3",
-    name: "Áo sơ mi",
-    image:
-      "https://image.uniqlo.com/UQ/ST3/AsianCommon/imagesgoods/462384/sub/goods_462384_sub14.jpg?width=750",
-  },
-  {
-    id: "4",
-    name: "Áo nỉ",
-    image:
-      "https://image.uniqlo.com/UQ/ST3/AsianCommon/imagesgoods/460322/item/goods_31_460322.jpg?width=750",
-  },
-  {
-    id: "5",
-    name: "Áo Polo",
-    image:
-      "https://image.uniqlo.com/UQ/ST3/AsianCommon/imagesgoods/433041/item/goods_69_433041.jpg?width=750",
-  },
-  {
-    id: "6",
-    name: "Áo khoác",
-    image:
-      "https://image.uniqlo.com/UQ/ST3/AsianCommon/imagesgoods/450195/sub/goods_450195_sub14.jpg?width=750",
-  },
-]);
+];
 const isEditModalOpen = ref(false);
-const selectedIndex = ref(null);
 const editedPerson = ref({
   id: null,
   name: "",
-  image: "",
+  datetime: "",
+  address: "",
+  number: "",
 });
 
-const imageInputRef = ref(null);
-function deletePerson(index) {
-  console.log("Deleting person at index:", index);
-  people.value.splice(index, 1);
-  console.log("People after deletion:", people.value);
-}
-
 function openEditModal(person) {
+  // Clone the person object to avoid modifying the original data
   editedPerson.value = { ...person };
-  selectedIndex.value = people.value.indexOf(person);
   isEditModalOpen.value = true;
 }
 
 function submitEditForm() {
   if (editedPerson.value) {
-    // Update the person in the array
-    people.value.splice(selectedIndex.value, 1, { ...editedPerson.value });
-    isEditModalOpen.value = false;
+    // Find the index of the editing person in the array
+    const index = people.value.findIndex(
+      (person) => person.id === editedPerson.value.id
+    );
+
+    if (index !== -1) {
+      // Update the person in the array
+      people.value[index] = { ...editedPerson.value };
+      isEditModalOpen.value = false;
+    }
   }
 }
+function deletePerson(personId) {
+  const index = people.value.findIndex((person) => person.id === personId);
 
+  if (index !== -1) {
+    people.value.splice(index, 1);
+  }
+}
 function closeEditModal() {
   isEditModalOpen.value = false;
-  imageInputRef.value.value = null;
-}
-function handleImageUpload() {
-  try {
-    const fileInput = imageInputRef.value;
-
-    if (fileInput.files.length > 0) {
-      const file = fileInput.files[0];
-
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        if (e.target.result) {
-          editedPerson.value.image = e.target.result;
-        } else {
-          console.error("Image loading failed.", file);
-        }
-      };
-      reader.readAsDataURL(file);
-    }
-  } catch (error) {
-    console.error("Error handling image upload:", error);
-  }
+  editedPerson.value = null;
 }
 
-// Search
-const selectedFilter = ref("id"); // Giá trị mặc định của bộ lọc
-const searchTerm = ref("");
-
-watch(
-  [selectedFilter, people],
-  ([newFilter, newPeople], [oldFilter, oldPeople]) => {
-    console.log("Bộ lọc được chọn:", newFilter);
-  }
-);
-
-const filteredPeople = computed(() => {
-  const term = searchTerm.value.toString().toLowerCase().trim();
-
-  switch (selectedFilter.value.toLowerCase()) {
-    case "id":
-      return people.value.filter((person) =>
-        person.id.toString().toLowerCase().includes(term)
-      );
-    case "name":
-      return people.value.filter((person) =>
-        person.name.toString().toLowerCase().includes(term)
-      );
-    default:
-      return people.value;
-  }
-});
-
-//search
 //delete
 const isDeleteModalOpen = ref(false);
 let deleteIndex = null;
@@ -435,7 +472,9 @@ const isAddModalOpen = ref(false);
 const newProduct = ref({
   id: null,
   name: "",
-  image: "",
+  datetime: "",
+  address: "",
+  number: "",
 });
 const openAddModal = () => {
   isAddModalOpen.value = true;
@@ -453,21 +492,11 @@ const addNewProduct = () => {
   newProduct.value = {
     id: null,
     name: "",
-    image: "",
+    datetime: "",
+    address: "",
+    number: "",
   };
 
   closeAddModal();
-};
-const handleImageUploadADD = (event) => {
-  const fileInput = event.target;
-  const file = fileInput.files[0];
-
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      newProduct.value.image = e.target.result;
-    };
-    reader.readAsDataURL(file);
-  }
 };
 </script>

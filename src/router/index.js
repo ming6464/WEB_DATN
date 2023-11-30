@@ -28,6 +28,10 @@ const routes = [
       {
         path: 'updateProduct',
         component: () => import('../views/UpdateProduct.vue'),
+      },
+      {
+        path: 'transactionList',
+        component: () => import('../views/TransactionList.vue'),
       }
     ],
   },
