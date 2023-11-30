@@ -99,7 +99,7 @@
                     <PencilSquareIcon class="h-5 w-5" aria-hidden="true" />
                     <span class="sr-only">{{ person.id }},</span>
                   </button>
-                  <button @click="deletePerson(index)" class="text-red-700 hover:text-indigo-900">
+                  <button @click="openDeleteModal(index)" class="text-red-700 hover:text-indigo-900">
                     <TrashIcon class="h-5 w-5" aria-hidden="true" />
                     <span class="sr-only">, {{ person.id }}</span>
                   </button>
@@ -147,6 +147,56 @@
             </button>
           </div>
         </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- delete modal -->
+  <div v-show="isDeleteModalOpen">
+    <div :class="{ 'opacity-100': isShowDeleteModal }"
+      class="transition-opacity ease-in-out duration-500 opacity-0 relative z-10" aria-labelledby="modal-title"
+      role="dialog" aria-modal="true">
+      <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
+      <div class="fixed inset-0 z-10 w-screen">
+        <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+          <div
+            class="relative transform rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+            <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+              <div class="sm:flex sm:items-start">
+                <div
+                  class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+                  <svg class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                    stroke="currentColor" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                  </svg>
+                </div>
+                <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+                  <h3 class="text-base font-semibold leading-6 text-gray-900" id="modal-title">
+                    Xoá tài khoản
+                  </h3>
+                  <div class="mt-2">
+                    <p class="text-sm text-gray-500">
+                      Bạn có chắc chắn muốn xoá danh mục này không? Tất cả dữ
+                      liệu sẽ bị xóa vĩnh viễn. Hành động này không thể được
+                      hoàn tác.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+              <button type="button" @click="deleteCategory"
+                class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto">
+                Xoá
+              </button>
+              <button type="button" @click="closeDeleteCategoryModal"
+                class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto">
+                Huỷ
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -204,7 +254,9 @@ const editedPerson = ref({
   name: "",
   image: "",
 });
-
+const isDeleteModalOpen = ref(false);
+const isShowDeleteModal = ref(false);
+let indexDelete = -1;
 onMounted(() => {
   updateCategories();
 });
@@ -225,6 +277,32 @@ function deletePerson(index) {
     })
     .catch(err => console.log(err));
 }
+//delete modal 
+
+const openDeleteModal = async (index) => {
+  indexDelete = index;
+  isDeleteModalOpen.value = true;
+  await delay(100);
+  isShowDeleteModal.value = true;
+};
+
+const deleteCategory = async () => {
+  try {
+    await axios.delete(`${API.DELCategories}/${categories.value[indexDelete].id}`)
+      .then(res => {
+        categories.value.splice(indexDelete, 1);
+      })
+      .catch(err => console.log(err));
+    closeDeleteCategoryModal();
+  } catch (error) { }
+}
+
+const closeDeleteCategoryModal = async () => {
+  isShowDeleteModal.value = false;
+  await delay(500);
+  isDeleteModalOpen.value = false;
+}
+//delete modal 
 
 function openEditModal(person) {
   editedPerson.value = { ...person };
@@ -232,19 +310,26 @@ function openEditModal(person) {
   isEditModalOpen.value = true;
 }
 
-function submitEditForm() {
-  if (editedPerson.value) {
-    // Update the person in the array
-    axios.put(`${API.PUTCategories}/${editedPerson.value.id}`, editedPerson.value)
-      .then(res => {
-        categories.value.splice(selectedIndex.value, 1, { ...editedPerson.value });
-        isEditModalOpen.value = false;
-      })
-      .catch(err => {
-        isEditModalOpen.value = false;
-        console.error(err);
-      });
-  }
+const submitEditForm = async () => {
+  if (!editedPerson.value) return;
+  const formData = new FormData();
+  formData.append('image', editedPerson.value.file);
+  formData.append('name', editedPerson.value.name);
+  isEditModalOpen.value = false;
+  // Update the person in the array
+  await axios.put(`${API.PUTCategories}/${editedPerson.value.id}`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    }
+  })
+    .then(res => {
+      console.log(res);
+      categories.value.splice(selectedIndex.value, 1, res.data.data);
+    })
+    .catch(err => {
+      console.error(err);
+    });
+
 }
 
 function closeEditModal() {
@@ -262,6 +347,7 @@ function handleImageUpload() {
       reader.onload = (e) => {
         if (e.target.result) {
           editedPerson.value.image = e.target.result;
+          editedPerson.value.file = file;
         } else {
           console.error("Image loading failed.", file);
         }
@@ -287,40 +373,32 @@ const closeAddModal = () => {
   isAddModalOpen.value = false;
 };
 
-const addNewProduct = () => {
-  // Ensure a unique ID is assigned to the new product
-  newProduct.value.id = String(categories.value.length + 1);
-  categories.value.push({ ...newProduct.value });
-  // Reset newProduct to clear the form
-  newProduct.value = {
-    id: null,
-    name: "",
-    image: "",
-  };
+const addNewProduct = async () => {
+  const formData = new FormData();
+  formData.append('name', newProduct.value.name);
+  formData.append('image', newProduct.value.file);
   closeAddModal();
-
-  // axios.post(API.POSTAddCategories, newProduct.value)
-  //   .then((res) => {
-  //     categories.value.push(res.data);
-  //     newProduct.value = {
-  //       id: null,
-  //       name: "",
-  //       image: "",
-  //     };
-  //     closeAddModal();
-  //   })
-  //   .catch(err => {
-  //     newProduct.value = {
-  //       id: null,
-  //       name: "",
-  //       image: "",
-  //     };
-  //     closeAddModal();
-  //     console.error(err);
-  //   })
-
-
-
+  await axios.post(API.POSTAddCategories, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  })
+    .then((res) => {
+      categories.value.push(res.data.data);
+      newProduct.value = {
+        id: null,
+        name: "",
+        image: "",
+      };
+    })
+    .catch(err => {
+      newProduct.value = {
+        id: null,
+        name: "",
+        image: "",
+      };
+      console.error(err);
+    })
 
 };
 const handleImageUploadADD = (event) => {
@@ -331,9 +409,13 @@ const handleImageUploadADD = (event) => {
     const reader = new FileReader();
     reader.onload = (e) => {
       newProduct.value.image = e.target.result;
+      newProduct.value.file = file;
     };
     reader.readAsDataURL(file);
   }
 };
+
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
 </script>
 i
