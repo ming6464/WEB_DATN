@@ -6,7 +6,7 @@
           <h1
             class="text-center text-3xl font-semibold leading-6 text-gray-900"
           >
-            Danh sách sản phẩm
+            Danh mục
           </h1>
         </div>
         <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
