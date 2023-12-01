@@ -26,10 +26,6 @@ const routes = [
         component: () => import('../views/AccountStaff.vue'),
       },
       {
-        path: 'updateProduct',
-        component: () => import('../views/UpdateProduct.vue'),
-      },
-      {
         path: 'transactionList',
         component: () => import('../views/TransactionList.vue'),
       }

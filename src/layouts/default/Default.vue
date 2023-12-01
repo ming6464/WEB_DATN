@@ -274,12 +274,41 @@
 
         <div class="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
           <form class="relative flex flex-1" action="#" method="GET"></form>
+          <nav class="flex" aria-label="Breadcrumb">
+            <ol role="list" class="flex items-center space-x-4">
+              <li>
+                <div>
+                  <a href="#" class="text-gray-400 hover:text-gray-500">
+                    <HomeIcon
+                      class="h-5 w-5 flex-shrink-0"
+                      aria-hidden="true"
+                    />
+                    <span class="sr-only">Home</span>
+                  </a>
+                </div>
+              </li>
+              <li v-for="page in pages" :key="page.name">
+                <div class="flex items-center">
+                  <ChevronRightIcon
+                    class="h-5 w-5 flex-shrink-0 text-gray-400"
+                    aria-hidden="true"
+                  />
+                  <a
+                    :href="page.href"
+                    class="ml-4 text-sm font-medium text-gray-500 hover:text-gray-700"
+                    :aria-current="page.current ? 'page' : undefined"
+                    >{{ page.name }}</a
+                  >
+                </div>
+              </li>
+            </ol>
+          </nav>
           <div class="flex items-center gap-x-4 lg:gap-x-6">
             <button
               type="button"
               class="-m-2.5 p-2.5 text-gray-400 hover:text-gray-500"
             >
-              <span class="sr-only">View notifications</span>
+              <span class="sr-only">View notifications </span>
               <BellIcon class="h-6 w-6" aria-hidden="true" />
             </button>
 
@@ -333,7 +362,7 @@
 <script setup>
 import { ref } from "vue";
 import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/vue";
-import { ChevronRightIcon } from "@heroicons/vue/20/solid";
+import { ChevronRightIcon, HomeIcon } from "@heroicons/vue/20/solid";
 import {
   Dialog,
   DialogPanel,
@@ -353,7 +382,6 @@ import {
   Cog6ToothIcon,
   DocumentDuplicateIcon,
   FolderIcon,
-  HomeIcon,
   UsersIcon,
   XMarkIcon,
 } from "@heroicons/vue/24/outline";
@@ -406,6 +434,9 @@ const navigation = [
   },
   { name: "Thống kê", href: "#", icon: ChartPieIcon, current: false },
 ];
-
+const pages = [
+  { name: "Projects", href: "#", current: false },
+  { name: "Project Nero", href: "#", current: true },
+];
 const sidebarOpen = ref(false);
 </script>

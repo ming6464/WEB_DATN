@@ -189,7 +189,7 @@
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-200 bg-white">
-            <tr v-for="person in people" :key="person.id">
+            <tr v-for="(person, index) in people" :key="person.id">
               <td
                 class="whitespace-nowrap px-3 py-5 text-sm text-gray-900 sm:pl-2"
               >
@@ -339,6 +339,7 @@
               Thoát
             </button>
             <button
+              @click="saveChanges"
               type="submit"
               class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-500"
             >
@@ -405,6 +406,7 @@ const people = [
     status: "đã xác nhận",
   },
 ];
+const selectedPerson = ref(null);
 const isEditModalOpen = ref(false);
 const editedPerson = ref({
   id: null,
@@ -413,13 +415,24 @@ const editedPerson = ref({
   address: "",
   number: "",
 });
-
+//Edit
 function openEditModal(person) {
   // Clone the person object to avoid modifying the original data
   editedPerson.value = { ...person };
   isEditModalOpen.value = true;
 }
+// const closeEditModal = () => {
+//   isEditModalOpen.value = false;
+//   selectedPerson.value = null;
+// };
+const saveChanges = () => {
+  const index = people.value.findIndex((p) => p.id === selectedPerson.value.id);
+  if (index !== -1) {
+    people.value[index] = { ...selectedPerson.value };
+  }
 
+  closeEditModal();
+};
 function submitEditForm() {
   if (editedPerson.value) {
     // Find the index of the editing person in the array
@@ -443,26 +456,34 @@ function deletePerson(personId) {
 }
 function closeEditModal() {
   isEditModalOpen.value = false;
-  editedPerson.value = null;
+  editedPerson.value = {
+    id: null,
+    name: "",
+    image: "",
+    datetime: "",
+    address: "",
+    number: "",
+  };
+  imageInputRef.value.value = null;
 }
 
-//delete
+// Delete functionality
 const isDeleteModalOpen = ref(false);
-let deleteIndex = null;
+let deletePersonIndex = null;
 
 function openDeleteModal(index) {
-  deleteIndex = index;
+  deletePersonIndex = index;
   isDeleteModalOpen.value = true;
 }
 
 function closeDeleteModal() {
-  deleteIndex = null;
   isDeleteModalOpen.value = false;
+  deletePersonIndex = null;
 }
 
 function confirmDelete() {
-  if (deleteIndex !== null) {
-    deletePerson(deleteIndex);
+  if (deletePersonIndex !== null) {
+    people.value.splice(deletePersonIndex, 1);
     closeDeleteModal();
   }
 }

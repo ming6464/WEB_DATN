@@ -1,11 +1,6 @@
 <template>
-  <div class="px-4 sm:px-6 lg:px-8">
-    <h1
-      class="text-center text-3xl font-semibold relative leading-4 text-gray-900"
-    >
-      Danh Mục
-    </h1>
-    <div class="sm:flex sm:items-center mt-4">
+  <div>
+    <div class="sm:flex sm:items-center mt-7">
       <div class="flex items-center space-x-4 flex-grow">
         <input
           type="text"
@@ -137,7 +132,7 @@
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-200 bg-white">
-            <tr v-for="(person, index) in people" :key="person.id">
+            <tr v-for="(person, index) in filteredPeople" :key="person.id">
               <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-900">
                 <div class="font-medium text-gray-900">{{ person.id }}</div>
               </td>
@@ -247,18 +242,39 @@
     <div class="flex items-center justify-center min-h-screen">
       <div class="fixed inset-0 bg-gray-500 bg-opacity-75"></div>
       <div class="relative bg-white p-8 rounded-lg w-96">
-        <div class="flex flex-row">
-          <ExclamationTriangleIcon
-            class="h-7 w-7 text-red-500 mx-2"
-            aria-hidden="true"
-          />
-          <h3 class="text-lg font-semibold mb-2">Xác nhận xóa</h3>
+        <div class="sm:flex sm:items-start">
+          <div
+            class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10"
+          >
+            <svg
+              class="h-6 w-6 text-red-600"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              aria-hidden="true"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"
+              />
+            </svg>
+          </div>
+          <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+            <h3
+              class="text-base font-semibold leading-6 text-gray-900"
+              id="modal-title"
+            >
+              Xác nhận xóa
+            </h3>
+            <div class="mt-2">
+              <p class="text-sm text-gray-500">
+                Bạn có chắc chắn muốn xoá danh mục này không?
+              </p>
+            </div>
+          </div>
         </div>
-
-        <p class="mb-6 text-gray-500 text-center">
-          Bạn có chắc chắn muốn xóa sản phẩm này?
-        </p>
-
         <div class="flex justify-end">
           <button
             type="button"

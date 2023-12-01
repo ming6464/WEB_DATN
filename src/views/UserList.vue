@@ -46,7 +46,7 @@
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-200 bg-white">
-              <tr v-for="person in people" :key="person.id">
+              <tr v-for="(person, index) in people" :key="person.id">
                 <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-900">
                   <div class="text-gray-900">{{ person.id }}</div>
                 </td>
@@ -54,7 +54,7 @@
                   <div class="flex items-center">
                     <div class="h-20 w-20 flex-shrink-0">
                       <img
-                        class="h-18 w-20 rounded-full"
+                        class="h-18 w-18 rounded-full"
                         :src="person.image"
                         alt=""
                       />
@@ -182,19 +182,40 @@
     <div class="flex items-center justify-center min-h-screen">
       <div class="fixed inset-0 bg-gray-500 bg-opacity-75"></div>
       <div class="relative bg-white p-8 rounded-lg w-96">
-        <div class="flex flex-row">
-          <ExclamationTriangleIcon
-            class="h-7 w-7 text-red-500 mx-2"
-            aria-hidden="true"
-          />
-          <h3 class="text-lg font-semibold mb-2">Xác nhận xóa</h3>
+        <div class="sm:flex sm:items-start">
+          <div
+            class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10"
+          >
+            <svg
+              class="h-6 w-6 text-red-600"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              aria-hidden="true"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"
+              />
+            </svg>
+          </div>
+          <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+            <h3
+              class="text-base font-semibold leading-6 text-gray-900"
+              id="modal-title"
+            >
+              Xác nhận xóa
+            </h3>
+            <div class="mt-2">
+              <p class="text-sm text-gray-500">
+                Bạn có chắc chắn muốn xoá khách hàng này không?
+              </p>
+            </div>
+          </div>
         </div>
-
-        <p class="mb-6 text-gray-500 text-center">
-          Bạn có chắc chắn muốn xóa khách hàng này?
-        </p>
-
-        <div class="flex justify-end">
+        <div class="flex justify-end mt-4">
           <button
             type="button"
             class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
@@ -216,6 +237,13 @@
 </template>
 <script setup>
 import { ref } from "vue";
+import {
+  Dialog,
+  DialogPanel,
+  DialogTitle,
+  TransitionChild,
+  TransitionRoot,
+} from "@headlessui/vue";
 import { PlusIcon } from "@heroicons/vue/20/solid";
 import {
   PencilSquareIcon,
@@ -269,7 +297,12 @@ function deletePerson(personId) {
 }
 function closeEditModal() {
   isEditModalOpen.value = false;
-  editedPerson.value = null;
+  editedPerson.value = {
+    id: null,
+    name: "",
+    image: "",
+    email: "",
+  };
   imageInputRef.value.value = null;
 }
 
@@ -285,25 +318,24 @@ function handleImageUpload() {
     reader.readAsDataURL(file);
   }
 }
-//delete
+// Delete functionality
 const isDeleteModalOpen = ref(false);
-let deleteIndex = null;
+let deletePersonIndex = null;
 
 function openDeleteModal(index) {
-  deleteIndex = index;
+  deletePersonIndex = index;
   isDeleteModalOpen.value = true;
 }
 
 function closeDeleteModal() {
-  deleteIndex = null;
   isDeleteModalOpen.value = false;
+  deletePersonIndex = null;
 }
 
 function confirmDelete() {
-  if (deleteIndex !== null) {
-    deletePerson(deleteIndex);
+  if (deletePersonIndex !== null) {
+    people.value.splice(deletePersonIndex, 1);
     closeDeleteModal();
   }
 }
-//delete
 </script>
