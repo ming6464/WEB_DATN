@@ -262,7 +262,7 @@ onMounted(() => {
 });
 
 const updateCategories = async () => {
-  await axios.get(API.GetCategories).then(res => {
+  await axios.get(API.GETCategories).then(res => {
     categories.value = res.data.data;
   }).catch(err => console.log(err));
 }
