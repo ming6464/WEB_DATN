@@ -268,15 +268,6 @@ const updateCategories = async () => {
 }
 
 const imageInputRef = ref(null);
-function deletePerson(index) {
-  // console.log("Deleting person at index:", index);
-  // console.log("People after deletion:", categories.value);
-  axios.delete(`${API.DELCategories}/${categories.value[index].id}`)
-    .then(res => {
-      categories.value.splice(index, 1);
-    })
-    .catch(err => console.log(err));
-}
 //delete modal 
 
 const openDeleteModal = async (index) => {

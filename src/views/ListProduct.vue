@@ -138,7 +138,7 @@
                   <span>Lựa chọn ảnh đại diện cho sản phẩm</span>
                   <span type="submit"
                     class="rounded-md bg-indigo-600 mt-2 py-2 text-sm font-semibold
-                                                                                         text-white shadow-sm hover:bg-indigo-500 text-center w-20">
+                                                                                                                   text-white shadow-sm hover:bg-indigo-500 text-center w-20">
                     Chọn ảnh
                   </span>
                 </label>
@@ -191,7 +191,7 @@
                       <tr v-for="(item, index) in productData" :key="index" class="hover:bg-gray-100 transition">
                         <td class="py-2 px-4 border-b">
                           <div class="relative">
-                            <select v-model="item.sizeData.name" @change="
+                            <select v-model="item.sizeData.id" @change="
                               ChooseCombobox(
                                 false,
                                 index,
@@ -199,7 +199,7 @@
                               )
                             "
                               class="block appearance-none w-full bg-white border border-gray-300 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:ring-2 focus:ring-inset focus:ring-indigo-600">
-                              <option v-for="(size, sizeIndex) in sizeOptions" :key="sizeIndex" :value="size.name">
+                              <option v-for="(size, sizeIndex) in sizeOptions" :key="sizeIndex" :value="size.id">
                                 {{ size.name }}
                               </option>
                             </select>
@@ -211,11 +211,11 @@
                         </td>
                         <td class="py-2 px-4 border-b">
                           <div class="relative">
-                            <select v-model="item.colorData.name" @change="
+                            <select v-model="item.colorData.id" @change="
                               ChooseCombobox(true, index, $event.target.value)
                             "
                               class="block appearance-none w-full bg-white border border-gray-300 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:ring-2 focus:ring-inset focus:ring-indigo-600">
-                              <option v-for="(color, colorIndex) in colorOptions" :key="colorIndex" :value="color.name">
+                              <option v-for="(color, colorIndex) in colorOptions" :key="colorIndex" :value="color.id">
                                 {{ color.name }}
                               </option>
                             </select>
@@ -258,8 +258,8 @@
         </button>
         <button type="submit"
           class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold
-                                                                                       text-white shadow-sm hover:bg-indigo-500 focus-visible:outline 
-                                                                                       focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                                                                                                                 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline 
+                                                                                                                 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
           Save
         </button>
       </div>
@@ -401,12 +401,11 @@ const itemProductData = {
   "price": 0,
   "colorData": {
     "id": -1,
-    "name": ""
   },
   "sizeData": {
     "id": -1,
-    "name": ""
-  }
+  },
+  isEdited: false,
 }
 const productData = ref(null);
 const sizeOptions = ref([
@@ -434,7 +433,6 @@ const openUpdateProduct = async (isEditProduct_, person) => {
       "description": "",
       "categoryData": {
         id: categories.value[0].id,
-        name: categories.value[0].name,
       },
     };
   } else {
@@ -442,6 +440,7 @@ const openUpdateProduct = async (isEditProduct_, person) => {
       .then(res => {
         updateProduct.value = res.data.data;
         productData.value = updateProduct.value.productData;
+        productData.value.isEdited = false;
       })
       .catch(err => {
         productData.value = [JSON.parse(JSON.stringify(itemProductData))];
@@ -458,22 +457,43 @@ const openUpdateProduct = async (isEditProduct_, person) => {
   isUpdateModalOpen.value = true;
 }
 
-function submitEditForm() {
-  //if (!updateProduct.value) return;
-  // Find the index of the editing person in the array
-  //  const index = people.value.findIndex(
-  //     (person) => person.id === updateProduct.value.id
-  //   );
+const submitEditForm = async () => {
 
-  //   if (index !== -1) {
-  //     // Update the person in the array
-  //     people.value[index] = { ...updateProduct.value };
-  //     isUpdateModalOpen.value = false;
-  //   }
+  if (updateProduct.value.mainImage.length == 0) return;
+  if (!updateProduct.value) return;
   console.log(updateProduct.value);
   console.log(productData.value);
   //onCloseUpdateProduct();
+  const formProductColorSize = new FormData();
+  const formProduct = new FormData();
+  if (isEditProduct) {
+    //formProductColorSize.append()
+  } else {
+    formProduct.append('name', updateProduct.value.name);
+    formProduct.append('mainImage', updateProduct.value.imageFile);
+    formProduct.append('categoryId', updateProduct.value.categoryData.id);
+    formProduct.append('price', updateProduct.value.price);
+    await axios.post(API.POSTProduct, formProduct)
+      .then(res => {
+
+      })
+      .catch(err => {
+        console.error(err);
+      });
+  }
+
 }
+
+const EditColorSize = (index) => {
+  if (productData.value[index])
+    productData.value[index].isEdited = true;
+}
+
+const onCloseUpdateProduct = () => {
+  isUpdateModalOpen.value = false;
+  isEditProduct = false;
+  updateProduct.value.imageFile = null;
+};
 
 //delete modal 
 
@@ -558,15 +578,14 @@ const addItem = () => {
 };
 
 const ChooseCombobox = (isColor, index, value) => {
-
   if (
-    (productData.value[index].sizeData.name.length == 0 && isColor) ||
-    (productData.value[index].colorData.name.length == 0 && !isColor)
+    (productData.value[index].sizeData.id == -1 && isColor) ||
+    (productData.value[index].colorData.id == -1 && !isColor)
   )
     return;
 
-  const c = isColor ? value : productData.value[index].colorData.name;
-  const s = isColor ? productData.value[index].sizeData.name : value;
+  const c = isColor ? value : productData.value[index].colorData.id;
+  const s = isColor ? productData.value[index].sizeData.id : value;
 
   for (let i = 0; i < productData.value.length; i++) {
 
@@ -574,14 +593,12 @@ const ChooseCombobox = (isColor, index, value) => {
 
     let itemF = productData.value[i];
 
-    if (itemF.sizeData.name == s && itemF.colorData.name == c) {
+    if (itemF.sizeData.id == s && itemF.colorData.id == c) {
       console.log(" Lỗi ");
       if (isColor) {
         productData.value[index].colorData.id = -1;
-        productData.value[index].colorData.name = "";
       } else {
         productData.value[index].sizeData.id = -1;
-        productData.value[index].sizeData.name = "";
       }
       return;
     }
@@ -590,11 +607,7 @@ const ChooseCombobox = (isColor, index, value) => {
 
 //thông tin bán hàng
 
-const onCloseUpdateProduct = () => {
-  isUpdateModalOpen.value = false;
-  isEditProduct = false;
-  updateProduct.value.imageFile = null;
-};
+
 
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
