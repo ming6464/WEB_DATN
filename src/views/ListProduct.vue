@@ -22,7 +22,7 @@
               <thead>
                 <tr>
                   <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
-                    STT
+                    ID
                   </th>
                   <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-4">
                     Ảnh
@@ -94,7 +94,7 @@
               <div class="sm:col-span-3">
                 <label for="productName" class="block text-sm font-medium leading-6 text-gray-900">Tên sản phẩm</label>
                 <div class="mt-1 flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 sm:max-w-md">
-                  <input required type="text" v-model="updateProduct.name" name="productName" id="productName"
+                  <input type="text" v-model="updateProduct.name" name="productName" id="productName"
                     autocomplete="productName"
                     class="block flex-1 border-0 bg-transparent py-1.5 pl-2 text-gray-900 rounded-md focus:ring-2 focus:ring-inset focus:ring-indigo-600 placeholder:text-gray-400 sm:text-sm sm:leading-6"
                     placeholder="Áo ...." />
@@ -110,9 +110,6 @@
                       {{ category.name }}
                     </option>
                   </select>
-                  <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                    <ChevronUpDownIcon class="fill-current h-4 w-4 text-gray-400" aria-hidden="true" />
-                  </div>
                 </div>
               </div>
               <!-- thể loại -->
@@ -138,7 +135,7 @@
                   <span>Lựa chọn ảnh đại diện cho sản phẩm</span>
                   <span type="submit"
                     class="rounded-md bg-indigo-600 mt-2 py-2 text-sm font-semibold
-                                                                                                                   text-white shadow-sm hover:bg-indigo-500 text-center w-20">
+                                                                                                                                                                                                                                                                                                                                                             text-white shadow-sm hover:bg-indigo-500 text-center w-20">
                     Chọn ảnh
                   </span>
                 </label>
@@ -169,8 +166,8 @@
               <div class="sm:col-span-full">
                 <label for="first-name" class="block text-sm font-medium leading-6 text-gray-900">Giá bán lẻ</label>
                 <div class="mt-1">
-                  <input v-model="updateProduct.price" required type="number" min="0" name="first-name" id="first-name"
-                    autocomplete="given-name"
+                  <input v-model="updateProduct.price" @input="validateQuantityPrice()" type="number" min="0"
+                    name="first-name" id="first-name" autocomplete="given-name"
                     class="block w-full pl-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
                 </div>
               </div>
@@ -203,10 +200,6 @@
                                 {{ size.name }}
                               </option>
                             </select>
-                            <div
-                              class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                              <ChevronUpDownIcon class="fill-current h-4 w-4 text-gray-400" aria-hidden="true" />
-                            </div>
                           </div>
                         </td>
                         <td class="py-2 px-4 border-b">
@@ -219,17 +212,13 @@
                                 {{ color.name }}
                               </option>
                             </select>
-                            <div
-                              class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                              <ChevronUpDownIcon class="fill-current h-4 w-4 text-gray-400" aria-hidden="true" />
-                            </div>
                           </div>
                         </td>
                         <td class="py-2 px-4 border-b">
-                          <input type="number" v-model="item.amount" @input="validateQuantity(index)"
+                          <input type="number" v-model="item.amount" @input="validateQuantityColorSize(index)"
                             class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-inset focus:ring-indigo-600" />
                         </td>
-                        <td v-if="index > 0" class="py-2 px-4 border-b">
+                        <td v-if="index > 0 && !(isEditProduct && !item.isNew)" class="py-2 px-4 border-b">
                           <button @click="removeItem(index)" type="button"
                             class="bg-red-500 hover:bg-red-600 text-white py-1 px-2 rounded text-xs md:text-base">
                             Xoá
@@ -258,8 +247,8 @@
         </button>
         <button type="submit"
           class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold
-                                                                                                                 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline 
-                                                                                                                 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                                                                                                                                                                                                                                                                                                                                                           text-white shadow-sm hover:bg-indigo-500 focus-visible:outline 
+                                                                                                                                                                                                                                                                                                                                                           focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
           Save
         </button>
       </div>
@@ -273,11 +262,11 @@
         <div class="fixed inset-0 z-10 w-screen">
           <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
             <div
-              class="relative transform rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+              class="relative transform rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg lg:ml-64 mt-10">
               <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                 <div class="sm:flex sm:items-start">
                   <div
-                    class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+                    class="mx-auto  flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
                     <svg class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                       stroke="currentColor" aria-hidden="true">
                       <path stroke-linecap="round" stroke-linejoin="round"
@@ -314,14 +303,28 @@
       </div>
     </div>
   </div>
+  <div v-if="ShowLoading" class="w-full h-full flex justify-center items-center"
+    style="position: fixed; top: 0; left: 0;">
+    <div class="flex justify-center items-center">
+      <!-- Phần background với độ mờ -->
+      <div class="bg-gray-500" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.3;">
+      </div>
+      <!-- Nội dung loading spinner -->
+      <div class="spinner-border text-white" role="status">
+        <fwb-spinner color="blue" size="12" class="lg:ml-64 mt-10" />
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup>
+import { FwbSpinner } from 'flowbite-vue'
+import { showToast } from '../assets/Toastify'
 import axios from "axios";
 import { TrashIcon, PhotoIcon, PencilSquareIcon, PlusIcon, UserCircleIcon } from "@heroicons/vue/20/solid";
 import * as API from "../assets/API";
 import { computed, ref, onMounted } from "vue";
-import { CheckIcon, ChevronUpDownIcon } from "@heroicons/vue/20/solid";
+import { CheckIcon } from "@heroicons/vue/20/solid";
 import {
   Combobox,
   ComboboxButton,
@@ -331,6 +334,7 @@ import {
   ComboboxOptions,
 } from "@headlessui/vue";
 
+const ShowLoading = ref(false);
 const products = ref([
   {
     "id": 1,
@@ -338,9 +342,6 @@ const products = ref([
     "mainImage": "https://via.placeholder.com/500",
     "price": 100000,
     "description": "This is Product 1",
-    "createdAt": "2023-11-28T15:58:39.000Z",
-    "updatedAt": "2023-11-28T15:58:39.000Z",
-    "deletedAt": null,
     "categoryData": {
       "id": 1,
       "name": "Category 1"
@@ -359,44 +360,15 @@ const products = ref([
           "name": "XS"
         }
       },
-      {
-        "id": 2,
-        "amount": 80,
-        "price": 100000,
-        "colorData": {
-          "id": 1,
-          "name": "Red"
-        },
-        "sizeData": {
-          "id": 2,
-          "name": "S"
-        }
-      },
-      {
-        "id": 3,
-        "amount": 120,
-        "price": 100000,
-        "colorData": {
-          "id": 1,
-          "name": "Red"
-        },
-        "sizeData": {
-          "id": 3,
-          "name": "M"
-        }
-      }
     ]
   },
 ]);
 const isUpdateModalOpen = ref(false);
-const updateProduct = ref(null);
-
 const isDeleteModalOpen = ref(false);
 const isShowDeleteModal = ref(false);
 let idDelete = -1;
 let isEditProduct = false;
-const itemProductData = {
-  "id": -1,
+const itemProductDataDefault = {
   "amount": 0,
   "price": 0,
   "colorData": {
@@ -405,8 +377,9 @@ const itemProductData = {
   "sizeData": {
     "id": -1,
   },
-  isEdited: false,
+  'isEdited': false,
 }
+const updateProduct = ref(null);
 const productData = ref(null);
 const sizeOptions = ref([
   { id: 1, name: "XS" },
@@ -420,79 +393,189 @@ const colorOptions = ref(
     { id: 3, name: "Green" },
   ]
 );
+let updateProductGetAPI = null;
+let productDataGetAPI = null;
+
 
 const openUpdateProduct = async (isEditProduct_, person) => {
   // Clone the person object to avoid modifying the original data
   isEditProduct = isEditProduct_;
-  if (!isEditProduct_) {
-    productData.value = [JSON.parse(JSON.stringify(itemProductData))];
-    updateProduct.value = {
+  if (isEditProduct_) {
+    updateLoading(true);
+    await axios.get(`${API.GETProduct}/${person.id}`)
+      .then(res => {
+        updateProductGetAPI = res.data.data;
+        productDataGetAPI = updateProductGetAPI.productData;
+        LoadUpdateData();
+        updateLoading(false);
+      })
+      .catch(err => {
+        updateLoading(false);
+        console.error(err);
+        return;
+      });
+  } else {
+    updateProductGetAPI = {
       "name": "",
       "mainImage": "",
       "price": 0,
-      "description": "",
+      "description": "Mô tả sản phẩm",
       "categoryData": {
-        id: categories.value[0].id,
+        'id': categories.value[0].id,
       },
     };
-  } else {
-    await axios.get(`${API.GETProduct}/${person.id}`)
-      .then(res => {
-        updateProduct.value = res.data.data;
-        productData.value = updateProduct.value.productData;
-        productData.value.isEdited = false;
-      })
-      .catch(err => {
-        productData.value = [JSON.parse(JSON.stringify(itemProductData))];
-        updateProduct.value = {
-          "name": "",
-          "mainImage": "",
-          "price": 0,
-          "description": "",
-          "categoryData": null,
-        };
-        console.error(err);
-      });
+    productDataGetAPI = [JSON.parse(JSON.stringify(itemProductDataDefault))];
+    LoadUpdateData();
   }
   isUpdateModalOpen.value = true;
 }
 
-const submitEditForm = async () => {
-
-  if (updateProduct.value.mainImage.length == 0) return;
-  if (!updateProduct.value) return;
+const LoadUpdateData = () => {
+  updateProductGetAPI.imageFile = null;
+  updateProduct.value = JSON.parse(JSON.stringify(updateProductGetAPI));
+  productData.value = JSON.parse(JSON.stringify(productDataGetAPI));
   console.log(updateProduct.value);
   console.log(productData.value);
-  //onCloseUpdateProduct();
-  const formProductColorSize = new FormData();
+}
+
+const submitEditForm = async () => {
+
+  if (!checkSubmit()) return;
+
+  if (!productData.value.find(x => x.colorData.id != -1 && x.sizeData.id != -1 && x.amount >= 0)) return;
+  updateLoading(true);
   const formProduct = new FormData();
   if (isEditProduct) {
-    //formProductColorSize.append()
+    let check = false;
+
+    if (updateProduct.value.name != updateProductGetAPI.name) {
+      check = true;
+      formProduct.append('name', updateProduct.value.name);
+    }
+    if (updateProduct.value.imageFile) {
+      check = true;
+      formProduct.append('mainImage', updateProduct.value.imageFile);
+    }
+    if (updateProduct.value.categoryData.id != updateProductGetAPI.categoryData.id) {
+      check = true;
+      formProduct.append('categoryId', updateProduct.value.categoryData.id);
+    }
+    if (updateProduct.value.description != updateProductGetAPI.description) {
+      check = true;
+      formProduct.append('description', updateProduct.value.description);
+    }
+    if (updateProduct.value.price != updateProductGetAPI.price) {
+      check = true;
+      formProduct.append('price', updateProduct.value.price);
+    }
+
+    if (check) {
+      await axios.put(`${API.PUTProduct}/${updateProduct.value.id}`, formProduct)
+        .then(res => {
+          updateListProduct();
+        })
+        .catch(err => console.error(err));
+    }
+    updateColorSize(updateProduct.value.id);
+    onCloseUpdateProduct();
+
+
   } else {
     formProduct.append('name', updateProduct.value.name);
     formProduct.append('mainImage', updateProduct.value.imageFile);
     formProduct.append('categoryId', updateProduct.value.categoryData.id);
     formProduct.append('price', updateProduct.value.price);
+    formProduct.append('description', updateProduct.value.description);
+
     await axios.post(API.POSTProduct, formProduct)
       .then(res => {
-
+        updateColorSize(res.data.data.id);
+        updateListProduct();
+        onCloseUpdateProduct();
       })
       .catch(err => {
         console.error(err);
       });
   }
-
 }
 
-const EditColorSize = (index) => {
-  if (productData.value[index])
-    productData.value[index].isEdited = true;
+const checkSubmit = () => {
+
+  if (!updateProduct.value) {
+    showToast("Lỗi", true);
+    return false;
+  }
+
+  if (updateProduct.value.name.length == 0) {
+    showToast("Tên sản phẩm bị thiếu", true);
+    return false;
+  }
+
+  if (updateProduct.value.mainImage.length == 0) {
+    showToast("Ảnh sản phẩm bị thiếu", true);
+    return false;
+  }
+
+  if (productData.value.length == 0) {
+    showToast("Thông tin sản phẩm bị thiếu", true);
+    return false;
+  } else if (productData.value.length == 1) {
+    if (productData.value[0].sizeData.id == -1 || productData.value[0].colorData.id == -1) {
+      showToast("Thông tin sản phẩm bị thiếu", true);
+      return false;
+    }
+  }
+
+  return true;
+}
+
+const updateColorSize = (id) => {
+  if (isEditProduct) {
+    productData.value.forEach(x => {
+      if (x.hasOwnProperty('isEdit')) {
+        const formItemColorSize = new FormData();
+        formItemColorSize.append('productId', id);
+        formItemColorSize.append('sizeId', x.sizeData.id);
+        formItemColorSize.append('colorId', x.colorData.id);
+        formItemColorSize.append('amount', x.amount);
+        formItemColorSize.append('price', 0);
+        if (x.isNew) {
+          //axios.post(API.POSTProduct_Size_Color, formItemColorSize);
+          UpDateAPI(true, API.POSTProduct_Size_Color, formItemColorSize);
+        } else {
+          //axios.put(`${API.POSTProduct_Size_Color}/${x.id}`, formItemColorSize);
+          UpDateAPI(false, `${API.POSTProduct_Size_Color}/${x.id}`, formItemColorSize);
+        }
+
+      }
+    });
+  } else {
+    productData.value.forEach(x => {
+      if (x.colorData.id >= 0 && x.sizeData.id >= 0) {
+        const formItemColorSize = new FormData();
+        formItemColorSize.append('productId', id);
+        formItemColorSize.append('sizeId', x.sizeData.id);
+        formItemColorSize.append('colorId', x.colorData.id);
+        formItemColorSize.append('amount', x.amount);
+        formItemColorSize.append('price', 0);
+        UpDateAPI(true, API.POSTProduct_Size_Color, formItemColorSize);
+      }
+    });
+  }
+}
+
+const UpDateAPI = async (isPost, api, data) => {
+  if (isPost) {
+    await axios.post(api, data);
+  } else {
+    await axios.put(api, data);
+  }
 }
 
 const onCloseUpdateProduct = () => {
   isUpdateModalOpen.value = false;
   isEditProduct = false;
-  updateProduct.value.imageFile = null;
+  updateLoading(false);
 };
 
 //delete modal 
@@ -505,19 +588,20 @@ const openDeleteModal = async (id) => {
 };
 
 const deleteProduct = async () => {
+  updateLoading(true);
   try {
     const index = products.value.findIndex((person) => person.id === idDelete);
 
     if (index !== -1) {
-      products.value.splice(index, 1);
+      await axios.delete(`${API.DELProduct}/${idDelete}`)
+        .then(res => {
+          products.value.splice(index, 1);
+        })
+        .catch(err => console.log(err));
     }
-    // await axios.delete(`${API.DELCategories}/${categories.value[idDelete].id}`)
-    //   .then(res => {
-    //     categories.value.splice(idDelete, 1);
-    //   })
-    //   .catch(err => console.log(err));
-
-  } catch (error) { }
+  } catch (error) {
+  }
+  updateLoading(false);
   closeDeleteProductModal();
 }
 
@@ -562,9 +646,21 @@ const handleImageUpload = (event) => {
 
 // thông tin bán hàng
 
-const validateQuantity = (index) => {
-  if (productData.value[index].amount < 0) {
+const validateQuantityColorSize = (index) => {
+  if (productData.value[index].amount.toString().length == 0) {
     productData.value[index].amount = 0;
+  }
+  else if (productData.value[index].amount < 0) {
+    productData.value[index].amount = 0;
+  }
+  if (isEditProduct && productData.value[index].sizeData.id != -1 && productData.value[index].colorData.id != -1) {
+    productData.value[index].isEdit = true;
+  }
+};
+
+const validateQuantityPrice = () => {
+  if (updateProduct.value.price < 0) {
+    updateProduct.value.price = 0;
   }
 };
 
@@ -573,8 +669,9 @@ const removeItem = (index) => {
 };
 
 const addItem = () => {
-  console.log(itemProductData);
-  productData.value.push(JSON.parse(JSON.stringify(itemProductData)));
+  console.log(productData.value);
+  productData.value.push(JSON.parse(JSON.stringify(itemProductDataDefault)));
+  productData.value[productData.value.length - 1].isNew = true;
 };
 
 const ChooseCombobox = (isColor, index, value) => {
@@ -594,7 +691,7 @@ const ChooseCombobox = (isColor, index, value) => {
     let itemF = productData.value[i];
 
     if (itemF.sizeData.id == s && itemF.colorData.id == c) {
-      console.log(" Lỗi ");
+      showToast("Thông tin đã tồn tại", true);
       if (isColor) {
         productData.value[index].colorData.id = -1;
       } else {
@@ -602,6 +699,9 @@ const ChooseCombobox = (isColor, index, value) => {
       }
       return;
     }
+  }
+  if (isEditProduct) {
+    productData.value[index].isEdit = true;
   }
 };
 
@@ -647,5 +747,9 @@ const updateColors = async () => {
       colorOptions.value = res.data.data;
     })
     .catch(err => console.log(err));
+}
+
+const updateLoading = (check) => {
+  ShowLoading.value = check;
 }
 </script>
