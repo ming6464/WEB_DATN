@@ -20,6 +20,12 @@ export const POSTProduct = `${http}/product`;
 export const GETProduct = `${http}/product`;
 export const PUTProduct = `${http}/product`;
 export const DELProduct = `${http}/product`;
+
+// sale {
+
+// } Sale
+export const PUTSale = `${http}/product/sale`;
+
 // } product
 
 

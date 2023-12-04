@@ -1,5 +1,6 @@
 <template>
   <div>
+    <!-- Layout List Product -->
     <div class="px-4 sm:px-6 lg:px-8" v-if="!isUpdateModalOpen">
       <div class="sm:flex sm:items-center">
         <div class="sm:flex-auto">
@@ -27,53 +28,83 @@
                   <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-4">
                     Ảnh
                   </th>
-                  <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:pl-0">
+                  <th scope="col" class="text-center py-3.5 text-sm font-semibold text-gray-900 sm:pl-0">
                     Tên sản phẩm
                   </th>
-                  <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:pl-0">
+                  <th scope="col" class=" py-3.5 text-center text-sm font-semibold text-gray-900 sm:pl-0">
                     Danh mục
                   </th>
-                  <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:pl-6">
-                    Giá
+                  <th scope="col" class=" py-3.5 text-center text-sm font-semibold text-gray-900 sm:pl-6">
+                    Giá ban đầu
                   </th>
-                  <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:pl-0">
+                  <th scope="col" class="py-3.5 text-center text-sm font-semibold text-gray-900 sm:pl-6">
+                    Thời gian Sale
+                  </th>
+                  <th scope="col" class="py-3.5 text-center text-sm font-semibold text-gray-900 sm:pl-6">
+                    Giá Sale
+                  </th>
+                  <th scope="col" class="py-3.5 text-center text-sm font-semibold text-gray-900 sm:pl-6">
+                    Giá bán
+                  </th>
+                  <th scope="col" class="py-3.5 text-center text-sm font-semibold text-gray-900 sm:pl-0">
                     Hoạt động
                   </th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-gray-200 bg-white">
                 <tr v-for="product in products" :key="product.id">
-                  <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
+                  <td class="whitespace-nowrap mr-4 text-left py-5 text-sm text-gray-500">
                     <div class="text-gray-900">{{ product.id }}</div>
                   </td>
-                  <td class="whitespace-nowrap py-5 pl-4 pr-3 text-sm sm:pl-0">
+                  <td class="whitespace-nowrap py-5 text-sm sm:pl-0">
                     <div class="flex items-center">
                       <div class="h-20 w-20 flex-shrink-0">
                         <img class="h-20 w-24" :src="product.mainImage" alt="" />
                       </div>
                     </div>
                   </td>
-                  <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
+                  <td class="whitespace-nowrap text-center py-5 text-sm text-gray-500">
                     <div class="text-gray-900">{{ product.name }}</div>
                   </td>
 
-                  <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
+                  <td class="whitespace-nowrap text-center py-5 text-sm text-gray-500">
                     <div class="text-gray-900">{{ product.categoryData.name }}</div>
                   </td>
 
-                  <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
+                  <td class="whitespace-nowrap text-center py-5 text-sm text-gray-500">
                     <div class="text-gray-900">{{ product.price }}</div>
                   </td>
+                  <td class="whitespace-nowrap text-center py-5 text-sm text-gray-500">
+                    <div v-if="product.saleStart">
+                      <div class="text-gray-900">{{ formatTime(product.saleStart) }}</div>
+                      <div class="text-gray-900">{{ formatTime(product.saleEnd) }}</div>
+                    </div>
+                    <div class="text-gray-900" v-else>Null</div>
+                  </td>
+                  <td class="whitespace-nowrap text-center py-5 text-sm text-gray-500">
+                    <div class="text-gray-900" v-if="product.salePrice">{{ product.salePrice }}</div>
+                    <div class="text-gray-900" v-else>Null</div>
+                  </td>
+                  <td class="whitespace-nowrap text-center py-5 text-sm text-gray-500">
+                    <div class="text-gray-900">{{ getPrice(product) }}</div>
+                  </td>
                   <td>
-                    <div class="mx-4 space-x-3">
+                    <div class="flex justify-center gap-x-3">
                       <button @click="openUpdateProduct(true, product)" class="text-indigo-600 hover:text-indigo-900">
                         <PencilSquareIcon class="h-5 w-5" aria-hidden="true" />
                         <span class="sr-only">Edit, {{ product.id }}</span>
                       </button>
                       <button @click="openDeleteModal(product.id)" class="text-red-700 hover:text-indigo-900">
-                        <TrashIcon class="h-5 w-5" aria-hidden="true" />
+                        <TrashIcon class="h- w-5" aria-hidden="true" />
                         <span class="sr-only">Delete, {{ product.id }}</span>
                       </button>
+
+                      <button @click="openSaleModal(product.id)">
+                        <img class="h-5 w-5"
+                          src="https://img.icons8.com/external-prettycons-flat-prettycons/47/external-sale-commerce-prettycons-flat-prettycons.png"
+                          alt="external-sale-commerce-prettycons-flat-prettycons" />
+                      </button>
+
                     </div>
                   </td>
                 </tr>
@@ -83,6 +114,8 @@
         </div>
       </div>
     </div>
+    <!-- Layout List Product -->
+
     <!-- update product -->
     <form v-if="isUpdateModalOpen" @submit.prevent="submitEditForm">
       <div class="space-y-12 mb-10">
@@ -135,7 +168,7 @@
                   <span>Lựa chọn ảnh đại diện cho sản phẩm</span>
                   <span type="submit"
                     class="rounded-md bg-indigo-600 mt-2 py-2 text-sm font-semibold
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             text-white shadow-sm hover:bg-indigo-500 text-center w-20">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       text-white shadow-sm hover:bg-indigo-500 text-center w-20">
                     Chọn ảnh
                   </span>
                 </label>
@@ -258,6 +291,8 @@
         </div>
       </div>
     </form>
+    <!-- update product -->
+
     <!-- delete modal -->
     <div v-show="isDeleteModalOpen">
       <div :class="{ 'opacity-100': isShowDeleteModal }"
@@ -305,6 +340,63 @@
         </div>
       </div>
     </div>
+    <!-- delete modal -->
+    <div v-show="isSaleModalOpen" class="fixed inset-0 overflow-y-auto">
+      <div class="flex items-center justify-center min-h-screen">
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75"></div>
+        <div class="relative bg-white p-8 rounded-lg w-96 lg:ml-64 mt-10">
+          <h3 class="text-lg font-semibold mb-4 text-center">
+            Cập nhật sale
+          </h3>
+          <form>
+            <!-- <div class="mb-4">
+              <label for="saleStart" class="block text-sm font-medium text-gray-700">
+                Ngày bắt đầu
+              </label>
+              <VueDatePicker class="mt-1 py-1.5 w-full" v-model="saleStart" id="saleStart" name="saleStart"
+                placeholder="Ngày bắt đầu" text-input />
+            </div>
+
+            <div class="mb-4">
+              <label for="saleEnd" class="block text-sm font-medium text-gray-700">
+                Ngày kết thúc
+              </label>
+              <VueDatePicker class="mt-1 py-1.5 w-full" v-model="saleEnd" id="saleEnd" name="saleEnd"
+                placeholder="Ngày kết thúc" text-input />
+            </div> -->
+
+            <div class="mb-4">
+              <label for="salePrice" class="block text-sm font-medium text-gray-700">
+                Giá bán
+              </label>
+              <input type="text" v-model="salePrice" @input="validateQuantityPriceSale()" id="salePrice" name="salePrice"
+                placeholder="Giá bán" class="mt-1 p-1.5 px-2.5 w-full border border-gray-200 rounded-md" />
+            </div>
+
+            <div class="flex justify-between">
+              <button type="button" @click="resetSaleModal()"
+                class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:w-auto">
+                <TrashIcon class="h-5 w-5" aria-hidden="true" />
+              </button>
+              <div>
+                <button type="button"
+                  class="inline-flex w-full justify-center rounded-md px-3 py-2 text-sm font-semibold text-gray-500 shadow-sm hover:text-gray-600 sm:w-auto"
+                  @click="closeSaleModal()">
+                  <div class="h-5 w-5 opacity-0" aria-hidden="true" />
+                  Hủy
+                </button>
+                <button type="button" @click="submitSaleModal()"
+                  class="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 sm:w-auto">
+                  <BookmarkIcon class="w-5 h-5 mr-2" aria-hidden="true" />
+                  Lưu
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <!-- sale modal -->
   </div>
   <div v-if="ShowLoading" class="w-full h-full flex justify-center items-center"
     style="position: fixed; top: 0; left: 0;">
@@ -321,6 +413,8 @@
 </template>
 
 <script setup>
+import VueApexCharts from "vue3-apexcharts";
+
 import { FwbSpinner } from 'flowbite-vue'
 import { showToast } from '../assets/Toastify'
 import axios from "axios";
@@ -784,4 +878,95 @@ const updateColors = async () => {
 const updateLoading = (check) => {
   ShowLoading.value = check;
 }
+
+//Sale {
+const isSaleModalOpen = ref(false);
+const saleStart = ref(null);
+const saleEnd = ref(null);
+const salePrice = ref(0);
+let idSale = -1;
+const validateQuantityPriceSale = () => {
+  console.log("validateQuantityPriceSale");
+  console.log(saleStart.value)
+  if (salePrice.value < 0) salePrice.value = 0;
+}
+
+const openSaleModal = (id) => {
+  const pr = products.value.find(x => x.id == id);
+  if (!pr) {
+    showToast("Lỗi", true);
+    return;
+  }
+  idSale = id;
+  saleStart.value = pr.saleStart;
+  saleEnd.value = pr.saleEnd;
+  salePrice.value = pr.salePrice ? pr.salePrice : 0;
+  isSaleModalOpen.value = true;
+};
+
+const closeSaleModal = () => {
+  updateLoading(false);
+  isSaleModalOpen.value = false;
+};
+
+const resetSaleModal = () => {
+  saleStart.value = null;
+  saleEnd.value = null;
+  priceSale.value = 0;
+};
+
+const submitSaleModal = async () => {
+  if (idSale == -1) {
+    showToast("Lỗi", true);
+    return;
+  }
+  updateLoading(true);
+  // if (!saleStart.value || !saleEnd.value) {
+  //   showToast("Thông tin thiếu", true);
+  //   return;
+  // }
+
+  const formSale = new FormData();
+  // formSale.append('saleStart', saleStart.value);
+  // formSale.append('saleEnd', saleEnd.value);
+  formSale.append('salePrice', salePrice.value);
+  await axios.put(`${API.PUTSale}/${idSale}`, formSale)
+    .then(res => {
+      showToast("Tạo giảm giá thành công", false);
+      updateProductWithId(idSale);
+      closeSaleModal();
+      return;
+    })
+    .catch(err => {
+      showToast("Tạo giảm giá thất bại", true);
+      updateLoading(false);
+      return;
+    });
+};
+
+const formatTime = (time) => {
+  // var newTimeString = new Date(time).locale("vi").toLocaleString("short", {
+  //   dateStyle: "short",
+  //   timeStyle: "short",
+  // });
+  // return newTimeString.toString();
+  return time;
+}
+
+// } Sale 
+
+const updateProductWithId = (id) => {
+
+}
+
+const getPrice = (product) => {
+  if (product.saleStart) {
+    return product.salePrice;
+  } else {
+    return product.price;
+  }
+
+}
+
+
 </script>

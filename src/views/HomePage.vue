@@ -10,17 +10,17 @@
     <div>
       <button @click="On_Click_FilterModel('day')" type="button"
         class="rounded-md mr-2 px-3 py-2 border-2 text-sm font-semibold shadow-sm hover:bg-indigo-500 hover:border-indigo-500 hover:text-white focus-visible:outline 
-                                                                                                                                                                                                                          focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                                                                                                                                                                                                                  focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
         :class="{ 'bg-indigo-600 text-white border-indigo-600': filterMode == 'day', 'border-gray-400': filterMode != 'day' }">Ngày</button>
 
       <button @click="On_Click_FilterModel('month')" type="button"
         class="rounded-md mr-2 px-3 py-2 border-2 text-sm font-semibold shadow-sm hover:bg-indigo-500 hover:border-indigo-500 hover:text-white focus-visible:outline 
-                                                                                                                                                                                                                          focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                                                                                                                                                                                                                  focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
         :class="{ 'bg-indigo-600 text-white border-indigo-600': filterMode == 'month', 'border-gray-400': filterMode != 'month' }">Tháng</button>
 
       <button type="button" @click="On_Click_FilterModel('year')"
         class="rounded-md px-3 py-2 border-2 text-sm font-semibold shadow-sm hover:bg-indigo-500 hover:border-indigo-500 hover:text-white focus-visible:outline 
-                                                                                                                                                                                                                                                    focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                                                                                                                                                                                                                                            focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
         :class="{ 'bg-indigo-600 text-white border-indigo-600': filterMode == 'year', 'border-gray-400': filterMode != 'year' }">Năm
       </button>
     </div>
@@ -38,8 +38,8 @@
     </div>
 
     <!-- Không được xoá -->
-    <div class="mt-10 flex flex-row">
-      <div class="w-1/2 mr-2">
+    <div class="mt-10 flex sm:flex-col lg:flex-row gap-x-6">
+      <div class="sm:w-full lg:w-1/2">
         <div class="max-w-full border-2 border-gray-300 rounded-md p-3">
           <h3 class="text-sm font-medium text-center">Doanh thu các mặt hàng</h3>
           <div id="chart-timeline">
@@ -49,7 +49,7 @@
           </div>
         </div>
       </div>
-      <div class="w-1/2 ml-2">
+      <div class="sm:w-full sm:mt-10 lg:mt-0 lg:w-1/2">
         <div class="max-w-full border-2 border-gray-300 rounded-md p-3">
           <h3 class="text-sm font-medium text-center">Số lượng bán các mặt hàng</h3>
           <div id="chart-timeline">
@@ -71,7 +71,6 @@ const chart_totalRevenue = ref(null);
 const chart_categoryRevenue = ref(null);
 const chart_categoryCount = ref(null);
 const filterMode = ref('');
-
 
 const _series_total = [
   {
@@ -1092,7 +1091,7 @@ const chartOptions_day = {
   annotations: {
     yaxis: [
       {
-        y: -1000,
+        y: -10000,
       },
     ],
     xaxis: [
@@ -1183,7 +1182,7 @@ const chartOptions_month = {
   annotations: {
     yaxis: [
       {
-        y: -1000,
+        y: -10000,
       },
     ],
     xaxis: [
@@ -1274,7 +1273,7 @@ const chartOptions_year = {
   annotations: {
     yaxis: [
       {
-        y: -1000,
+        y: -10000,
       },
     ],
     xaxis: [
