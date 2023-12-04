@@ -18,7 +18,7 @@
         <div class="flex items-center justify-center min-h-screen">
           <div class="fixed inset-0 bg-gray-500 bg-opacity-75"></div>
 
-          <div class="relative bg-white p-8 rounded-lg w-96">
+          <div class="relative bg-white p-8 rounded-lg w-96 lg:ml-64 mt-10">
             <h3 class="text-lg font-semibold mb-4 text-center">
               Thêm danh mục
             </h3>
@@ -116,7 +116,7 @@
     <div class="flex items-center justify-center min-h-screen">
       <div class="fixed inset-0 bg-gray-500 bg-opacity-75"></div>
 
-      <div class="relative bg-white p-8 rounded-lg w-96">
+      <div class="relative bg-white p-8 rounded-lg w-96 lg:ml-64 mt-10">
         <h3 class="text-lg font-semibold mb-4 text-center">Chỉnh sửa</h3>
 
         <!-- Form for editing person details -->

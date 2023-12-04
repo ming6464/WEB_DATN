@@ -295,7 +295,6 @@ const navigation = [
       },
     ],
   },
-  { name: "Thống kê", href: "#", icon: ChartPieIcon, current: false },
 ];
 const userNavigation = [
   { name: "Your profile", href: "#" },

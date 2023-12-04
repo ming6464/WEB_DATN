@@ -125,7 +125,8 @@
       class="fixed inset-0 transition-opacity ease-in-out duration-500 opacity-0">
       <div class="flex items-center justify-center min-h-screen">
         <div class="fixed inset-0 bg-gray-500 bg-opacity-50" @click="closeEditModal"></div>
-        <div class="relative bg-white p-6 rounded-lg max-w-5xl max-h-[600px] overflow-y-auto overflow-hidden">
+        <div
+          class="relative bg-white p-6 rounded-lg max-w-5xl max-h-[600px] overflow-y-auto overflow-hidden lg:ml-64 mt-10">
           <h1 class="text-xl font-bold mb-4 text-center">
             {{
               selectedIndex >= 0 ? "Sửa thông tin người dùng" : "Thêm tài khoản"
@@ -253,7 +254,6 @@
                 </div>
               </div>
             </div>
-
             <div class="mt-8 flex">
               <button type="button" @click="closeEditModal"
                 class="rounded-md bg-red-500 px-3 py-2 mr-2 text-sm font-semibold text-white shadow-sm hover:bg-red-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500">

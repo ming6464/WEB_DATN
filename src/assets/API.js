@@ -1,7 +1,10 @@
 export const port = '3333';
 export const http = `http://localhost:${port}`;
 
+//customer
+export const GETCustomer = `${http}/customer`
 
+//customer
 
 //category {
 export const GETCategories = `${http}/category/categories`
