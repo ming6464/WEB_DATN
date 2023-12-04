@@ -168,7 +168,7 @@
                   <span>Lựa chọn ảnh đại diện cho sản phẩm</span>
                   <span type="submit"
                     class="rounded-md bg-indigo-600 mt-2 py-2 text-sm font-semibold
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       text-white shadow-sm hover:bg-indigo-500 text-center w-20">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   text-white shadow-sm hover:bg-indigo-500 text-center w-20">
                     Chọn ảnh
                   </span>
                 </label>
@@ -414,7 +414,7 @@
 
 <script setup>
 import VueApexCharts from "vue3-apexcharts";
-
+import moment from 'moment';
 import { FwbSpinner } from 'flowbite-vue'
 import { showToast } from '../assets/Toastify'
 import axios from "axios";
@@ -540,6 +540,9 @@ const submitEditForm = async () => {
 
   if (!productData.value.find(x => x.colorData.id != -1 && x.sizeData.id != -1 && x.amount >= 0)) return;
   updateLoading(true);
+  if (!updateProduct.value.price) {
+    updateProduct.value.price = 0;
+  }
   const formProduct = new FormData();
   if (isEditProduct) {
     let check = false;
@@ -570,6 +573,7 @@ const submitEditForm = async () => {
       await axios.put(`${API.PUTProduct}/${updateProduct.value.id}`, formProduct)
         .then(res => {
           updateListProduct();
+          updateProductWithId(updateProduct.value.id);
         })
         .catch(err => {
           console.error(err);
@@ -579,9 +583,8 @@ const submitEditForm = async () => {
         });
     }
     updateColorSize(updateProduct.value.id);
+    showToast("Cập nhật thành công", false);
     onCloseUpdateProduct();
-
-
   } else {
     formProduct.append('name', updateProduct.value.name);
     formProduct.append('mainImage', updateProduct.value.imageFile);
@@ -593,6 +596,7 @@ const submitEditForm = async () => {
       .then(res => {
         updateColorSize(res.data.data.id);
         updateListProduct();
+        showToast("Cập nhật thành công", false);
         onCloseUpdateProduct();
       })
       .catch(err => {
@@ -642,7 +646,7 @@ const updateColorSize = (id) => {
         formItemColorSize.append('productId', id);
         formItemColorSize.append('sizeId', x.sizeData.id);
         formItemColorSize.append('colorId', x.colorData.id);
-        formItemColorSize.append('amount', x.amount);
+        formItemColorSize.append('amount', x.amount ? x.amount : 0);
         formItemColorSize.append('price', 0);
         if (x.isNew) {
           //axios.post(API.POSTProduct_Size_Color, formItemColorSize);
@@ -661,7 +665,7 @@ const updateColorSize = (id) => {
         formItemColorSize.append('productId', id);
         formItemColorSize.append('sizeId', x.sizeData.id);
         formItemColorSize.append('colorId', x.colorData.id);
-        formItemColorSize.append('amount', x.amount);
+        formItemColorSize.append('amount', x.amount ? x.amount : 0);
         formItemColorSize.append('price', 0);
         UpDateAPI(true, API.POSTProduct_Size_Color, formItemColorSize);
       }
@@ -773,10 +777,7 @@ const handleImageUpload = (event) => {
 // thông tin bán hàng
 
 const validateQuantityColorSize = (index) => {
-  if (productData.value[index].amount.toString().length == 0) {
-    productData.value[index].amount = 0;
-  }
-  else if (productData.value[index].amount < 0) {
+  if (productData.value[index].amount < 0) {
     productData.value[index].amount = 0;
   }
   if (isEditProduct && productData.value[index].sizeData.id != -1 && productData.value[index].colorData.id != -1) {
@@ -886,8 +887,6 @@ const saleEnd = ref(null);
 const salePrice = ref(0);
 let idSale = -1;
 const validateQuantityPriceSale = () => {
-  console.log("validateQuantityPriceSale");
-  console.log(saleStart.value)
   if (salePrice.value < 0) salePrice.value = 0;
 }
 
@@ -944,19 +943,21 @@ const submitSaleModal = async () => {
     });
 };
 
-const formatTime = (time) => {
-  // var newTimeString = new Date(time).locale("vi").toLocaleString("short", {
-  //   dateStyle: "short",
-  //   timeStyle: "short",
-  // });
-  // return newTimeString.toString();
-  return time;
-}
-
 // } Sale 
 
-const updateProductWithId = (id) => {
-
+const updateProductWithId = async (id) => {
+  await axios(`${API.GETProduct}/${id}`)
+    .then(res => {
+      const index = products.value.findIndex(x => x.id == id);
+      if (index < 0) {
+        updateListProduct();
+        return;
+      }
+      products.value[index] = res.data.data;
+    })
+    .catch(err => {
+      updateListProduct();
+    });
 }
 
 const getPrice = (product) => {
@@ -965,7 +966,10 @@ const getPrice = (product) => {
   } else {
     return product.price;
   }
+}
 
+const formatTime = (time) => {
+  return moment(time).format("HH:mm - DD/MM/yyyy");
 }
 
 
