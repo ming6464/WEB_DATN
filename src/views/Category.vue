@@ -1,58 +1,60 @@
 <template>
   <div class="px-4 sm:px-6 lg:px-8">
-    <div class="sm:flex sm:items-center">
+    <div class="flex flex-col items-center">
       <div class="sm:flex-auto">
         <h1 class="text-center text-3xl font-semibold leading-6 text-gray-900">
           Danh Mục
         </h1>
       </div>
-      <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-        <button @click="openAddModal" type="button"
+      <div class="mt-4 sm:ml-16 sm:mt-0 self-end">
+        <button type="button" @click="openAddModal()"
           class="inline-flex items-center gap-x-1.5 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
           <PlusIcon class="h-5 w-5" aria-hidden="true" />
           Thêm danh mục
         </button>
       </div>
+
       <!-- Add Modal -->
-      <div v-if="isAddModalOpen" class="fixed inset-0 overflow-y-auto">
-        <div class="flex items-center justify-center min-h-screen">
-          <div class="fixed inset-0 bg-gray-500 bg-opacity-75"></div>
 
-          <div class="relative bg-white p-8 rounded-lg w-96 lg:ml-64 mt-10">
-            <h3 class="text-lg font-semibold mb-4 text-center">
-              Thêm danh mục
-            </h3>
+    </div>
+    <div v-if="isAddModalOpen" class="fixed inset-0 overflow-y-auto">
+      <div class="flex items-center justify-center min-h-screen">
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75"></div>
 
-            <!-- Form for adding a new product -->
-            <form @submit.prevent="addNewProduct">
-              <div class="mb-4">
-                <label for="newProductName" class="block text-sm font-medium text-gray-700">
-                  Tên sản phẩm
-                </label>
-                <input v-model="newProduct.name" type="text" id="newProductName" name="newProductName"
-                  class="mt-1 p-2 w-full border rounded-md" />
-              </div>
-              <div class="mb-4">
-                Ảnh Sản Phẩm
-                <label for="image-upload" class="block text-sm font-medium text-gray-700">
-                  <img :src="newProduct.image" alt="" class="h-20 w-24 object-cover" />
-                </label>
-                <input type="file" id="image-upload" ref="imageInputRef" style="display: none"
-                  @change="handleImageUploadADD" accept="image/*" />
-              </div>
+        <div class="relative bg-white p-8 rounded-lg w-96 lg:ml-64 mt-10">
+          <h3 class="text-lg font-semibold mb-4 text-center">
+            Thêm danh mục
+          </h3>
 
-              <!-- ... other fields ... -->
+          <!-- Form for adding a new product -->
+          <form @submit.prevent="addNewProduct">
+            <div class="mb-4">
+              <label for="newProductName" class="block text-sm font-medium text-gray-700">
+                Tên sản phẩm
+              </label>
+              <input v-model="newProduct.name" type="text" id="newProductName" name="newProductName"
+                class="mt-1 p-2 w-full border rounded-md" />
+            </div>
+            <div class="mb-4">
+              Ảnh Sản Phẩm
+              <label for="image-upload" class="block text-sm font-medium text-gray-700">
+                <img :src="newProduct.image" alt="" class="h-20 w-24 object-cover" />
+              </label>
+              <input type="file" id="image-upload" ref="imageInputRef" style="display: none"
+                @change="handleImageUploadADD" accept="image/*" />
+            </div>
 
-              <div class="flex justify-end">
-                <button type="button" class="mr-2 text-gray-500 hover:text-gray-700 mx-6" @click="closeAddModal">
-                  Hủy
-                </button>
-                <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-500">
-                  Thêm
-                </button>
-              </div>
-            </form>
-          </div>
+            <!-- ... other fields ... -->
+
+            <div class="flex justify-end">
+              <button type="button" class="mr-2 text-gray-500 hover:text-gray-700 mx-6" @click="closeAddModal">
+                Hủy
+              </button>
+              <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-500">
+                Thêm
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </div>

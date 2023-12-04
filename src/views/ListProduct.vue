@@ -2,13 +2,13 @@
   <div>
     <!-- Layout List Product -->
     <div class="px-4 sm:px-6 lg:px-8" v-if="!isUpdateModalOpen">
-      <div class="sm:flex sm:items-center">
+      <div class="flex flex-col items-center">
         <div class="sm:flex-auto">
           <h1 class="text-center text-3xl font-semibold leading-6 text-gray-900">
             Danh sách sản phẩm
           </h1>
         </div>
-        <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+        <div class="mt-4 sm:ml-16 sm:mt-0 self-end">
           <button type="button" @click="openUpdateProduct(false)"
             class="inline-flex items-center gap-x-1.5 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
             <PlusIcon class="h-5 w-5" aria-hidden="true" />
@@ -85,8 +85,10 @@
                     <div class="text-gray-900" v-if="product.salePrice">{{ product.salePrice }}</div>
                     <div class="text-gray-900" v-else>Null</div>
                   </td>
-                  <td class="whitespace-nowrap text-center py-5 text-sm text-gray-500">
-                    <div class="text-gray-900">{{ getPrice(product) }}</div>
+                  <td class="whitespace-nowrap text-center py-5 text-sm">
+                    <div
+                      :class="{ 'text-red-600 font-semibold text-base': getPrice(product).isSale, 'text-gray-900': !getPrice(product).isSale }">
+                      {{ getPrice(product).value }}</div>
                   </td>
                   <td>
                     <div class="flex justify-center gap-x-3">
@@ -168,7 +170,7 @@
                   <span>Lựa chọn ảnh đại diện cho sản phẩm</span>
                   <span type="submit"
                     class="rounded-md bg-indigo-600 mt-2 py-2 text-sm font-semibold
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   text-white shadow-sm hover:bg-indigo-500 text-center w-20">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               text-white shadow-sm hover:bg-indigo-500 text-center w-20">
                     Chọn ảnh
                   </span>
                 </label>
@@ -429,7 +431,6 @@ import {
   ComboboxOption,
   ComboboxOptions,
 } from "@headlessui/vue";
-
 const ShowLoading = ref(false);
 const products = ref([
   {
@@ -459,11 +460,9 @@ const products = ref([
     ]
   },
 ]);
-const isUpdateModalOpen = ref(false);
-const isDeleteModalOpen = ref(false);
-const isShowDeleteModal = ref(false);
-let idDelete = -1;
-let isEditProduct = false;
+
+
+// Update Product {
 const itemProductDataDefault = {
   "amount": 0,
   "price": 0,
@@ -491,7 +490,79 @@ const colorOptions = ref(
 );
 let updateProductGetAPI = null;
 let productDataGetAPI = null;
+let isEditProduct = false;
+const isUpdateModalOpen = ref(false);
+const categories = ref([
+  { id: 1, name: "Áo polo" },
+  { id: 2, name: "Áo thun" },
+  { id: 3, name: "Áo sơ mi" },
+  { id: 4, name: "Áo khoác" },
+  { id: 5, name: "Áo vest" },
+  { id: 6, name: "Áo len" },
+  { id: 7, name: "Áo hoodie" },
+]);
+// } Update Product
 
+// delete modal {
+const isDeleteModalOpen = ref(false);
+const isShowDeleteModal = ref(false);
+let idDelete = -1;
+// } delete modal
+
+// sale {
+const isSaleModalOpen = ref(false);
+const saleStart = ref(null);
+const saleEnd = ref(null);
+const salePrice = ref(0);
+let idSale = -1;
+// } sale
+
+
+
+
+// load Data {
+onMounted(() => {
+  updateListProduct();
+  updateCategories();
+  updateSizes();
+  updateColors();
+});
+
+const updateListProduct = async () => {
+  await axios.get(API.GETProducts)
+    .then(res => {
+      products.value = res.data.data;
+    })
+    .catch(err => {
+
+    });
+}
+
+const updateCategories = async () => {
+  await axios.get(API.GETCategories).then(res => {
+    categories.value = res.data.data;
+  }).catch(err => console.log(err));
+}
+
+const updateSizes = async () => {
+  await axios.get(API.GETSizes)
+    .then(res => {
+      sizeOptions.value = res.data.data;
+    })
+    .catch(err => console.log(err));
+}
+const updateColors = async () => {
+  await axios.get(API.GETColors)
+    .then(res => {
+      colorOptions.value = res.data.data;
+    })
+    .catch(err => console.log(err));
+}
+// } load Data 
+
+
+
+// Update Product {
 
 const openUpdateProduct = async (isEditProduct_, person) => {
   // Clone the person object to avoid modifying the original data
@@ -525,7 +596,11 @@ const openUpdateProduct = async (isEditProduct_, person) => {
   }
   isUpdateModalOpen.value = true;
 }
-
+const onCloseUpdateProduct = () => {
+  isUpdateModalOpen.value = false;
+  isEditProduct = false;
+  updateLoading(false);
+};
 const LoadUpdateData = () => {
   updateProductGetAPI.imageFile = null;
   updateProduct.value = JSON.parse(JSON.stringify(updateProductGetAPI));
@@ -533,7 +608,6 @@ const LoadUpdateData = () => {
   console.log(updateProduct.value);
   console.log(productData.value);
 }
-
 const submitEditForm = async () => {
 
   if (!checkSubmit()) return;
@@ -607,7 +681,6 @@ const submitEditForm = async () => {
       });
   }
 }
-
 const checkSubmit = () => {
 
   if (!updateProduct.value) {
@@ -637,7 +710,6 @@ const checkSubmit = () => {
 
   return true;
 }
-
 const updateColorSize = (id) => {
   if (isEditProduct) {
     productData.value.forEach(x => {
@@ -650,10 +722,10 @@ const updateColorSize = (id) => {
         formItemColorSize.append('price', 0);
         if (x.isNew) {
           //axios.post(API.POSTProduct_Size_Color, formItemColorSize);
-          UpDateAPI(true, API.POSTProduct_Size_Color, formItemColorSize);
+          UpAPIColorSize(true, API.POSTProduct_Size_Color, formItemColorSize);
         } else {
           //axios.put(`${API.POSTProduct_Size_Color}/${x.id}`, formItemColorSize);
-          UpDateAPI(false, `${API.POSTProduct_Size_Color}/${x.id}`, formItemColorSize);
+          UpAPIColorSize(false, `${API.POSTProduct_Size_Color}/${x.id}`, formItemColorSize);
         }
 
       }
@@ -667,13 +739,12 @@ const updateColorSize = (id) => {
         formItemColorSize.append('colorId', x.colorData.id);
         formItemColorSize.append('amount', x.amount ? x.amount : 0);
         formItemColorSize.append('price', 0);
-        UpDateAPI(true, API.POSTProduct_Size_Color, formItemColorSize);
+        UpAPIColorSize(true, API.POSTProduct_Size_Color, formItemColorSize);
       }
     });
   }
 }
-
-const UpDateAPI = async (isPost, api, data) => {
+const UpAPIColorSize = async (isPost, api, data) => {
   if (isPost) {
     await axios.post(api, data)
       .catch(err => {
@@ -692,14 +763,51 @@ const UpDateAPI = async (isPost, api, data) => {
       });
   }
 }
+const removeItem = (index) => {
+  productData.value.splice(index, 1);
+};
+const addItem = () => {
+  console.log(productData.value);
+  productData.value.push(JSON.parse(JSON.stringify(itemProductDataDefault)));
+  productData.value[productData.value.length - 1].isNew = true;
+};
+const ChooseCombobox = (isColor, index, value) => {
+  if (
+    (productData.value[index].sizeData.id == -1 && isColor) ||
+    (productData.value[index].colorData.id == -1 && !isColor)
+  )
+    return;
 
-const onCloseUpdateProduct = () => {
-  isUpdateModalOpen.value = false;
-  isEditProduct = false;
-  updateLoading(false);
+  const c = isColor ? value : productData.value[index].colorData.id;
+  const s = isColor ? productData.value[index].sizeData.id : value;
+
+  for (let i = 0; i < productData.value.length; i++) {
+
+    if (i == index) continue;
+
+    let itemF = productData.value[i];
+
+    if (itemF.sizeData.id == s && itemF.colorData.id == c) {
+      showToast("Thông tin đã tồn tại", true);
+      if (isColor) {
+        productData.value[index].colorData.id = -1;
+      } else {
+        productData.value[index].sizeData.id = -1;
+      }
+      return;
+    }
+  }
+  if (isEditProduct) {
+    productData.value[index].isEdit = true;
+  }
 };
 
-//delete modal 
+// } Update Product
+
+
+
+
+//delete modal {
 
 const openDeleteModal = async (id) => {
   idDelete = id;
@@ -740,152 +848,11 @@ const closeDeleteProductModal = async () => {
   await delay(500);
   isDeleteModalOpen.value = false;
 }
-//delete modal 
-
-//Update product
-
-const categories = ref([
-  { id: 1, name: "Áo polo" },
-  { id: 2, name: "Áo thun" },
-  { id: 3, name: "Áo sơ mi" },
-  { id: 4, name: "Áo khoác" },
-  { id: 5, name: "Áo vest" },
-  { id: 6, name: "Áo len" },
-  { id: 7, name: "Áo hoodie" },
-]);
-
-//thông tin cơ bản
+// } delete modal 
 
 
-//thông tin cơ bản
-
-//chi tiết sản phẩm
-
-
-const handleImageUpload = (event) => {
-  // Xử lý khi người dùng chọn file ảnh
-  const file = event.target.files[0];
-  if (file) {
-    updateProduct.value.imageFile = file;
-    // Xử lý và cập nhật đường dẫn ảnh
-    updateProduct.value.mainImage = URL.createObjectURL(file);
-  }
-};
-
-//chi tiết sản phẩm
-
-// thông tin bán hàng
-
-const validateQuantityColorSize = (index) => {
-  if (productData.value[index].amount < 0) {
-    productData.value[index].amount = 0;
-  }
-  if (isEditProduct && productData.value[index].sizeData.id != -1 && productData.value[index].colorData.id != -1) {
-    productData.value[index].isEdit = true;
-  }
-};
-
-const validateQuantityPrice = () => {
-  if (updateProduct.value.price < 0) {
-    updateProduct.value.price = 0;
-  }
-};
-
-const removeItem = (index) => {
-  productData.value.splice(index, 1);
-};
-
-const addItem = () => {
-  console.log(productData.value);
-  productData.value.push(JSON.parse(JSON.stringify(itemProductDataDefault)));
-  productData.value[productData.value.length - 1].isNew = true;
-};
-
-const ChooseCombobox = (isColor, index, value) => {
-  if (
-    (productData.value[index].sizeData.id == -1 && isColor) ||
-    (productData.value[index].colorData.id == -1 && !isColor)
-  )
-    return;
-
-  const c = isColor ? value : productData.value[index].colorData.id;
-  const s = isColor ? productData.value[index].sizeData.id : value;
-
-  for (let i = 0; i < productData.value.length; i++) {
-
-    if (i == index) continue;
-
-    let itemF = productData.value[i];
-
-    if (itemF.sizeData.id == s && itemF.colorData.id == c) {
-      showToast("Thông tin đã tồn tại", true);
-      if (isColor) {
-        productData.value[index].colorData.id = -1;
-      } else {
-        productData.value[index].sizeData.id = -1;
-      }
-      return;
-    }
-  }
-  if (isEditProduct) {
-    productData.value[index].isEdit = true;
-  }
-};
-
-//thông tin bán hàng
-
-
-
-const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
-onMounted(() => {
-  updateListProduct();
-  updateCategories();
-  updateSizes();
-  updateColors();
-});
-
-const updateListProduct = async () => {
-  await axios.get(API.GETProducts)
-    .then(res => {
-      products.value = res.data.data;
-    })
-    .catch(err => {
-
-    });
-}
-
-const updateCategories = async () => {
-  await axios.get(API.GETCategories).then(res => {
-    categories.value = res.data.data;
-  }).catch(err => console.log(err));
-}
-
-const updateSizes = async () => {
-  await axios.get(API.GETSizes)
-    .then(res => {
-      sizeOptions.value = res.data.data;
-    })
-    .catch(err => console.log(err));
-}
-const updateColors = async () => {
-  await axios.get(API.GETColors)
-    .then(res => {
-      colorOptions.value = res.data.data;
-    })
-    .catch(err => console.log(err));
-}
-
-const updateLoading = (check) => {
-  ShowLoading.value = check;
-}
 
 //Sale {
-const isSaleModalOpen = ref(false);
-const saleStart = ref(null);
-const saleEnd = ref(null);
-const salePrice = ref(0);
-let idSale = -1;
 const validateQuantityPriceSale = () => {
   if (salePrice.value < 0) salePrice.value = 0;
 }
@@ -942,9 +909,33 @@ const submitSaleModal = async () => {
       return;
     });
 };
-
 // } Sale 
 
+
+
+
+const handleImageUpload = (event) => {
+  // Xử lý khi người dùng chọn file ảnh
+  const file = event.target.files[0];
+  if (file) {
+    updateProduct.value.imageFile = file;
+    // Xử lý và cập nhật đường dẫn ảnh
+    updateProduct.value.mainImage = URL.createObjectURL(file);
+  }
+};
+const validateQuantityColorSize = (index) => {
+  if (productData.value[index].amount < 0) {
+    productData.value[index].amount = 0;
+  }
+  if (isEditProduct && productData.value[index].sizeData.id != -1 && productData.value[index].colorData.id != -1) {
+    productData.value[index].isEdit = true;
+  }
+};
+const validateQuantityPrice = () => {
+  if (updateProduct.value.price < 0) {
+    updateProduct.value.price = 0;
+  }
+};
 const updateProductWithId = async (id) => {
   await axios(`${API.GETProduct}/${id}`)
     .then(res => {
@@ -962,15 +953,22 @@ const updateProductWithId = async (id) => {
 
 const getPrice = (product) => {
   if (product.saleStart) {
-    return product.salePrice;
+    return { isSale: true, value: product.salePrice }
   } else {
-    return product.price;
+    return { isSale: false, value: product.price };
   }
 }
 
 const formatTime = (time) => {
   return moment(time).format("HH:mm - DD/MM/yyyy");
 }
+
+const updateLoading = (check) => {
+  ShowLoading.value = check;
+}
+
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
 
 
 </script>
