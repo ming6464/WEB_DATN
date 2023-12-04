@@ -85,7 +85,7 @@
     </div>
     <!-- update product -->
     <form v-if="isUpdateModalOpen" @submit.prevent="submitEditForm">
-      <div class="space-y-12">
+      <div class="space-y-12 mb-10">
         <!-- Thông tin cơ bản -->
         <div>
           <h1 class="font-medium text-xl">Thông tin cơ bản</h1>
@@ -135,7 +135,7 @@
                   <span>Lựa chọn ảnh đại diện cho sản phẩm</span>
                   <span type="submit"
                     class="rounded-md bg-indigo-600 mt-2 py-2 text-sm font-semibold
-                                                                                                                                                                                                                                                                                                                                                             text-white shadow-sm hover:bg-indigo-500 text-center w-20">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             text-white shadow-sm hover:bg-indigo-500 text-center w-20">
                     Chọn ảnh
                   </span>
                 </label>
@@ -229,7 +229,8 @@
                   </table>
                 </div>
                 <button @click="addItem" type="button"
-                  class="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded">
+                  class="bg-green-500 hover:bg-green-600 text-sm font-semibold text-white py-2 px-4 rounded inline-flex items-center">
+                  <PlusIcon class="h-5 w-5" aria-hidden="true" />
                   Thêm thành phần
                 </button>
               </div>
@@ -240,17 +241,21 @@
         <!-- thông tin bán hàng -->
       </div>
 
-      <div class="mt-6 flex items-center justify-end gap-x-6">
-        <button type="button" @click="onCloseUpdateProduct"
-          class="rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600">
-          Cancel
-        </button>
-        <button type="submit"
-          class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold
-                                                                                                                                                                                                                                                                                                                                                           text-white shadow-sm hover:bg-indigo-500 focus-visible:outline 
-                                                                                                                                                                                                                                                                                                                                                           focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-          Save
-        </button>
+      <div class="flex items-center justify-between py-2 px-3 border-2 w-full bg-gray-50 rounded-lg"
+        style="position: fixed; bottom : 0; right : 0;">
+        <h2 class=" lg:ml-72 text-base font-semibold">Xác nhận quá trình ?</h2>
+        <div class="flex gap-x-6">
+          <button type="button" @click="onCloseUpdateProduct"
+            class="flex rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600">
+            <XCircleIcon class="h-5 w-5" aria-hidden="true" />
+            Huỷ
+          </button>
+          <button type="submit"
+            class="flex rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline  focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+            <BookmarkIcon class="h-5 w-5" aria-hidden="true" />
+            Lưu
+          </button>
+        </div>
       </div>
     </form>
     <!-- delete modal -->
@@ -260,7 +265,8 @@
         role="dialog" aria-modal="true">
         <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
         <div class="fixed inset-0 z-10 w-screen">
-          <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+          <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0"
+            @click="closeDeleteProductModal">
             <div
               class="relative transform rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg lg:ml-64 mt-10">
               <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
@@ -290,11 +296,8 @@
               <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                 <button type="button" @click="deleteProduct"
                   class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto">
+                  <TrashIcon class="h-5 w-5" aria-hidden="true" />
                   Xoá
-                </button>
-                <button type="button" @click="closeDeleteProductModal"
-                  class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto">
-                  Huỷ
                 </button>
               </div>
             </div>
@@ -321,10 +324,9 @@
 import { FwbSpinner } from 'flowbite-vue'
 import { showToast } from '../assets/Toastify'
 import axios from "axios";
-import { TrashIcon, PhotoIcon, PencilSquareIcon, PlusIcon, UserCircleIcon } from "@heroicons/vue/20/solid";
+import { TrashIcon, PhotoIcon, PencilSquareIcon, PlusIcon, UserCircleIcon, BookmarkIcon, XCircleIcon, CheckIcon } from "@heroicons/vue/20/solid";
 import * as API from "../assets/API";
 import { computed, ref, onMounted } from "vue";
-import { CheckIcon } from "@heroicons/vue/20/solid";
 import {
   Combobox,
   ComboboxButton,
@@ -460,9 +462,10 @@ const submitEditForm = async () => {
       check = true;
       formProduct.append('categoryId', updateProduct.value.categoryData.id);
     }
-    if (updateProduct.value.description != updateProductGetAPI.description) {
+    const des = updateProduct.value.description.length == 0 ? ' ' : updateProduct.value.description;
+    if (des != updateProductGetAPI.description) {
       check = true;
-      formProduct.append('description', updateProduct.value.description);
+      formProduct.append('description', des);
     }
     if (updateProduct.value.price != updateProductGetAPI.price) {
       check = true;
@@ -474,7 +477,12 @@ const submitEditForm = async () => {
         .then(res => {
           updateListProduct();
         })
-        .catch(err => console.error(err));
+        .catch(err => {
+          console.error(err);
+          showToast("Lỗi", true);
+          updateLoading(false);
+          return;
+        });
     }
     updateColorSize(updateProduct.value.id);
     onCloseUpdateProduct();
@@ -485,7 +493,7 @@ const submitEditForm = async () => {
     formProduct.append('mainImage', updateProduct.value.imageFile);
     formProduct.append('categoryId', updateProduct.value.categoryData.id);
     formProduct.append('price', updateProduct.value.price);
-    formProduct.append('description', updateProduct.value.description);
+    formProduct.append('description', updateProduct.value.description.length == 0 ? ' ' : updateProduct.value.description);
 
     await axios.post(API.POSTProduct, formProduct)
       .then(res => {
@@ -495,6 +503,9 @@ const submitEditForm = async () => {
       })
       .catch(err => {
         console.error(err);
+        showToast("Lỗi", true);
+        updateLoading(false);
+        return;
       });
   }
 }
@@ -566,9 +577,21 @@ const updateColorSize = (id) => {
 
 const UpDateAPI = async (isPost, api, data) => {
   if (isPost) {
-    await axios.post(api, data);
+    await axios.post(api, data)
+      .catch(err => {
+        console.error(err);
+        showToast("Lỗi", true);
+        updateLoading(false);
+        return;
+      });
   } else {
-    await axios.put(api, data);
+    await axios.put(api, data)
+      .catch(err => {
+        console.error(err);
+        showToast("Lỗi", true);
+        updateLoading(false);
+        return;
+      });
   }
 }
 
@@ -597,9 +620,18 @@ const deleteProduct = async () => {
         .then(res => {
           products.value.splice(index, 1);
         })
-        .catch(err => console.log(err));
+        .catch(err => {
+          console.error(err);
+          showToast("Lỗi", true);
+          updateLoading(false);
+          return;
+        });
     }
   } catch (error) {
+    console.error(err);
+    showToast("Lỗi", true);
+    updateLoading(false);
+    return;
   }
   updateLoading(false);
   closeDeleteProductModal();

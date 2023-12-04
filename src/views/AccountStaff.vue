@@ -277,9 +277,10 @@
       role="dialog" aria-modal="true">
       <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
       <div class="fixed inset-0 z-10 w-screen">
-        <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+        <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0"
+          @click="closeDeleteModal">
           <div
-            class="relative transform rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+            class="relative transform rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg lg:ml-64 mt-10">
             <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
               <div class="sm:flex sm:items-start">
                 <div
@@ -305,17 +306,10 @@
               </div>
             </div>
             <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-              <div v-if="showError" class="ml-4 p-2 bg-red-100 text-red-500 text-sm rounded">
-                Tên không hợp lệ. Vui lòng kiểm tra lại.
-              </div>
-
               <button type="button" @click="deleteStaff"
                 class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto">
+                <TrashIcon class="h-5 w-5" aria-hidden="true" />
                 Xoá
-              </button>
-              <button type="button" @click="closeDeleteModal"
-                class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto">
-                Huỷ
               </button>
             </div>
           </div>
@@ -367,8 +361,6 @@ const staffs = ref([
   },
 ]);
 
-const showError = ref(false);
-
 // modal
 const isOpenModal = ref(false);
 const isShowModal = ref(false);
@@ -409,19 +401,16 @@ const handlePhoneNumberInput = () => {
 
 const submitEditForm = () => {
   if (!CheckRegex.CheckNameRegex(staffEdit.value.last_name)) {
-    showError.value = true; // Hiển thị thông báo lỗi
     showToast("Tên không hợp lệ. Vui lòng kiểm tra lại", true);
     return;
   }
 
   if (!CheckRegex.CheckNameRegex(staffEdit.value.first_name)) {
-    showError.value = true; // Hiển thị thông báo lỗi
     showToast("Họ không hợp lệ. Vui lòng kiểm tra lại", true);
     return;
   }
 
   if (!CheckRegex.CheckPhoneNumberRegex(staffEdit.value.phone)) {
-    showError.value = true; // Hiển thị thông báo lỗi
     showToast(
       "Số điện thoại chưa đúng định dạng. Vui lòng kiểm tra lại", true
     );
@@ -433,7 +422,6 @@ const submitEditForm = () => {
     staffEdit.value.isStaff ||
     staffEdit.value.isAdmin;
   if (isAnySwitchOn.value == false) {
-    showError.value = true; // Hiển thị thông báo lỗi
     showToast("Tài khoản phải có ít nhất 1 quyền", true);
     return;
   }
@@ -475,7 +463,6 @@ const closeDeleteModal = async () => {
 };
 
 const closeEditModal = async () => {
-  showError.value = false;
   isShowModal.value = false;
   await delay(500);
   isOpenModal.value = false;
