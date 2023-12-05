@@ -1,3 +1,4 @@
+
 <template>
   <div class="px-4 sm:px-6 lg:px-8">
     <div class="px-4 sm:px-6 lg:px-8">
@@ -209,6 +210,7 @@
 </template>
 
 <script setup>
+
 import { ref, onMounted, computed } from "vue";
 import { PlusIcon } from "@heroicons/vue/20/solid";
 import { PencilSquareIcon } from "@heroicons/vue/20/solid";
@@ -265,14 +267,17 @@ const isShowDeleteModal = ref(false);
 const selectedFilter = ref("id"); // Giá trị mặc định của bộ lọc
 const searchTerm = ref("");
 let indexDelete = -1;
+
 onMounted(() => {
   updateCategories();
 });
 
 const updateCategories = async () => {
-  await axios.get(API.GETCategories).then(res => {
-    categories.value = res.data.data;
-  }).catch(err => console.log(err));
+  await axios.get(API.GETCategories)
+    .then(res => {
+      categories.value = res.data.data;
+    })
+    .catch(err => console.log(err));
 }
 
 const imageInputRef = ref(null);

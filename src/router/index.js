@@ -25,6 +25,10 @@ const routes = [
         path: 'account_staff',
         component: () => import('../views/AccountStaff.vue'),
       },
+      {
+        path: 'transactionList',
+        component: () => import('../views/TransactionList.vue'),
+      }
     ],
   },
   {
