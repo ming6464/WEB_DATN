@@ -1,22 +1,29 @@
 <template>
   <div class="px-4 sm:px-6 lg:px-8">
-    <div class="flex flex-col items-center">
-      <div class="sm:flex-auto">
-        <h1 class="text-center text-3xl font-semibold leading-6 text-gray-900">
-          Danh Mục
-        </h1>
-      </div>
-      <div class="mt-4 sm:ml-16 sm:mt-0 self-end">
-        <button type="button" @click="openAddModal()"
-          class="inline-flex items-center gap-x-1.5 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-          <PlusIcon class="h-5 w-5" aria-hidden="true" />
-          Thêm danh mục
-        </button>
-      </div>
+    <div class="px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center border-gray-300 py-4">
+        <div class="flex items-center space-x-4 flex-grow">
+          <input type="text" v-model="searchTerm" placeholder="Tìm kiếm ..."
+            class="rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring focus:border-indigo-500 flex-grow" />
 
-      <!-- Add Modal -->
+          <!-- Dropdown filter -->
+          <select v-model="selectedFilter"
+            class="rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring focus:border-indigo-500">
+            <option value="id">ID</option>
+            <option value="name">Tên</option>
+          </select>
+          <div class="mt-4 sm:ml-16 sm:mt-0 self-end">
+            <button type="button" @click="openAddModal(false)"
+              class="inline-flex items-center gap-x-1.5 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+              <PlusIcon class="h-5 w-5" aria-hidden="true" />
+              Thêm danh mục
+            </button>
+          </div>
 
+        </div>
+      </div>
     </div>
+
     <div v-if="isAddModalOpen" class="fixed inset-0 overflow-y-auto">
       <div class="flex items-center justify-center min-h-screen">
         <div class="fixed inset-0 bg-gray-500 bg-opacity-75"></div>
@@ -59,7 +66,6 @@
       </div>
     </div>
   </div>
-  <!-- ... (existing code) ... -->
   <div class="mt-4 flow-root">
     <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-4 lg:-mx-6">
       <div class="inline-block min-w-full py-2 align-middle sm:px-4 lg:px-6">
@@ -81,7 +87,7 @@
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-200 bg-white">
-            <tr v-for="(person, index) in categories" :key="person.id">
+            <tr v-for="(person, index) in filteredStaffs" :key="person.id">
               <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
                 <div class="font-medium text-gray-900">{{ person.id }}</div>
               </td>
@@ -203,7 +209,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { PlusIcon } from "@heroicons/vue/20/solid";
 import { PencilSquareIcon } from "@heroicons/vue/20/solid";
 import { TrashIcon } from "@heroicons/vue/20/solid";
@@ -256,6 +262,8 @@ const editedPerson = ref({
 });
 const isDeleteModalOpen = ref(false);
 const isShowDeleteModal = ref(false);
+const selectedFilter = ref("id"); // Giá trị mặc định của bộ lọc
+const searchTerm = ref("");
 let indexDelete = -1;
 onMounted(() => {
   updateCategories();
@@ -351,12 +359,13 @@ function handleImageUpload() {
 }
 //ADD
 const isAddModalOpen = ref(false);
-const newProduct = ref({
-  id: null,
-  name: "",
-  image: "",
-});
+const newProduct = ref();
 const openAddModal = () => {
+  newProduct.value = {
+    id: null,
+    name: "",
+    image: "",
+  };
   isAddModalOpen.value = true;
 };
 
@@ -368,19 +377,10 @@ const addNewProduct = async () => {
   const formData = new FormData();
   formData.append('name', newProduct.value.name);
   formData.append('image', newProduct.value.file);
-  closeAddModal();
-  await axios.post(API.POSTAddCategories, formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-  })
+  await axios.post(API.POSTAddCategories, formData)
     .then((res) => {
-      categories.value.push(res.data.data);
-      newProduct.value = {
-        id: null,
-        name: "",
-        image: "",
-      };
+      updateCategories();
+      closeAddModal();
     })
     .catch(err => {
       newProduct.value = {
@@ -405,6 +405,26 @@ const handleImageUploadADD = (event) => {
     reader.readAsDataURL(file);
   }
 };
+
+// search {
+
+const filteredStaffs = computed(() => {
+  const term = searchTerm.value.toString().toLowerCase().trim();
+
+  switch (selectedFilter.value.toLowerCase()) {
+    case "id":
+      return categories.value.filter((person) =>
+        person.id.toString().toLowerCase().includes(term)
+      );
+    case "name":
+      return categories.value.filter(
+        (person) =>
+          person.name.toString().toLowerCase().includes(term)
+      );
+  }
+});
+
+// } search
 
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
