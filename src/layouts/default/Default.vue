@@ -139,7 +139,7 @@
                     </li>
                     <li class="mt-auto">
                       <a
-                        href="#"
+                        href="/"
                         class="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-700 hover:bg-gray-50 hover:text-indigo-600"
                       >
                         <Cog6ToothIcon
