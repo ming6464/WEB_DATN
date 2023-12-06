@@ -171,7 +171,7 @@
                   <span>Lựa chọn ảnh đại diện cho sản phẩm</span>
                   <span type="submit"
                     class="rounded-md bg-indigo-600 mt-2 py-2 text-sm font-semibold
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     text-white shadow-sm hover:bg-indigo-500 text-center w-20">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       text-white shadow-sm hover:bg-indigo-500 text-center w-20">
                     Chọn ảnh
                   </span>
                 </label>
@@ -530,13 +530,16 @@ onMounted(() => {
 });
 
 const updateListProduct = async () => {
+  updateLoading(true);
   await axios.get(API.GETProducts)
     .then(res => {
       products.value = res.data.data;
     })
     .catch(err => {
-
+      showToast("Lỗi", true);
     });
+  updateLoading(false);
+
 }
 
 const updateCategories = async () => {

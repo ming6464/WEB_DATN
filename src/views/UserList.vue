@@ -67,7 +67,34 @@ import * as API from '../assets/API'
 const user = ref([
   {
     id: "1",
-    userId: '999999',
+    userId: '10029',
+    name: "Linh",
+    email: "linnn@gmail.com",
+    picture:
+      "https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+    dob: '12/12/2012',
+  },
+  {
+    id: "2",
+    userId: '10030',
+    name: "Linh",
+    email: "linnn@gmail.com",
+    picture:
+      "https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+    dob: '12/12/2012',
+  },
+  {
+    id: "3",
+    userId: '10031',
+    name: "Linh",
+    email: "linnn@gmail.com",
+    picture:
+      "https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+    dob: '12/12/2012',
+  },
+  {
+    id: "4",
+    userId: '10032',
     name: "Linh",
     email: "linnn@gmail.com",
     picture:
@@ -77,7 +104,7 @@ const user = ref([
 ]);
 
 onMounted(() => {
-  LoadCustomerList();
+  //LoadCustomerList();
 })
 
 const LoadCustomerList = async () => {

@@ -207,16 +207,33 @@
       </div>
     </div>
   </div>
+
+  <!-- loadding -->
+  <div v-if="ShowLoading" class="w-full h-full flex justify-center items-center"
+    style="position: fixed; top: 0; left: 0;">
+    <div class="flex justify-center items-center">
+      <!-- Phần background với độ mờ -->
+      <div class="bg-gray-500" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.3;">
+      </div>
+      <!-- Nội dung loading spinner -->
+      <div class="spinner-border text-white" role="status">
+        <fwb-spinner color="blue" size="12" class="lg:ml-64 mt-10" />
+      </div>
+    </div>
+  </div>
+  <!-- loadding -->
 </template>
 
 <script setup>
-
+import { FwbSpinner } from 'flowbite-vue'
 import { ref, onMounted, computed } from "vue";
 import { PlusIcon } from "@heroicons/vue/20/solid";
 import { PencilSquareIcon } from "@heroicons/vue/20/solid";
 import { TrashIcon } from "@heroicons/vue/20/solid";
 import axios from "axios";
 import * as API from "../assets/API";
+import { showToast } from '../assets/Toastify'
+const ShowLoading = ref(false);
 const categories = ref([
   {
     id: "1",
@@ -273,11 +290,16 @@ onMounted(() => {
 });
 
 const updateCategories = async () => {
+  updateLoading(true);
   await axios.get(API.GETCategories)
     .then(res => {
       categories.value = res.data.data;
     })
-    .catch(err => console.log(err));
+    .catch(err => {
+      console.error(err);
+      showToast("Lỗi", true);
+    });
+  updateLoading(false);
 }
 
 const imageInputRef = ref(null);
@@ -291,14 +313,19 @@ const openDeleteModal = async (index) => {
 };
 
 const deleteCategory = async () => {
+  updateLoading(true);
   try {
     await axios.delete(`${API.DELCategories}/${categories.value[indexDelete].id}`)
       .then(res => {
         categories.value.splice(indexDelete, 1);
+        showToast("Xoá thành công", false);
       })
-      .catch(err => console.log(err));
+      .catch(err => {
+        showToast("Xoá thành công", false);
+      });
     closeDeleteCategoryModal();
   } catch (error) { }
+  updateLoading(false);
 }
 
 const closeDeleteCategoryModal = async () => {
@@ -316,6 +343,7 @@ function openEditModal(person) {
 
 const submitEditForm = async () => {
   if (!editedPerson.value) return;
+  updateLoading(true);
   const formData = new FormData();
   formData.append('image', editedPerson.value.file);
   formData.append('name', editedPerson.value.name);
@@ -329,12 +357,16 @@ const submitEditForm = async () => {
     .then(res => {
       console.log(res);
       categories.value.splice(selectedIndex.value, 1, res.data.data);
+      showToast("Cập nhật thành công", false);
     })
     .catch(err => {
       console.error(err);
+      showToast("Lỗi", true);
     });
 
+  updateLoading(false);
 }
+
 
 function closeEditModal() {
   isEditModalOpen.value = false;
@@ -379,22 +411,25 @@ const closeAddModal = () => {
 };
 
 const addNewProduct = async () => {
+  if (!newProduct.value.file || !newProduct.value.name || newProduct.value.name.toString().length == 0) {
+    showToast("Thông tin thiếu", true);
+    return;
+  }
+  updateLoading(true);
   const formData = new FormData();
   formData.append('name', newProduct.value.name);
   formData.append('image', newProduct.value.file);
   await axios.post(API.POSTAddCategories, formData)
     .then((res) => {
       updateCategories();
+      showToast("Thêm mới thành công", false);
       closeAddModal();
     })
     .catch(err => {
-      newProduct.value = {
-        id: null,
-        name: "",
-        image: "",
-      };
+      showToast("Lỗi", true);
       console.error(err);
-    })
+    });
+  updateLoading(true);
 
 };
 const handleImageUploadADD = (event) => {
@@ -431,6 +466,14 @@ const filteredStaffs = computed(() => {
 
 // } search
 
+
+//loading {
+
+const updateLoading = (check) => {
+  ShowLoading.value = check;
+}
+
+// } Loading
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 </script>
