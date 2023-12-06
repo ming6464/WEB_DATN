@@ -26,6 +26,10 @@ export const DELProduct = `${http}/product`;
 // } Sale
 export const PUTSale = `${http}/product/sale`;
 
+// filter {
+
+// } Filter
+export const GETFilter = `${http}/product/filter`;
 // } product
 
 

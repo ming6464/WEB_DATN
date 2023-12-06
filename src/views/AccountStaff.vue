@@ -450,6 +450,7 @@ const submitEditForm = async () => {
     formAccount.append('avatar', staffEdit.value.fileImage);
     await instance.post(API.POSTAccount, formAccount)
       .then(res => {
+        showToast("Thêm mới thành công");
         loadData();
       })
       .catch(err => {

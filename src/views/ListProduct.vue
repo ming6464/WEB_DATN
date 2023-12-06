@@ -2,18 +2,49 @@
   <div>
     <!-- Layout List Product -->
     <div class="px-4 sm:px-6 lg:px-8" v-if="!isUpdateModalOpen">
-      <div class="flex flex-col items-center">
-        <div class="sm:flex-auto">
-          <h1 class="text-center text-3xl font-semibold leading-6 text-gray-900">
-            Danh sách sản phẩm
-          </h1>
-        </div>
-        <div class="mt-4 sm:ml-16 sm:mt-0 self-end">
-          <button type="button" @click="openUpdateProduct(false)"
-            class="inline-flex items-center gap-x-1.5 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-            <PlusIcon class="h-5 w-5" aria-hidden="true" />
-            Thêm sản phẩm
-          </button>
+      <div class="-mt-2 bg-white border-b border-gray-200 " style="position: fixed;top : 70px;right: 0px;left: 0px;">
+        <div class="lg:ml-72 px-4">
+          <div class="flex justify-around items-center border-gray-300 py-4">
+            <div class="flex justify-between">
+
+              <button class="group flex items-center font-medium mr-2" @click="openOptionModal">
+                <AdjustmentsHorizontalIcon class="mr-2 h-5 w-5 flex-none text-gray-700 group-hover:text-gray-500"
+                  aria-hidden="true" />
+              </button>
+
+              <button class="group flex items-center font-medium mr-2" @click="openFilterModal">
+                <FunnelIcon class="mr-2 h-5 w-5 flex-none text-gray-700 group-hover:text-gray-500" aria-hidden="true"
+                  :class="{ 'group-hover:text-orange-500 text-orange-600': numberFilter > 0 }" />
+              </button>
+
+
+              <button class="group flex items-center font-medium text-gray-700" @click="changeSort">
+                <img v-if='filterVal.sortPrice == 1' class="h-5 w-5 flex-none text-gray-400 group-hover:text-gray-500"
+                  src="https://img.icons8.com/external-creatype-glyph-colourcreatype/64/external-descending-miscellaneous-user-interface-v1-creatype-glyph-colourcreatype.png"
+                  alt="external-descending-miscellaneous-user-interface-v1-creatype-glyph-colourcreatype" />
+                <img v-if='filterVal.sortPrice == 0' class="h-5 w-5 flex-none text-gray-400 group-hover:text-gray-500"
+                  src="https://img.icons8.com/external-creatype-glyph-colourcreatype/64/external-descending-miscellaneous-user-interface-v1-creatype-glyph-colourcreatype-2.png"
+                  alt="external-descending-miscellaneous-user-interface-v1-creatype-glyph-colourcreatype-2" />
+                <sapn v-if="filterVal.sortPrice >= 2">Sort</sapn>
+              </button>
+
+            </div>
+            <div
+              class="flex items-center justify-between border border-gray-400 border-r-0 rounded-md shadow-sm md:w-8/12 sm:w-6/12">
+              <input type="text" v-model="filterVal.keyword" placeholder="Tìm kiếm ..."
+                class="rounded-md w-full rounded-r-none border-0 px-3 py-2 text-sm focus:border-gray-50 focus:border-0" />
+              <button type="button" @click="applyFilter"
+                class="inline-flex items-center rounded-md rounded-l-none bg-indigo-600 px-1 py-1 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                <MagnifyingGlassIcon class="h-7 w-7" aria-hidden="true" />
+              </button>
+            </div>
+
+            <button type="button" @click="openUpdateProduct(false)"
+              class="inline-flex self-end items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+              <PlusIcon class="h-5 w-5" aria-hidden="true" />
+              Thêm mới
+            </button>
+          </div>
         </div>
 
       </div>
@@ -23,28 +54,36 @@
             <table class="min-w-full divide-y divide-gray-300">
               <thead>
                 <tr>
-                  <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
+                  <th v-if="optionModal.id" scope="col"
+                    class=" w-min- py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
                     ID
                   </th>
-                  <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-4">
+                  <th v-if="optionModal.picture" scope="col"
+                    class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-4">
                     Ảnh
                   </th>
-                  <th scope="col" class="text-center py-3.5 text-sm font-semibold text-gray-900 sm:pl-0">
+                  <th v-if="optionModal.name" scope="col"
+                    class="text-center py-3.5 text-sm font-semibold text-gray-900 sm:pl-0">
                     Tên sản phẩm
                   </th>
-                  <th scope="col" class=" py-3.5 text-center text-sm font-semibold text-gray-900 sm:pl-0">
+                  <th v-if="optionModal.category" scope="col"
+                    class=" py-3.5 text-center text-sm font-semibold text-gray-900 sm:pl-0">
                     Danh mục
                   </th>
-                  <th scope="col" class=" py-3.5 text-center text-sm font-semibold text-gray-900 sm:pl-6">
+                  <th v-if="optionModal.priceDefault" scope="col"
+                    class=" py-3.5 text-center text-sm font-semibold text-gray-900 sm:pl-6">
                     Giá ban đầu
                   </th>
-                  <th scope="col" class="py-3.5 text-center text-sm font-semibold text-gray-900 sm:pl-6">
+                  <th v-if="optionModal.timeSale" scope="col"
+                    class="py-3.5 text-center text-sm font-semibold text-gray-900 sm:pl-6">
                     Thời gian Sale
                   </th>
-                  <th scope="col" class="py-3.5 text-center text-sm font-semibold text-gray-900 sm:pl-6">
+                  <th v-if="optionModal.priceSale" scope="col"
+                    class="py-3.5 text-center text-sm font-semibold text-gray-900 sm:pl-6">
                     Giá Sale
                   </th>
-                  <th scope="col" class="py-3.5 text-center text-sm font-semibold text-gray-900 sm:pl-6">
+                  <th v-if="optionModal.price" scope="col"
+                    class="py-3.5 text-center text-sm font-semibold text-gray-900 sm:pl-6">
                     Giá bán
                   </th>
                   <th scope="col" class="py-3.5 text-center text-sm font-semibold text-gray-900 sm:pl-0">
@@ -54,39 +93,39 @@
               </thead>
               <tbody class="divide-y divide-gray-200 bg-white">
                 <tr v-for="product in products" :key="product.id">
-                  <td class="whitespace-nowrap mr-4 text-left py-5 text-sm text-gray-500">
+                  <td v-if="optionModal.id" class="whitespace-nowrap mr-4 text-left py-5 text-sm text-gray-500">
                     <div class="text-gray-900">{{ product.id }}</div>
                   </td>
-                  <td class="whitespace-nowrap py-5 text-sm sm:pl-0">
+                  <td v-if="optionModal.picture" class="whitespace-nowrap py-5 text-sm sm:pl-0">
                     <div class="flex items-center">
                       <div class="h-20 w-20 flex-shrink-0">
                         <img class="h-20 w-24" :src="product.mainImage" alt="" />
                       </div>
                     </div>
                   </td>
-                  <td class="whitespace-nowrap text-center py-5 text-sm text-gray-500">
+                  <td v-if="optionModal.name" class="whitespace-nowrap text-center py-5 text-sm text-gray-500">
                     <div class="text-gray-900">{{ product.name }}</div>
                   </td>
 
-                  <td class="whitespace-nowrap text-center py-5 text-sm text-gray-500">
+                  <td v-if="optionModal.category" class="whitespace-nowrap text-center py-5 text-sm text-gray-500">
                     <div class="text-gray-900">{{ product.categoryData.name }}</div>
                   </td>
 
-                  <td class="whitespace-nowrap text-center py-5 text-sm text-gray-500">
+                  <td v-if="optionModal.priceDefault" class="whitespace-nowrap text-center py-5 text-sm text-gray-500">
                     <div class="text-gray-900">{{ product.price }}</div>
                   </td>
-                  <td class="whitespace-nowrap text-center py-5 text-sm text-gray-500">
+                  <td v-if="optionModal.timeSale" class="whitespace-nowrap text-center py-5 text-sm text-gray-500">
                     <div v-if="product.saleStart">
                       <div class="text-gray-900">{{ formatTime(product.saleStart) }}</div>
                       <div class="text-gray-900">{{ formatTime(product.saleEnd) }}</div>
                     </div>
                     <div class="text-gray-900" v-else>Null</div>
                   </td>
-                  <td class="whitespace-nowrap text-center py-5 text-sm text-gray-500">
+                  <td v-if="optionModal.priceSale" class="whitespace-nowrap text-center py-5 text-sm text-gray-500">
                     <div class="text-gray-900" v-if="product.salePrice">{{ product.salePrice }}</div>
                     <div class="text-gray-900" v-else>Null</div>
                   </td>
-                  <td class="whitespace-nowrap text-center py-5 text-sm">
+                  <td v-if="optionModal.price" class="whitespace-nowrap text-center py-5 text-sm">
                     <div
                       :class="{ 'text-red-600 font-semibold text-base': getPrice(product).isSale, 'text-gray-900': !getPrice(product).isSale }">
                       {{ getPrice(product).value }}</div>
@@ -171,7 +210,7 @@
                   <span>Lựa chọn ảnh đại diện cho sản phẩm</span>
                   <span type="submit"
                     class="rounded-md bg-indigo-600 mt-2 py-2 text-sm font-semibold
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   text-white shadow-sm hover:bg-indigo-500 text-center w-20">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               text-white shadow-sm hover:bg-indigo-500 text-center w-20">
                     Chọn ảnh
                   </span>
                 </label>
@@ -372,8 +411,9 @@
               <label for="salePrice" class="block text-sm font-medium text-gray-700">
                 Giá bán
               </label>
-              <input type="text" v-model="salePrice" @input="validateQuantityPriceSale()" id="salePrice" name="salePrice"
-                placeholder="Giá bán" class="mt-1 p-1.5 px-2.5 w-full border border-gray-200 rounded-md" />
+              <input type="number" v-model="salePrice" @input="validateQuantityPriceSale()" id="salePrice"
+                name="salePrice" placeholder="Giá bán"
+                class="mt-1 p-1.5 px-2.5 w-full border border-gray-200 rounded-md" />
             </div>
 
             <div class="flex justify-between">
@@ -400,6 +440,153 @@
       </div>
     </div>
     <!-- sale modal -->
+
+    <!-- filter modal -->
+    <div v-if="isOpenFilterModal" class="fixed inset-0 overflow-y-auto">
+      <div class="flex items-center justify-center min-h-screen">
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75"></div>
+
+        <div class="relative bg-white p-8 rounded-lg lg:ml-64 mt-10">
+          <h3 class="text-lg font-semibold mb-4 text-center">
+            Bộ lọc tìm kiếm
+          </h3>
+
+          <!-- Form for adding a new product -->
+          <form @submit.prevent="applyFilter">
+            <div class="mb-4">
+              <label for="priceRange" class="block text-sm font-medium text-gray-700">
+                Khoảng giá
+              </label>
+              <div id="priceRange" name='priceRange' class="flex items-center justify-between mt-1 gap-x-3">
+                <div>
+                  <label for="minPrice" class="block text-xs font-medium text-gray-700">
+                    Tối thiểu
+                  </label>
+                  <input v-model="filterVal.minPrice" type="number" min="0" id="minPrice" name="minPrice"
+                    class="mt-1 p-2 w-full border rounded-md" />
+                </div>
+                <div>
+                  <label for="maxPrice" class="block text-xs font-medium text-gray-700">
+                    tối đa
+                  </label>
+                  <input v-model="filterVal.maxPrice" type="number" min="0" id="maxPrice" name="maxPrice"
+                    class="mt-1 p-2 w-full border rounded-md" />
+                </div>
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <label for="category" class="block text-sm font-medium text-gray-700">
+                Danh mục
+              </label>
+              <div class="relative mt-1 rounded-md" id="category" name="category">
+                <select v-model="filterVal.categoryId"
+                  class="block appearance-none w-full bg-white border border-gray-300 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:ring-2 focus:ring-inset focus:ring-indigo-600">
+                  <option v-for="(category, index) in categoriesFilter" :key="index" :value="category.id">
+                    {{ category.name }}
+                  </option>
+                </select>
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <label for="status" class="block text-sm font-medium text-gray-700">
+                Tình trạng
+              </label>
+              <input type="checkbox" v-model="filterVal.isNew" /> Hàng mới
+            </div>
+
+            <div class="flex justify-between items-center">
+              <div>
+                <button type="button" @click="ResetFilter" class="mr-2 text-gray-500 hover:text-gray-700 mx-6">
+                  Thiết lập lại
+                </button>
+              </div>
+              <div>
+                <button type="button" @click="closeFilterModal" class="mr-2 text-gray-500 hover:text-gray-700 mx-6">
+                  Hủy
+                </button>
+                <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-500">
+                  Áp dụng
+                </button>
+              </div>
+
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <!-- filter modal -->
+
+    <!-- option modal -->
+    <div v-if="isOpenOptionModal" class="fixed inset-0 overflow-y-auto">
+      <div class="flex items-center justify-center min-h-screen">
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75"></div>
+
+        <div class="relative bg-white p-8 rounded-lg lg:ml-64 mt-10">
+          <h3 class="text-lg font-semibold mb-4 text-center">
+            Bộ lọc hiển thị
+          </h3>
+
+          <!-- Form for adding a new product -->
+          <form @submit.prevent="applyOption">
+            <table class="mb-3">
+              <tr>
+                <td class="px-5 py-4">
+                  <input type="checkbox" class="mr-2" v-model="optionModalUI.id" />
+                  <span>ID</span>
+                </td>
+                <td class="px-5 py-4">
+                  <input type="checkbox" class="mr-2" v-model="optionModalUI.picture" />
+                  <span>Ảnh sản phẩm</span>
+                </td>
+              </tr>
+              <tr>
+                <td class="px-5 py-4">
+                  <input type="checkbox" class="mr-2" v-model="optionModalUI.name" />
+                  <span>Tên sản phẩm</span>
+                </td>
+                <td class="px-5 py-4">
+                  <input type="checkbox" class="mr-2" v-model="optionModalUI.category" />
+                  <span>Danh mục</span>
+                </td>
+              </tr>
+              <tr>
+                <td class="px-5 py-4">
+                  <input type="checkbox" class="mr-2" v-model="optionModalUI.priceDefault" />
+                  <span>Giá ban đầu</span>
+                </td>
+                <td class="px-5 py-4">
+                  <input type="checkbox" class="mr-2" v-model="optionModalUI.timeSale" />
+                  <span>Thời gian sale</span>
+                </td>
+              </tr>
+              <tr>
+                <td class="px-5 py-4">
+                  <input type="checkbox" class="mr-2" v-model="optionModalUI.priceSale" />
+                  <span>Giá sale</span>
+                </td>
+                <td class="px-5 py-4">
+                  <input type="checkbox" class="mr-2" v-model="optionModalUI.price" />
+                  <span>Giá bán</span>
+                </td>
+              </tr>
+            </table>
+            <div class="flex justify-end items-center">
+              <button type="button" @click="closeOptionModal" class="mr-2 text-gray-500 hover:text-gray-700 mx-6">
+                Hủy
+              </button>
+              <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-500">
+                Áp dụng
+              </button>
+
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <!-- option modal -->
+
   </div>
   <div v-if="ShowLoading" class="w-full h-full flex justify-center items-center"
     style="position: fixed; top: 0; left: 0;">
@@ -421,9 +608,9 @@ import moment from 'moment';
 import { FwbSpinner } from 'flowbite-vue'
 import { showToast } from '../assets/Toastify'
 import { instance } from '../assets/axios-instance';
-import { TrashIcon, PhotoIcon, PencilSquareIcon, PlusIcon, UserCircleIcon, BookmarkIcon, XCircleIcon, CheckIcon } from "@heroicons/vue/20/solid";
+import { TrashIcon, PhotoIcon, PencilSquareIcon, PlusIcon, UserCircleIcon, BookmarkIcon, XCircleIcon, CheckIcon, MagnifyingGlassIcon, AdjustmentsHorizontalIcon, FunnelIcon } from "@heroicons/vue/20/solid";
 import * as API from "../assets/API";
-import { computed, ref, onMounted } from "vue";
+import { computed, ref, onMounted, watch } from "vue";
 import {
   Combobox,
   ComboboxButton,
@@ -518,7 +705,32 @@ const salePrice = ref(0);
 let idSale = -1;
 // } sale
 
+// filter option {
+const categoriesFilter = ref([
+  { id: -1, name: "Không có" },
+  { id: 1, name: "Áo polo" },
+  { id: 2, name: "Áo thun" },
+  { id: 3, name: "Áo sơ mi" },
+  { id: 4, name: "Áo khoác" },
+  { id: 5, name: "Áo vest" },
+  { id: 6, name: "Áo len" },
+  { id: 7, name: "Áo hoodie" },
+]);
+const filterVal = ref({
+  categoryId: -1,
+  sortPrice: 2,
+  page: 0,
+  pageSize: 10,
+  keyword: '',
+  minPrice: 0,
+  maxPrice: 0,
+  isNew: false,
+});
+const numberFilter = ref(0);
+const isOpenFilterModal = ref(false);
 
+const isOpenOptionModal = ref(false);
+// } filter option
 
 
 // load Data {
@@ -545,6 +757,8 @@ const updateListProduct = async () => {
 const updateCategories = async () => {
   await instance.get(API.GETCategories).then(res => {
     categories.value = res.data.data;
+    categoriesFilter.value = res.data.data;
+    categoriesFilter.value.unshift({ id: -1, name: "Không có" });
   }).catch(err => console.log(err));
 }
 
@@ -916,7 +1130,119 @@ const submitSaleModal = async () => {
 // } Sale 
 
 
+// filter {
+const changeSort = () => {
+  filterVal.value.sortPrice++;
+  if (filterVal.value.sortPrice > 2) {
+    filterVal.value.sortPrice = 0;
+  }
+  applyFilter();
+}
 
+const applyFilter = async () => {
+  updateLoading(true);
+  const params = {};
+  if (filterVal.value.sortPrice < 2) {
+    params.sortPrice = filterVal.value.sortPrice;
+  }
+
+  numberFilter.value = 0;
+
+  params.page = filterVal.value.page;
+  params.pageSize = filterVal.value.pageSize;
+
+  if (filterVal.value.keyword.toString().trim().length > 0) {
+    params.keyword = filterVal.value.keyword;
+  }
+  if (filterVal.value.maxPrice > filterVal.value.minPrice) {
+    params.maxPrice = filterVal.value.maxPrice;
+    params.minPrice = filterVal.value.minPrice;
+    numberFilter.value++;
+  } else {
+    filterVal.value.maxPrice = 0;
+    filterVal.value.minPrice = 0;
+  }
+
+  if (filterVal.value.categoryId >= 0) {
+    params.categoryId = filterVal.value.categoryId;
+    numberFilter.value++;
+  }
+
+  if (filterVal.value.isNew) {
+    params.isNew = filterVal.value.isNew;
+    numberFilter.value++;
+  }
+  closeFilterModal();
+  await instance.get(API.GETFilter, {
+    params: params,
+  })
+    .then(res => {
+      products.value = res.data.data.products;
+    })
+    .catch(err => {
+      console.error(err);
+      products.value = [];
+    });
+
+  updateLoading(false);
+
+}
+const openFilterModal = () => {
+  isOpenFilterModal.value = true;
+}
+
+const closeFilterModal = () => {
+  isOpenFilterModal.value = false;
+}
+
+const ResetFilter = () => {
+  filterVal.value.minPrice = 0;
+  filterVal.value.maxPrice = 0;
+  filterVal.value.isNew = false;
+  filterVal.value.categoryId = -1;
+}
+
+// } filter
+
+// option {
+const optionModal = ref({
+  id: true,
+  picture: true,
+  name: true,
+  category: true,
+  priceDefault: false,
+  timeSale: false,
+  priceSale: false,
+  price: true,
+  action: true,
+});
+const optionModalUI = ref({
+  id: true,
+  picture: true,
+  name: true,
+  category: true,
+  priceDefault: false,
+  timeSale: false,
+  priceSale: false,
+  price: true,
+  action: true,
+});
+
+const applyOption = () => {
+  optionModal.value = { ...optionModalUI.value };
+  closeOptionModal();
+}
+
+const openOptionModal = () => {
+  isOpenOptionModal.value = true;
+}
+
+const closeOptionModal = () => {
+  isOpenOptionModal.value = false;
+  optionModalUI.value = { ...optionModal.value };
+}
+
+// } option 
 
 const handleImageUpload = (event) => {
   // Xử lý khi người dùng chọn file ảnh
