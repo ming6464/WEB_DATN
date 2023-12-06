@@ -9,3 +9,17 @@ export const CheckPhoneNumberRegex = (text) => {
     return PhoneNumberRegex.test(text);
 }
 
+export const CheckUserNameRegex = (text) => {
+
+    // Kiểm tra xem ký tự đầu tiên có phải là chữ số
+    const startsWithDigit = /^\d/.test(text);
+
+    // Kiểm tra 
+    const check = /^[a-zA-Z0-9]+$/.test(text);
+
+    // Trả về kết quả kiểm tra
+    return !startsWithDigit && check;
+};
+
+
+

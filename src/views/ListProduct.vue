@@ -171,7 +171,7 @@
                   <span>Lựa chọn ảnh đại diện cho sản phẩm</span>
                   <span type="submit"
                     class="rounded-md bg-indigo-600 mt-2 py-2 text-sm font-semibold
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       text-white shadow-sm hover:bg-indigo-500 text-center w-20">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   text-white shadow-sm hover:bg-indigo-500 text-center w-20">
                     Chọn ảnh
                   </span>
                 </label>
@@ -420,7 +420,7 @@ import VueApexCharts from "vue3-apexcharts";
 import moment from 'moment';
 import { FwbSpinner } from 'flowbite-vue'
 import { showToast } from '../assets/Toastify'
-import axios from "axios";
+import { instance } from '../assets/axios-instance';
 import { TrashIcon, PhotoIcon, PencilSquareIcon, PlusIcon, UserCircleIcon, BookmarkIcon, XCircleIcon, CheckIcon } from "@heroicons/vue/20/solid";
 import * as API from "../assets/API";
 import { computed, ref, onMounted } from "vue";
@@ -531,7 +531,7 @@ onMounted(() => {
 
 const updateListProduct = async () => {
   updateLoading(true);
-  await axios.get(API.GETProducts)
+  await instance.get(API.GETProducts)
     .then(res => {
       products.value = res.data.data;
     })
@@ -543,20 +543,20 @@ const updateListProduct = async () => {
 }
 
 const updateCategories = async () => {
-  await axios.get(API.GETCategories).then(res => {
+  await instance.get(API.GETCategories).then(res => {
     categories.value = res.data.data;
   }).catch(err => console.log(err));
 }
 
 const updateSizes = async () => {
-  await axios.get(API.GETSizes)
+  await instance.get(API.GETSizes)
     .then(res => {
       sizeOptions.value = res.data.data;
     })
     .catch(err => console.log(err));
 }
 const updateColors = async () => {
-  await axios.get(API.GETColors)
+  await instance.get(API.GETColors)
     .then(res => {
       colorOptions.value = res.data.data;
     })
@@ -573,7 +573,7 @@ const openUpdateProduct = async (isEditProduct_, person) => {
   isEditProduct = isEditProduct_;
   if (isEditProduct_) {
     updateLoading(true);
-    await axios.get(`${API.GETProduct}/${person.id}`)
+    await instance.get(`${API.GETProduct}/${person.id}`)
       .then(res => {
         updateProductGetAPI = res.data.data;
         productDataGetAPI = updateProductGetAPI.productData;
@@ -648,10 +648,13 @@ const submitEditForm = async () => {
     }
 
     if (check) {
-      await axios.put(`${API.PUTProduct}/${updateProduct.value.id}`, formProduct)
+      await instance.put(`${API.PUTProduct}/${updateProduct.value.id}`, formProduct)
         .then(res => {
+          showToast("Cập nhật thành công", false);
           updateListProduct();
           updateProductWithId(updateProduct.value.id);
+          updateColorSize(updateProduct.value.id);
+          onCloseUpdateProduct();
         })
         .catch(err => {
           console.error(err);
@@ -660,9 +663,6 @@ const submitEditForm = async () => {
           return;
         });
     }
-    updateColorSize(updateProduct.value.id);
-    showToast("Cập nhật thành công", false);
-    onCloseUpdateProduct();
   } else {
     formProduct.append('name', updateProduct.value.name);
     formProduct.append('mainImage', updateProduct.value.imageFile);
@@ -670,7 +670,7 @@ const submitEditForm = async () => {
     formProduct.append('price', updateProduct.value.price);
     formProduct.append('description', updateProduct.value.description.length == 0 ? ' ' : updateProduct.value.description);
 
-    await axios.post(API.POSTProduct, formProduct)
+    await instance.post(API.POSTProduct, formProduct)
       .then(res => {
         updateColorSize(res.data.data.id);
         updateListProduct();
@@ -725,10 +725,10 @@ const updateColorSize = (id) => {
         formItemColorSize.append('amount', x.amount ? x.amount : 0);
         formItemColorSize.append('price', 0);
         if (x.isNew) {
-          //axios.post(API.POSTProduct_Size_Color, formItemColorSize);
+          //instance.post(API.POSTProduct_Size_Color, formItemColorSize);
           UpAPIColorSize(true, API.POSTProduct_Size_Color, formItemColorSize);
         } else {
-          //axios.put(`${API.POSTProduct_Size_Color}/${x.id}`, formItemColorSize);
+          //instance.put(`${API.POSTProduct_Size_Color}/${x.id}`, formItemColorSize);
           UpAPIColorSize(false, `${API.POSTProduct_Size_Color}/${x.id}`, formItemColorSize);
         }
 
@@ -750,7 +750,7 @@ const updateColorSize = (id) => {
 }
 const UpAPIColorSize = async (isPost, api, data) => {
   if (isPost) {
-    await axios.post(api, data)
+    await instance.post(api, data)
       .catch(err => {
         console.error(err);
         showToast("Lỗi", true);
@@ -758,7 +758,7 @@ const UpAPIColorSize = async (isPost, api, data) => {
         return;
       });
   } else {
-    await axios.put(api, data)
+    await instance.put(api, data)
       .catch(err => {
         console.error(err);
         showToast("Lỗi", true);
@@ -826,7 +826,7 @@ const deleteProduct = async () => {
     const index = products.value.findIndex((person) => person.id === idDelete);
 
     if (index !== -1) {
-      await axios.delete(`${API.DELProduct}/${idDelete}`)
+      await instance.delete(`${API.DELProduct}/${idDelete}`)
         .then(res => {
           products.value.splice(index, 1);
         })
@@ -900,7 +900,7 @@ const submitSaleModal = async () => {
   // formSale.append('saleStart', saleStart.value);
   // formSale.append('saleEnd', saleEnd.value);
   formSale.append('salePrice', salePrice.value);
-  await axios.put(`${API.PUTSale}/${idSale}`, formSale)
+  await instance.put(`${API.PUTSale}/${idSale}`, formSale)
     .then(res => {
       showToast("Tạo giảm giá thành công", false);
       updateProductWithId(idSale);
@@ -941,7 +941,7 @@ const validateQuantityPrice = () => {
   }
 };
 const updateProductWithId = async (id) => {
-  await axios(`${API.GETProduct}/${id}`)
+  await instance(`${API.GETProduct}/${id}`)
     .then(res => {
       const index = products.value.findIndex(x => x.id == id);
       if (index < 0) {

@@ -1,4 +1,4 @@
-export const port = '3333';
+const port = '3333';
 export const http = `http://localhost:${port}`;
 
 //customer
@@ -43,3 +43,12 @@ export const GETProduct_Size_Color = `${http}/product-size-color`;
 export const POSTProduct_Size_Color = `${http}/product-size-color`;
 export const PUTProduct_Size_Color = `${http}/product-size-color`;
 // } Product_size_color
+
+//account {
+export const GETAccounts = `${http}/admin`;
+export const GETAccount = `${http}/admin`;
+export const POSTAccount = `${http}/admin/signup`;
+export const PUTAccount = `${http}/admin`;
+export const DELAccount = `${http}/admin`;
+export const SignIn = `${http}/admin/signin`;
+// } account

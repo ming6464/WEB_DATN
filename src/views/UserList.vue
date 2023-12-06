@@ -62,7 +62,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { PencilSquareIcon, TrashIcon, PlusIcon } from "@heroicons/vue/20/solid";
-import axios from "axios";
+import { instance } from '../assets/axios-instance';
 import * as API from '../assets/API'
 const user = ref([
   {
@@ -108,7 +108,7 @@ onMounted(() => {
 })
 
 const LoadCustomerList = async () => {
-  await axios.get(API.GETCustomer)
+  await instance.get(API.GETCustomer)
     .then(res => {
       user.value = res.data.data;
     })

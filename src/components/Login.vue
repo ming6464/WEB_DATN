@@ -1,84 +1,49 @@
 <template>
-  <div
-    class="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8"
-  >
+  <div class="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
     <div class="sm:mx-auto sm:w-full sm:max-w-sm">
-      <img
-        class="mx-auto h-10 w-auto"
-        src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
-        alt="Your Company"
-      />
-      <h2
-        class="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900"
-      >
+      <img class="mx-auto h-10 w-auto" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
+        alt="Your Company" />
+      <h2 class="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
         Sign in to your account
       </h2>
     </div>
 
     <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-      <form class="space-y-6" action="#" method="POST" @submit.prevent="submit">
+      <form class="space-y-6" @submit.prevent="submitForm">
         <div>
-          <label
-            for="email"
-            class="block text-sm font-medium leading-6 text-gray-900"
-            >Địa chỉ email</label
-          >
+          <label for="userName" class="block text-sm font-medium leading-6 text-gray-900">Tài khoản</label>
           <div class="mt-2">
-            <input
-              id="email"
-              name="email"
-              type="email"
-              autocomplete="email"
-              required
-              v-model="formData.email"
-              :class="{ 'border-red-500': errors.email }"
-              @input="clearError('email')"
-              class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-            />
-            <div v-if="errors.email" class="text-red-500 text-sm mt-1">
-              {{ errors.email }}
+            <input id="userName" name="text" type="userName" autocomplete="userName" v-model="formData.userName"
+              :class="{ 'border-2 border-red-500': errors.userName }" @input="clearError('userName')"
+              class="block w-full rounded-md border-0 py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+            <div v-if="errors.userName" class="text-red-500 text-xs font-semibold mt-1">
+              {{ `* ${errors.userName}` }}
             </div>
           </div>
         </div>
 
         <div>
           <div class="flex items-center justify-between">
-            <label
-              for="password"
-              class="block text-sm font-medium leading-6 text-gray-900"
-              >Mật khẩu
+            <label for="password" class="block text-sm font-medium leading-6 text-gray-900">Mật khẩu
             </label>
             <div class="text-sm">
-              <a
-                href="#"
-                class="font-semibold text-indigo-600 hover:text-indigo-500"
-                >Quên mật khẩu ?</a
-              >
+              <a href="#" class="font-semibold text-indigo-600 hover:text-indigo-500">Quên mật khẩu ?</a>
             </div>
           </div>
           <div class="mt-2">
-            <input
-              id="password"
-              name="password"
-              type="password"
-              autocomplete="current-password"
-              required
-              v-model="formData.password"
-              :class="{ 'border-red-500': errors.password }"
+            <input id="password" name="password" type="password" autocomplete="current-password"
+              v-model="formData.password" :class="{ 'border-2 border-red-500': errors.password }"
               @input="clearError('password')"
-              class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-            />
-            <div v-if="errors.password" class="text-red-500 text-sm mt-1">
-              {{ errors.password }}
+              class="block w-full rounded-md px-2 border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+            <div v-if="errors.password" class="text-red-500 text-xs font-semibold mt-1">
+              {{ `* ${errors.password}` }}
             </div>
           </div>
         </div>
 
         <div>
-          <button
-            type="submit"
-            class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-          >
+          <button type="submit"
+            class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
             Đăng nhập
           </button>
           <Button label="Submit" />
@@ -89,36 +54,64 @@
 </template>
 <script setup>
 import { ref } from "vue";
+import * as API from '../assets/API'
+import { showToast } from '../assets/Toastify'
+import { setAuthToken } from '../assets/axios-instance'
+import { useRouter } from "vue-router";
+import axios from "axios";
+const router = useRouter();
 
-const formData = ref({
-  email: "",
-  password: "",
-});
 
 const errors = ref({
-  email: "",
+  userName: null,
+  password: null,
+});
+
+const formData = ref({
+  userName: "",
   password: "",
 });
 
-function submitForm() {
+const submitForm = async () => {
+
+  let check = false;
   errors.value = {}; // Reset errors
 
-  if (!formData.value.email.trim()) {
-    errors.value.email = "Email is required.";
+  if (!formData.value.userName.trim()) {
+    errors.value.userName = "Thông tin trống";
+    check = true;
   }
 
   if (!formData.value.password.trim()) {
-    errors.value.password = "Password is required.";
+    errors.value.password = "Thông tin trống";
+    check = true;
   }
+  if (check) return;
+  const formAccount = new FormData();
+  formAccount.append('username', formData.value.userName);
+  formAccount.append('password', formData.value.password);
+  login(false, formAccount);
+}
 
-  // Perform form submission logic if there are no errors
-  if (Object.keys(errors.value).length === 0) {
-    // Your form submission logic goes here
-    console.log("Form submitted successfully");
-  }
+const login = async (toMain, form) => {
+
+  await axios.post(API.SignIn, form)
+    .then(res => {
+      if (toMain) {
+        router.push("/admin/home");
+      } else {
+        setAuthToken(res.data.data.token);
+        login(true, form);
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      showToast("Tài khoản hoặc mật khẩu không hơp lệ", true);
+      return;
+    })
 }
 
 function clearError(field) {
-  errors.value[field] = "";
+  errors.value[field] = null;
 }
 </script>

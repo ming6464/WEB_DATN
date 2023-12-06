@@ -11,7 +11,6 @@
             class="rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring focus:border-indigo-500">
             <option value="id">ID</option>
             <option value="name">Tên</option>
-            <option value="email">Email</option>
           </select>
 
           <button type="button" @click="openModal(-1)"
@@ -33,82 +32,55 @@
                 <th scope="col" class="py-3.5 text-left text-sm font-semibold text-gray-900">
                   Tên
                 </th>
-
                 <th scope="col" class="py-3.5 text-left text-sm font-semibold text-gray-900">
-                  Email
+                  Tên tài khoản
                 </th>
                 <th scope="col" class="py-3.5 text-left text-sm font-semibold text-gray-900">
-                  Số điện thoại
-                </th>
-                <th scope="col" class="px-3.5 py-3.5 text-left text-sm font-semibold text-gray-900">
                   Chức vụ cao nhất
                 </th>
-                <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-0">
-                  <span class="sr-only">Edit</span>
+                <th scope="col" class="py-3.5 text-left text-sm font-semibold text-gray-900">
+                  Hoạt động
                 </th>
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-200 bg-white">
               <tr v-for="(person, index) in filteredStaffs" :key="index">
-                <td class="px-3 py-4 text-sm text-gray-500">
+                <td class="py-4 text-sm text-gray-500">
                   <div class="font-medium text-gray-900">{{ person.id }}</div>
                 </td>
-                <td class="whitespace-nowrap py-5 pl-4 pr-3 text-sm sm:pl-0">
+                <td class="whitespace-nowrap py-5 text-sm">
                   <div class="flex items-center">
                     <div class="h-11 w-11 flex-shrink-0">
-                      <img class="h-11 w-11 rounded-full" :src="person.image" alt="" />
+                      <img class="h-11 w-11 rounded-full" :src="person.avatar" alt="" />
                     </div>
                     <div class="ml-4">
                       <div class="font-medium text-gray-900">
-                        {{ person.last_name + " " + person.first_name }}
+                        {{ person.fullname }}
                       </div>
                     </div>
                   </div>
                 </td>
 
-                <td class="whitespace-nowrap py-4 px-3 text-sm sm:pl-0">
+                <td class="whitespace-nowrap py-4 text-sm">
                   <div class="flex items-center">
                     <div class="font-medium text-gray-900">
-                      {{ person.email }}
+                      {{ person.username }}
                     </div>
                   </div>
                 </td>
 
-                <td class="whitespace-nowrap py-4 px-3 text-sm sm:pl-0">
-                  <div class="flex items-center">
-                    <div class="font-medium text-gray-900">
-                      {{ person.phone }}
-                    </div>
-                  </div>
+                <td class="py-4 text-sm">
+                  <span
+                    class="rounded-md text-center bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
+                    Nhân viên
+                  </span>
                 </td>
-
-                <td class="py-4 px-3 text-sm sm:pl-0">
-                  <div class="flex items-center">
-                    <div class="ml-4">
-                      <div
-                        class="mt-1 rounded-md text-center bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20"
-                        v-if="person.isAdmin">
-                        Admin
-                      </div>
-                      <div
-                        class="mt-1 rounded-md text-center bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20"
-                        v-else-if="person.isStaff">
-                        Nhân viên
-                      </div>
-                      <div
-                        class="mt-1 rounded-md text-center bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20"
-                        v-else-if="person.isShiper">
-                        Giao hàng
-                      </div>
-                    </div>
-                  </div>
-                </td>
-                <td class="relative whitespace-nowrap py-5 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
-                  <button type="button" @click="openModal(index)" class="text-indigo-600 hover:text-indigo-900 mr-1">
+                <td class="flex whitespace-nowrap py-5 text-right text-sm font-medium">
+                  <button type="button" @click="openModal(person.id)" class="text-indigo-600 hover:text-indigo-900 mr-1">
                     <PencilSquareIcon class="h-5 w-5" aria-hidden="true" />
                     <span class="sr-only">Edit, {{ person.id }}</span>
                   </button>
-                  <button type="button" @click="showDeleteModal(index)" class="text-red-600 hover:text-red-900 ml-1">
+                  <button type="button" @click="showDeleteModal(person.id)" class="text-red-600 hover:text-red-900 ml-1">
                     <TrashIcon class="h-5 w-5" aria-hidden="true" />
                   </button>
                 </td>
@@ -129,36 +101,36 @@
           class="relative bg-white p-6 rounded-lg max-w-5xl max-h-[600px] overflow-y-auto overflow-hidden lg:ml-64 mt-10">
           <h1 class="text-xl font-bold mb-4 text-center">
             {{
-              selectedIndex >= 0 ? "Sửa thông tin người dùng" : "Thêm tài khoản"
+              IdSelected >= 0 ? "Sửa thông tin tải khoản" : "Thêm tài khoản"
             }}
           </h1>
           <!-- Form for editing person details -->
-          <form @submit.prevent="submitEditForm" class="mx-auto mt-8 sm:max-w-xl sm:mt-7">
+          <form @submit.prevent="submitEditForm" class="mx-auto mt-8 w-96 sm:mt-7">
             <div class="grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2">
               <div class="col-span-full flex items-center gap-x-8">
                 <label for="image-upload" class="cursor-pointer">
-                  <img :src="staffEdit.image" alt="" class="h-24 w-24 flex-none rounded-lg bg-gray-800 object-cover" />
+                  <img :src="staffEdit.avatar" alt="" class="h-24 w-24 flex-none rounded-lg bg-gray-800 object-cover" />
                 </label>
                 <input type="file" id="image-upload" @change="handleImageUpload" accept="image/*" class="hidden" />
               </div>
-              <div>
-                <label for="last-name" class="block text-sm font-semibold leading-6 text-gray-900">Họ</label>
+
+              <div class="sm:col-span-2">
+                <label for="fullName" class="block text-sm font-semibold leading-6 text-gray-900">Tên đầy đủ</label>
                 <div class="mt-2.5">
-                  <input type="text" v-model="staffEdit.last_name" name="last-name" id="last-name" required
-                    autocomplete="family-name"
-                    class="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
-                </div>
-              </div>
-              <div>
-                <label for="first-name" class="block text-sm font-semibold leading-6 text-gray-900">Tên</label>
-                <div class="mt-2.5">
-                  <input type="text" v-model="staffEdit.first_name" required name="first-name" id="first-name"
-                    autocomplete="given-name"
+                  <input type="text" name="fullName" v-model="staffEdit.fullname" id="fullName" autocomplete="fullName"
                     class="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
                 </div>
               </div>
 
-              <div class="sm:col-span-2">
+              <div class="sm:col-span-2" v-show="IdSelected < 0">
+                <label for="userName" class="block text-sm font-semibold leading-6 text-gray-900">Tài khoản</label>
+                <div class="mt-2.5">
+                  <input type="text" name="userName" v-model="staffEdit.username" id="userName" autocomplete="userName"
+                    class="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                </div>
+              </div>
+
+              <!-- <div class="sm:col-span-2">
                 <label for="email" class="block text-sm font-semibold leading-6 text-gray-900">Email</label>
                 <div class="mt-2.5">
                   <input type="email" name="email" required v-model="staffEdit.email" id="email" autocomplete="email"
@@ -173,27 +145,28 @@
                     id="phone" autocomplete="phone"
                     class="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
                 </div>
-              </div>
+              </div> -->
 
               <div class="sm:col-span-2">
-                <label for="password" class="block text-sm font-semibold leading-6 text-gray-900">Mật khẩu</label>
+                <label for="password" class="block text-sm font-semibold leading-6 text-gray-900">{{ IdSelected >=
+                  0 ? 'Mật khẩu mới' : 'Mật khẩu' }}</label>
                 <div class="mt-2.5">
-                  <input type="text" name="password" required v-model="staffEdit.password" id="password"
-                    autocomplete="password"
+                  <input type="text" name="password" v-model="staffEdit.password" id="password" autocomplete="password"
                     class="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
                 </div>
               </div>
 
-              <div class="sm:col-span-2" v-if="selectedIndex < 0">
+              <div class="sm:col-span-2" v-if="IdSelected < 0">
                 <label for="password2" class="block text-sm font-semibold leading-6 text-gray-900">Nhập lại mật
                   khẩu</label>
                 <div class="mt-2.5">
-                  <input type="text" name="password2" required v-model="password2" id="phone" autocomplete="password2"
+                  <input type="text" name="password2" v-model="password2" id="phone" autocomplete="password2"
                     class="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
                 </div>
               </div>
 
-              <div class="sm:col-span-2">
+              <!-- phân quyền động -->
+              <!-- <div class="sm:col-span-2">
                 <div class="sm:col-span-2">
                   <div>
                     <SwitchGroup as="div" class="flex items-center justify-between">
@@ -252,7 +225,7 @@
                     </SwitchGroup>
                   </div>
                 </div>
-              </div>
+              </div> -->
             </div>
             <div class="mt-8 flex">
               <button type="button" @click="closeEditModal"
@@ -317,12 +290,26 @@
       </div>
     </div>
   </div>
+
+  <!-- loadding -->
+  <div v-if="ShowLoading" class="w-full h-full flex justify-center items-center"
+    style="position: fixed; top: 0; left: 0;">
+    <div class="flex justify-center items-center">
+      <!-- Phần background với độ mờ -->
+      <div class="bg-gray-500" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.3;">
+      </div>
+      <!-- Nội dung loading spinner -->
+      <div class="spinner-border text-white" role="status">
+        <fwb-spinner color="blue" size="12" class="lg:ml-64 mt-10" />
+      </div>
+    </div>
+  </div>
+  <!-- loadding -->
 </template>
 
 <script setup>
-import { PencilSquareIcon } from "@heroicons/vue/20/solid";
-import { TrashIcon } from "@heroicons/vue/20/solid";
-import { ref, watch, computed } from "vue";
+import { TrashIcon, PencilSquareIcon } from "@heroicons/vue/20/solid";
+import { ref, watch, computed, onMounted } from "vue";
 import {
   Switch,
   SwitchDescription,
@@ -331,63 +318,77 @@ import {
 } from "@headlessui/vue";
 import * as CheckRegex from "../assets/validate";
 import { showToast } from "../assets/Toastify";
+import * as API from '../assets/API';
+import { instance } from '../assets/axios-instance';
+import { FwbSpinner } from 'flowbite-vue'
+
+const ShowLoading = ref(false);
+
 const staffs = ref([
   {
-    id: "md0001",
-    last_name: "Lindsay",
-    first_name: "Walton",
-    email: "lindsay.walton@example.com",
-    isAdmin: true,
-    isStaff: true,
-    isShiper: true,
-    phone: "1234567890",
-    password: "1234567890",
-    image:
-      "https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-  },
-
-  {
-    id: "md0002",
-    last_name: "Lindsay",
-    first_name: "Walton",
-    email: "lindsay.walton@example.com",
-    isAdmin: true,
-    isStaff: true,
-    isShiper: true,
-    phone: "1234567890",
-    password: "1234567890",
-    image:
-      "https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-  },
+    "id": 1,
+    "username": "admin8",
+    "password": "$2b$10$WeV6.qT91W7o4y.xc65YNe8u0cZ8o6PYrs1.pWZcW0xxhlY4bA0bq",
+    "role": 1,
+    "fullname": "admin",
+    "avatar": "http://res.cloudinary.com/dbsfgxrjz/image/upload/v1701790879/admin-image/ro0e208y5nqcgccstxvt.jpg",
+  }
 ]);
-
+const selectedFilter = ref("id"); // Giá trị mặc định của bộ lọc
+const searchTerm = ref("");
 // modal
 const isOpenModal = ref(false);
 const isShowModal = ref(false);
 const isDeleteModalOpen = ref(false);
 const isShowDeleteModal = ref(false);
 const password2 = ref("");
-const selectedIndex = ref(-1);
+const IdSelected = ref(-1);
 const staffEdit = ref({});
 const isAnySwitchOn = ref(true);
-const openModal = async (index) => {
+
+onMounted(() => {
+  loadData();
+});
+
+const loadData = async () => {
+  updateLoad(true);
+  await instance.get(API.GETAccounts)
+    .then(res => {
+      staffs.value = [];
+      console.log(res.data);
+      res.data.data.forEach(x => {
+        if (x.role == 0) {
+          staffs.value.push(x);
+        }
+      });
+    })
+    .catch(err => {
+      console.error(err);
+      showToast("Lỗi", true);
+      return;
+    })
+  updateLoad(false);
+}
+
+const openModal = async (id) => {
   isAnySwitchOn.value = true;
   isOpenModal.value = true;
-  selectedIndex.value = index;
-  if (index >= 0) {
-    staffEdit.value = { ...staffs.value[index] };
+  IdSelected.value = id;
+  if (staffEdit.value.fileImage) {
+    staffEdit.value.fileImage = null;
+  }
+  if (id >= 0) {
+    const editAcc = staffs.value.find(x => x.id == IdSelected.value);
+    staffEdit.value = { ...editAcc };
+    staffEdit.value.password = '';
   } else {
     password2.value = "";
     staffEdit.value = {
-      id: "",
-      last_name: "",
-      first_name: "",
-      email: "",
-      phone: "",
-      isAdmin: false,
-      isStaff: false,
-      isShiper: false,
-      image: "",
+      "username": "",
+      "password": "",
+      "role": 0,
+      "fullname": "",
+      "avatar": "",
     };
   }
   await delay(100);
@@ -399,61 +400,132 @@ const handlePhoneNumberInput = () => {
   staffEdit.value.phone = staffEdit.value.phone.replace(/\D/g, "");
 };
 
-const submitEditForm = () => {
-  if (!CheckRegex.CheckNameRegex(staffEdit.value.last_name)) {
-    showToast("Tên không hợp lệ. Vui lòng kiểm tra lại", true);
-    return;
-  }
+const submitEditForm = async () => {
 
-  if (!CheckRegex.CheckNameRegex(staffEdit.value.first_name)) {
-    showToast("Họ không hợp lệ. Vui lòng kiểm tra lại", true);
-    return;
-  }
+  if (!checkvalidate(true)) return;
+  updateLoad(true);
 
-  if (!CheckRegex.CheckPhoneNumberRegex(staffEdit.value.phone)) {
-    showToast(
-      "Số điện thoại chưa đúng định dạng. Vui lòng kiểm tra lại", true
-    );
-    return;
-  }
+  const formAccount = new FormData();
 
-  isAnySwitchOn.value =
-    staffEdit.value.isShiper ||
-    staffEdit.value.isStaff ||
-    staffEdit.value.isAdmin;
-  if (isAnySwitchOn.value == false) {
-    showToast("Tài khoản phải có ít nhất 1 quyền", true);
-    return;
-  }
-  if (staffEdit.value.image.length == 0) {
-    staffEdit.value.image =
-      "https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80";
-  }
-  if (selectedIndex.value >= 0) {
-    staffs.value.splice(selectedIndex.value, 1, staffEdit.value);
-  } else {
-    if (staffEdit.value.password == password2.value) {
-      staffEdit.value.id = staffs.value.length;
-      staffs.value.push(staffEdit.value);
-    } else {
-      console.log("Sai password");
+  if (IdSelected.value >= 0) {
+    const oldAcc = staffs.value.find(x => x.id == IdSelected.value);
+    let checkEdit = false;
+
+    if (oldAcc.fullname != staffEdit.value.fullname) {
+      checkEdit = true;
+      formAccount.append('fullname', staffEdit.value.fullname);
     }
+
+    if (staffEdit.value.fileImage) {
+      checkEdit = true;
+      formAccount.append('avatar', staffEdit.value.fileImage);
+    }
+
+    if (staffEdit.value.password.toString().trim().length > 0) {
+      checkEdit = true;
+      formAccount.append('password', staffEdit.value.password.toString().trim());
+    }
+
+    if (checkEdit) {
+      await instance.put(`${API.PUTAccount}/${IdSelected.value}`, formAccount)
+        .then(res => {
+          updateAccountWithId(IdSelected.value);
+          showToast("Cập nhật thành công");
+        })
+        .catch(err => {
+          console.error(err);
+          showToast("Lỗi", true);
+        })
+    }
+
+  } else {
+    if (!checkvalidate(false)) {
+      updateLoad(false);
+      return;
+    }
+    formAccount.append('username', staffEdit.value.username);
+    formAccount.append('password', staffEdit.value.password);
+    formAccount.append('fullname', staffEdit.value.fullname);
+    formAccount.append('role', 0);
+    formAccount.append('avatar', staffEdit.value.fileImage);
+    await instance.post(API.POSTAccount, formAccount)
+      .then(res => {
+        loadData();
+      })
+      .catch(err => {
+        console.error(err);
+        showToast("Lỗi", true);
+      })
   }
   closeEditModal();
+  updateLoad(false);
 };
 
-const showDeleteModal = async (index) => {
-  selectedIndex.value = index;
+const checkvalidate = (isEdit) => {
+  if (!CheckRegex.CheckNameRegex(staffEdit.value.fullname)) {
+    showToast("Tên đầy đủ không hợp lệ. Vui lòng kiểm tra lại", true);
+    return false;
+  }
+  if (!isEdit) {
+    if (!staffEdit.value.fileImage) {
+      showToast("Ảnh đại diện bị thiếu", true);
+      return false;
+    }
+    if (!CheckRegex.CheckUserNameRegex(staffEdit.value.username)) {
+      showToast("Tên tài khoản không hợp lệ. Vui lòng kiểm tra lại", true);
+      return false;
+    }
+
+    if (staffEdit.value.password.toString().trim().length == 0) {
+      showToast("Mật khẩu bị thiếu", true);
+      return false;
+    }
+
+    if (staffEdit.value.password != password2.value) {
+      showToast("Mật khẩu không trùng khớp", true);
+      return false;
+    }
+  }
+  return true;
+}
+
+const updateAccountWithId = async (id) => {
+  await instance.get(`${API.GETAccount}/${id}`)
+    .then(res => {
+      const index = staffs.value.findIndex(x => x.id == id);
+      staffs.value[index] = res.data.data;
+    })
+    .catch(err => {
+      console.error(err);
+      showToast("Lỗi");
+    })
+}
+
+const showDeleteModal = async (id) => {
+  IdSelected.value = id;
   isDeleteModalOpen.value = true;
   await delay(100);
   isShowDeleteModal.value = true;
 };
 
-const deleteStaff = () => {
+const deleteStaff = async () => {
+  updateLoad(true)
   try {
-    staffs.value.splice(selectedIndex.value, 1);
-    closeDeleteModal();
+    console.log(`${API.DELAccount}/${IdSelected.value}`)
+    await instance.delete(`${API.DELAccount}/${IdSelected.value}`)
+      .then(res => {
+        showToast("Xoá thành công");
+        const index = staffs.value.findIndex(x => x.id == IdSelected.value);
+        staffs.value.splice(index, 1);
+      })
+      .catch(err => {
+        showToast("Lỗi", true);
+        console.error(err);
+      })
+
   } catch (error) { }
+  updateLoad(false);
+  closeDeleteModal();
 };
 
 const closeDeleteModal = async () => {
@@ -474,22 +546,15 @@ const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const handleImageUpload = (event) => {
   const file = event.target.files[0];
   if (file) {
+    staffEdit.value.fileImage = file;
     const reader = new FileReader();
     reader.onload = () => {
-      staffEdit.value.image = reader.result;
+      staffEdit.value.avatar = reader.result;
     };
     reader.readAsDataURL(file);
   }
 };
 //search
-
-const selectedFilter = ref("id"); // Giá trị mặc định của bộ lọc
-
-const searchTerm = ref("");
-
-watch(selectedFilter, (newVal, oldVal) => {
-  console.log("Bộ lọc được chọn:", newVal);
-});
 
 const filteredStaffs = computed(() => {
   const term = searchTerm.value.toString().toLowerCase().trim();
@@ -502,18 +567,16 @@ const filteredStaffs = computed(() => {
     case "name":
       return staffs.value.filter(
         (person) =>
-          person.last_name.toString().toLowerCase().includes(term) ||
-          person.first_name.toString().toLowerCase().includes(term)
-      );
-    case "email":
-      return staffs.value.filter((person) =>
-        person.email.toString().toLowerCase().includes(term)
+          person.fullname.toString().toLowerCase().includes(term)
       );
   }
 });
 
 //search
 
+const updateLoad = (check) => {
+  ShowLoading.value = check;
+}
 
 // modal
 </script>

@@ -230,7 +230,7 @@ import { ref, onMounted, computed } from "vue";
 import { PlusIcon } from "@heroicons/vue/20/solid";
 import { PencilSquareIcon } from "@heroicons/vue/20/solid";
 import { TrashIcon } from "@heroicons/vue/20/solid";
-import axios from "axios";
+import { instance } from '../assets/axios-instance';
 import * as API from "../assets/API";
 import { showToast } from '../assets/Toastify'
 const ShowLoading = ref(false);
@@ -291,7 +291,7 @@ onMounted(() => {
 
 const updateCategories = async () => {
   updateLoading(true);
-  await axios.get(API.GETCategories)
+  await instance.get(API.GETCategories)
     .then(res => {
       categories.value = res.data.data;
     })
@@ -315,7 +315,7 @@ const openDeleteModal = async (index) => {
 const deleteCategory = async () => {
   updateLoading(true);
   try {
-    await axios.delete(`${API.DELCategories}/${categories.value[indexDelete].id}`)
+    await instance.delete(`${API.DELCategories}/${categories.value[indexDelete].id}`)
       .then(res => {
         categories.value.splice(indexDelete, 1);
         showToast("Xoá thành công", false);
@@ -349,7 +349,7 @@ const submitEditForm = async () => {
   formData.append('name', editedPerson.value.name);
   isEditModalOpen.value = false;
   // Update the person in the array
-  await axios.put(`${API.PUTCategories}/${editedPerson.value.id}`, formData, {
+  await instance.put(`${API.PUTCategories}/${editedPerson.value.id}`, formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     }
@@ -419,7 +419,7 @@ const addNewProduct = async () => {
   const formData = new FormData();
   formData.append('name', newProduct.value.name);
   formData.append('image', newProduct.value.file);
-  await axios.post(API.POSTAddCategories, formData)
+  await instance.post(API.POSTAddCategories, formData)
     .then((res) => {
       updateCategories();
       showToast("Thêm mới thành công", false);
