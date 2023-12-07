@@ -28,7 +28,11 @@ const routes = [
       {
         path: 'transactionList',
         component: () => import('../views/TransactionList.vue'),
-      }
+      },
+      {
+        path: 'userEdit',
+        component: () => import('../views/UserProfileEdit.vue'),
+      },
     ],
   },
   {
