@@ -299,10 +299,11 @@
                   alt=""
                 />
                 <span class="hidden lg:flex lg:items-center">
-                  <span
+                  <a
+                    href="/admin/userEdit"
                     class="ml-4 text-sm font-semibold leading-6 text-gray-900"
                     aria-hidden="true"
-                    >Tom Cook</span
+                    >Tom Cook</a
                   >
                 </span>
               </MenuButton>

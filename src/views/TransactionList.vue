@@ -55,7 +55,7 @@
                 scope="col"
                 class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:pl-0"
               >
-                Tổng số lượng
+                Tổng tiền
               </th>
               <th
                 scope="col"
@@ -63,14 +63,17 @@
               >
                 Trạng thái
               </th>
+              <th
+                scope="col"
+                class="py-3 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
+              >
+                Hoạt động
+              </th>
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-200 bg-white">
-            <tr
-              v-for="person in filteredPeople"
-              :key="person.id"
-              @click="showDetails(person)"
-            >
+            <!-- ... (existing code) ... -->
+            <tr v-for="person in filteredPeople" :key="person.id">
               <td
                 class="whitespace-nowrap px-3 py-5 text-sm text-gray-900 sm:pl-2"
               >
@@ -96,6 +99,7 @@
               >
                 {{ person.number }}
               </td>
+
               <td>
                 <select
                   v-model="person.status"
@@ -108,14 +112,26 @@
                   <option value="cancelled">Đã hủy</option>
                 </select>
               </td>
+              <td>
+                <div class="mx-4 space-x-3">
+                  <button
+                    class="text-red-700 hover:text-indigo-900"
+                    @click="showDetails(person)"
+                  >
+                    <Bars3Icon class="h-5 w-5" aria-hidden="true" />
+                    <span class="sr-only">, {{ person.id }}</span>
+                  </button>
+                </div>
+              </td>
             </tr>
+            <!-- ... (existing code) ... -->
           </tbody>
         </table>
       </div>
     </div>
   </div>
   <!-- Modal for Details -->
-  <div v-if="selectedPerson" class="fixed inset-0 z-10 overflow-y-auto">
+  <div v-if="selectedPerson" class="fixed inset-0 z-10 overflow-y-auto mt-8">
     <div
       class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0"
     >
@@ -134,9 +150,9 @@
       >
         <div>
           <div class="px-4 sm:px-6">
-            <h3 class="text-base font-semibold leading-7 text-gray-900">
+            <h1 class="text-base font-semibold leading-7 text-gray-900">
               Chi tiết đơn hàng
-            </h3>
+            </h1>
           </div>
           <div class="mt-6 border-t border-gray-100">
             <dl class="divide-y divide-gray-100">
@@ -162,6 +178,16 @@
               </div>
               <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-4">
                 <dt class="text-sm font-medium leading-6 text-gray-900">
+                  Số điện thoại
+                </dt>
+                <dd
+                  class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0"
+                >
+                  {{ selectedPerson.phone }}
+                </dd>
+              </div>
+              <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-4">
+                <dt class="text-sm font-medium leading-6 text-gray-900">
                   Địa chỉ
                 </dt>
                 <dd
@@ -172,12 +198,22 @@
               </div>
               <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-4">
                 <dt class="text-sm font-medium leading-6 text-gray-900">
-                  Số lượng
+                  Tổng tiền
                 </dt>
                 <dd
                   class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0"
                 >
                   {{ selectedPerson.number }}
+                </dd>
+              </div>
+              <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-4">
+                <dt class="text-sm font-medium leading-6 text-gray-900">
+                  Loại thanh toán
+                </dt>
+                <dd
+                  class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0"
+                >
+                  {{ selectedPerson.paymentType }}
                 </dd>
               </div>
               <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-4">
@@ -225,7 +261,7 @@
 
 <script setup>
 import { ref, watch, computed } from "vue";
-import { PlusIcon } from "@heroicons/vue/20/solid";
+import { Bars3Icon } from "@heroicons/vue/20/solid";
 import {
   PencilSquareIcon,
   ExclamationTriangleIcon,
@@ -237,8 +273,10 @@ const people = ref([
     name: "Lindsay",
     datetime: "12:35:35 19/04/2023",
     address: "Nam Từ Liêm - Hà Nội",
-    number: "12",
+    number: "30000",
     status: "pending",
+    phone: "0608993454",
+    paymentType: "Khi nhận hàng",
   },
 ]);
 //search
@@ -280,11 +318,31 @@ const showDetails = (person) => {
 const closeDetails = () => {
   selectedPerson.value = null;
 };
+const filteredPeopleByStatus = computed(() => {
+  if (selectedStatus.value === "all") {
+    // Return all orders if "all" status is selected
+    return filteredPeople.value;
+  }
+
+  return filteredPeople.value.filter(
+    (person) => person.status === selectedStatus.value
+  );
+});
 const saveStatusChanges = () => {
-  // Implement the logic to save the changes to the backend or perform any other necessary actions
   console.log("Status changes saved:", selectedPerson.status);
 
-  // Close the details modal after saving changes
+  const updatedPeople = [...people.value];
+
+  const index = updatedPeople.findIndex(
+    (person) => person.id === selectedPerson.value.id
+  );
+
+  if (index !== -1) {
+    updatedPeople[index].status = selectedPerson.value.status;
+
+    filteredPeople.value = updatedPeople;
+  }
+
   closeDetails();
 };
 </script>
