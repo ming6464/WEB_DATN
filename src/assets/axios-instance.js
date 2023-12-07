@@ -7,10 +7,6 @@ const instance = axios.create({
     timeout: 7000, // Timeout cho mỗi yêu cầu
 });
 
-const setAuthToken = (token) => {
-    useToken().onSetToken(token);
-};
-
 instance.interceptors.request.use(
     (config) => {
         const token = useToken().token;
@@ -28,4 +24,4 @@ instance.interceptors.request.use(
     }
 );
 
-export { instance, setAuthToken };
+export { instance };

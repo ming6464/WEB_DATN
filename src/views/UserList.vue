@@ -1,13 +1,6 @@
 <template>
-  <div class="px-4 sm:px-6 lg:px-8">
-    <div class="sm:flex sm:items-center">
-      <div class="sm:flex-auto">
-        <h1 class="text-center text-3xl font-semibold leading-6 text-gray-900">
-          Danh sách khách hàng
-        </h1>
-      </div>
-    </div>
-    <div class="mt-8 flow-root">
+  <div class="px-4 sm:px-6 lg:px-8 -mt-4">
+    <div class="flow-root">
       <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
         <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
           <table class="min-w-full divide-y divide-gray-300">
@@ -63,7 +56,9 @@
 import { ref, onMounted } from "vue";
 import { PencilSquareIcon, TrashIcon, PlusIcon } from "@heroicons/vue/20/solid";
 import { instance } from '../assets/axios-instance';
+import { useToken } from "../store/tokenStore";
 import * as API from '../assets/API'
+const store = useToken();
 const user = ref([
   {
     id: "1",
@@ -104,7 +99,17 @@ const user = ref([
 ]);
 
 onMounted(() => {
-  //LoadCustomerList();
+  if (store.id == -1) {
+    store.onSetGoToLogin(true);
+    return;
+  }
+  if (store.role == 1) {
+    store.onSetCurrentPage({ index: 1, child: 0 });
+  } else {
+    store.onSetCurrentPage({ index: 1, child: 0 });
+  }
+
+
 })
 
 const LoadCustomerList = async () => {

@@ -10,17 +10,17 @@
     <div>
       <button @click="On_Click_FilterModel('day')" type="button"
         class="rounded-md mr-2 px-3 py-2 border-2 text-sm font-semibold shadow-sm hover:bg-indigo-500 hover:border-indigo-500 hover:text-white focus-visible:outline 
-                                                                                                                                                                                                                                                                                            focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                          focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
         :class="{ 'bg-indigo-600 text-white border-indigo-600': filterMode == 'day', 'border-gray-400': filterMode != 'day' }">Ngày</button>
 
       <button @click="On_Click_FilterModel('month')" type="button"
         class="rounded-md mr-2 px-3 py-2 border-2 text-sm font-semibold shadow-sm hover:bg-indigo-500 hover:border-indigo-500 hover:text-white focus-visible:outline 
-                                                                                                                                                                                                                                                                                            focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                          focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
         :class="{ 'bg-indigo-600 text-white border-indigo-600': filterMode == 'month', 'border-gray-400': filterMode != 'month' }">Tháng</button>
 
       <button type="button" @click="On_Click_FilterModel('year')"
         class="rounded-md px-3 py-2 border-2 text-sm font-semibold shadow-sm hover:bg-indigo-500 hover:border-indigo-500 hover:text-white focus-visible:outline 
-                                                                                                                                                                                                                                                                                                                      focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
         :class="{ 'bg-indigo-600 text-white border-indigo-600': filterMode == 'year', 'border-gray-400': filterMode != 'year' }">Năm
       </button>
     </div>
@@ -39,9 +39,9 @@
 
     <!-- Không được xoá -->
     <div class="mt-10 flex sm:flex-col lg:flex-row gap-x-6">
-      <div class="sm:w-full lg:w-1/2">
+      <div class="sm:w-full lg:w-2/3">
         <div class="max-w-full border-2 border-gray-300 rounded-md p-3">
-          <h3 class="text-sm font-medium text-center">Doanh thu các mặt hàng</h3>
+          <h3 class="text-sm font-medium text-center">Số lượng bán</h3>
           <div id="chart-timeline">
             <apexchart type="area" height="350" ref="chart_count"
               :options="filterMode == 'day' ? chartOptions_day : filterMode == 'month' ? chartOptions_month : chartOptions_year"
@@ -49,32 +49,57 @@
           </div>
         </div>
       </div>
-      <div class="sm:w-full sm:mt-10 lg:mt-0 lg:w-1/2">
+      <div class="sm:w-full sm:mt-10 lg:mt-0 lg:w-1/3">
         <div class="max-w-full border-2 border-gray-300 rounded-md p-3">
-          <h3 class="text-sm font-medium text-center">Số lượng bán các mặt hàng</h3>
-          <div id="chart-timeline">
-            <apexchart type="area" height="350" ref="chart_top5"
-              :options="filterMode == 'day' ? chartOptions_day : filterMode == 'month' ? chartOptions_month : chartOptions_year"
-              :series="series_top5"></apexchart>
+          <h3 class="text-sm font-medium text-center">TOP 5 sản phẩm bán chạy nhất</h3>
+          <div class="h-[350px]">
+            <div class="mt-5 flex flex-col items-start w-full h-full justify-around">
+              <div class="px-4 border-t border-gray-100 pt-3 w-full" v-for="(item, index) in series_top5.data"
+                :key="index">
+                <div class="grid grid-cols-4 gap-4">
+                  <dt class="text-sm font-medium leading-6 text-gray-900">{{ index }}</dt>
+                  <dd class="text-sm leading-6 text-gray-700 sm:col-span-3 sm:mt-0">
+                    <div>{{ item.name }}</div>
+                    <div>Số lượng bán ra: {{
+                      item.totalAmount }}</div>
+                  </dd>
+                </div>
+              </div>
+            </div>
           </div>
+
         </div>
       </div>
     </div>
-
+  </div>
+  <div v-if="ShowLoading" class="w-full h-full flex justify-center items-center"
+    style="position: fixed; top: 0; left: 0;">
+    <div class="flex justify-center items-center">
+      <!-- Phần background với độ mờ -->
+      <div class="bg-gray-500" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.3;">
+      </div>
+      <!-- Nội dung loading spinner -->
+      <div class="spinner-border text-white" role="status">
+        <fwb-spinner color="blue" size="12" class="lg:ml-64 mt-10" />
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
 import moment from 'moment';
+import { FwbSpinner } from 'flowbite-vue'
 import { instance } from '../assets/axios-instance';
 import * as API from '../assets/API'
 import VueApexCharts from "vue3-apexcharts";
 import { watch, ref, onMounted } from 'vue';
+import { useToken } from '../store/tokenStore';
 const chart_totalRevenue = ref(null);
 const chart_count = ref(null);
 const chart_top5 = ref(null);
 const filterMode = ref('');
-
+const store = useToken();
+const ShowLoading = ref(false);
 const series_total = ref([
   {
     name: "",
@@ -89,12 +114,40 @@ const series_count = ref([
   }
 ]);
 
-const series_top5 = ref([
+const series_top5 = ref({
+  name: "",
+  data: [{
+    "name": "Product 1",
+    "image": "https://via.placeholder.com/500",
+    "price": 100000,
+    "totalAmount": "60"
+  },
   {
-    name: "",
-    data: []
-  }
-]);
+    "name": "Product 2",
+    "image": "https://placekitten.com/500/500",
+    "price": 120000,
+    "totalAmount": "32"
+  },
+  {
+    "name": "Product 3",
+    "image": "https://placekitten.com/500/500",
+    "price": 120000,
+    "totalAmount": "32"
+  },
+  {
+    "name": "Product 4",
+    "image": "https://placekitten.com/500/500",
+    "price": 120000,
+    "totalAmount": "32"
+  },
+  {
+    "name": "Product 5",
+    "image": "https://placekitten.com/500/500",
+    "price": 120000,
+    "totalAmount": "32"
+  },
+  ]
+});
 
 
 const chartOptions_day = {
@@ -372,6 +425,15 @@ const chartOptions_year = {
 const date = ref();
 // Set default date range to yesterday to today on component mount
 onMounted(() => {
+  if (store.id == -1) {
+    store.onSetGoToLogin(true);
+    return;
+  }
+
+  store.onSetCurrentPage({ index: 0, child: -1 })
+
+
+
   const lastMonth = new Date();
 
   if (lastMonth.getMonth() == 0) {
@@ -392,6 +454,7 @@ onMounted(() => {
 
 // Define the updateData function
 const updateData = async () => {
+  updateLoading(true);
   let time1 = new Date(date.value[0]);
   let time2 = new Date(date.value[1]);
   let zoom = time2;
@@ -433,11 +496,9 @@ const updateData = async () => {
       console.log(res.data);
       series_total.value = [];
       series_count.value = [];
-      series_top5.value = [];
       series_total.value.push(finishData(res.data.data[0]));
-      series_total.value.push(finishData(res.data.data[1]));
       series_count.value.push(finishData(res.data.data[1]));
-      series_top5.value.push(res.data.data[2]);
+      series_top5.value = res.data.data[2];
       console.log(series_total.value, series_count.value, series_top5.value);
       ZoomXAll(time1, time2)
     })
@@ -445,6 +506,8 @@ const updateData = async () => {
     .catch(err => {
       console.error(err);
     })
+
+  updateLoading(false);
 
 };
 
@@ -517,6 +580,10 @@ const formatLog = (currentDate) => {
 
   return formattedDateTime;
 
+}
+
+const updateLoading = (check) => {
+  ShowLoading.value = check;
 }
 
 </script>

@@ -39,11 +39,12 @@
               </button>
             </div>
 
-            <button type="button" @click="openUpdateProduct(false)"
+            <button type="button" @click="openUpdateProduct(false)" v-if='store.role == 1'
               class="inline-flex self-end items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
               <PlusIcon class="h-5 w-5" aria-hidden="true" />
               Thêm mới
             </button>
+            <div v-else class="opacity-0 px-3 py-2 "></div>
           </div>
         </div>
 
@@ -86,7 +87,8 @@
                     class="py-3.5 text-center text-sm font-semibold text-gray-900 sm:pl-6">
                     Giá bán
                   </th>
-                  <th scope="col" class="py-3.5 text-center text-sm font-semibold text-gray-900 sm:pl-0">
+                  <th scope="col" class="py-3.5 text-center text-sm font-semibold text-gray-900 sm:pl-0"
+                    v-if="store.role == 1">
                     Hoạt động
                   </th>
                 </tr>
@@ -131,7 +133,7 @@
                       {{ getPrice(product).value }}</div>
                   </td>
                   <td>
-                    <div class="flex justify-center gap-x-3">
+                    <div class="flex justify-center gap-x-3" v-if="store.role == 1">
                       <button @click="openUpdateProduct(true, product)" class="text-indigo-600 hover:text-indigo-900">
                         <PencilSquareIcon class="h-5 w-5" aria-hidden="true" />
                         <span class="sr-only">Edit, {{ product.id }}</span>
@@ -210,7 +212,7 @@
                   <span>Lựa chọn ảnh đại diện cho sản phẩm</span>
                   <span type="submit"
                     class="rounded-md bg-indigo-600 mt-2 py-2 text-sm font-semibold
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               text-white shadow-sm hover:bg-indigo-500 text-center w-20">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               text-white shadow-sm hover:bg-indigo-500 text-center w-20">
                     Chọn ảnh
                   </span>
                 </label>
@@ -611,6 +613,7 @@ import { instance } from '../assets/axios-instance';
 import { TrashIcon, PhotoIcon, PencilSquareIcon, PlusIcon, UserCircleIcon, BookmarkIcon, XCircleIcon, CheckIcon, MagnifyingGlassIcon, AdjustmentsHorizontalIcon, FunnelIcon } from "@heroicons/vue/20/solid";
 import * as API from "../assets/API";
 import { computed, ref, onMounted, watch } from "vue";
+import { useToken } from "../store/tokenStore";
 import {
   Combobox,
   ComboboxButton,
@@ -731,10 +734,20 @@ const isOpenFilterModal = ref(false);
 
 const isOpenOptionModal = ref(false);
 // } filter option
-
+const store = useToken();
 
 // load Data {
 onMounted(() => {
+  if (store.id == -1) {
+    store.onSetGoToLogin(true);
+    return;
+  }
+  if (store.role == 1) {
+    store.onSetCurrentPage({ index: 2, child: 1 });
+  } else {
+    store.onSetCurrentPage({ index: 1, child: 1 });
+  }
+
   updateListProduct();
   updateCategories();
   updateSizes();

@@ -74,8 +74,9 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { PlusIcon } from "@heroicons/vue/20/solid";
+import { useToken } from "../store/tokenStore";
 import {
   PencilSquareIcon,
   ExclamationTriangleIcon,
@@ -91,6 +92,7 @@ const people = [
     status: "đã xác nhận",
   },
 ];
+const store = useToken();
 const selectedFilter = ref('id');
 const selectedPerson = ref(null);
 const editedPerson = ref({
@@ -109,6 +111,18 @@ const newProduct = ref({
   address: "",
   number: "",
 });
+onMounted(() => {
+  if (store.id == -1) {
+    store.onSetGoToLogin(true);
+    return;
+  }
+  if (store.role == 1) {
+    store.onSetCurrentPage({ index: 3, child: 0 });
+  } else {
+    store.onSetCurrentPage({ index: 2, child: 0 });
+  }
+
+})
 const openAddModal = () => {
   isAddModalOpen.value = true;
 };

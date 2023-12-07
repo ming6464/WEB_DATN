@@ -1,7 +1,8 @@
 <template>
   <div class="px-4 sm:px-6 lg:px-8">
-    <div class="px-4 sm:px-6 lg:px-8">
-      <div class="flex justify-between items-center border-gray-300 py-4">
+
+    <div class="px-4 sm:px-6 lg:px-8 bg-white -mt-2" style="position: fixed;top : 70px;right: 0px;left: 0px;">
+      <div class="flex justify-between items-center border-gray-300 py-4 lg:ml-72">
         <div class="flex items-center space-x-4 flex-grow">
           <input type="text" v-model="searchTerm" placeholder="Tìm kiếm ..."
             class="rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring focus:border-indigo-500 flex-grow" />
@@ -12,11 +13,15 @@
             <option value="id">ID</option>
             <option value="name">Tên</option>
           </select>
+          <div class="mt-4 sm:ml-16 sm:mt-0 self-end">
+            <button type="button" @click="openModal(-1)"
+              class="inline-flex items-center gap-x-1.5 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+              <PlusIcon class="h-5 w-5" aria-hidden="true" />
+              Thêm tài khoản
 
-          <button type="button" @click="openModal(-1)"
-            class="block rounded-md border border-indigo-600 bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-            Thêm tài khoản
-          </button>
+            </button>
+          </div>
+
         </div>
       </div>
     </div>
@@ -308,7 +313,8 @@
 </template>
 
 <script setup>
-import { TrashIcon, PencilSquareIcon } from "@heroicons/vue/20/solid";
+import { useToken } from "../store/tokenStore";
+import { TrashIcon, PencilSquareIcon, PlusIcon } from "@heroicons/vue/20/solid";
 import { ref, watch, computed, onMounted } from "vue";
 import {
   Switch,
@@ -321,7 +327,7 @@ import { showToast } from "../assets/Toastify";
 import * as API from '../assets/API';
 import { instance } from '../assets/axios-instance';
 import { FwbSpinner } from 'flowbite-vue'
-
+const store = useToken();
 const ShowLoading = ref(false);
 
 const staffs = ref([
@@ -347,6 +353,14 @@ const staffEdit = ref({});
 const isAnySwitchOn = ref(true);
 
 onMounted(() => {
+  if (store.id == -1) {
+    store.onSetGoToLogin(true);
+    return;
+  }
+  if (store.role == 1) {
+    store.onSetCurrentPage({ index: 4, child: 0 });
+  }
+
   loadData();
 });
 

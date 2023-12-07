@@ -56,8 +56,11 @@
 import { ref, onMounted } from "vue";
 import * as API from '../assets/API'
 import { showToast } from '../assets/Toastify'
-import { setAuthToken, instance } from '../assets/axios-instance'
+import { instance } from '../assets/axios-instance'
 import { useRouter } from "vue-router";
+import { useToken } from '../store/tokenStore';
+
+const store = useToken();
 const router = useRouter();
 const errors = ref({
   userName: null,
@@ -70,7 +73,7 @@ const formData = ref({
 });
 
 onMounted(() => {
-  setAuthToken('');
+  store.onResetStore();
 })
 
 const submitForm = async () => {
@@ -100,7 +103,9 @@ const login = async (toMain, form) => {
       if (toMain) {
         router.push("/admin/home");
       } else {
-        setAuthToken(res.data.data.token);
+        store.onSetToken(res.data.data.token);
+        store.onSetRole(res.data.data.admin.role);
+        store.onSetID(res.data.data.admin.id);
         login(true, form);
       }
     })

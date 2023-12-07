@@ -49,12 +49,16 @@
                           </button>
                           <Disclosure as="div" v-else v-slot="{ open }">
                             <DisclosureButton :class="[
-                              item.current
-                                ? 'bg-gray-50'
-                                : 'hover:bg-gray-50',
+                              item.current ? 'bg-gray-50 text-indigo-600' : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50',
+                              'flex items-center w-full text-left rounded-md p-2 gap-x-3 text-sm leading-6 font-semibold text-gray-700',
                               'flex items-center w-full text-left rounded-md p-2 gap-x-3 text-sm leading-6 font-semibold text-gray-700',
                             ]">
-                              <component :is="item.icon" class="h-6 w-6 shrink-0 text-gray-400" aria-hidden="true" />
+                              <component :is="item.icon" :class="[
+                                item.current
+                                  ? 'text-indigo-600'
+                                  : 'text-gray-400 ',
+                                'h-6 w-6 shrink-0',
+                              ]" aria-hidden="true" />
                               {{ item.name }}
                               <ChevronRightIcon :class="[
                                 open
@@ -62,14 +66,15 @@
                                   : 'text-gray-400',
                                 'ml-auto h-5 w-5 shrink-0',
                               ]" aria-hidden="true" />
+
                             </DisclosureButton>
                             <DisclosurePanel as="ul" class="mt-1 px-2">
                         <li v-for="subItem in item.children" :key="subItem.name">
                           <!-- 44px -->
                           <DisclosureButton as="a" @click="ToRouter(subItem.href)" :class="[
                             subItem.current
-                              ? 'bg-gray-50'
-                              : 'hover:bg-gray-50',
+                              ? 'bg-gray-50 text-indigo-600'
+                              : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50',
                             'block rounded-md py-2 pr-2 pl-9 text-sm leading-6 text-gray-700',
                           ]">{{ subItem.name }}</DisclosureButton>
                         </li>
@@ -81,7 +86,7 @@
                   <li class="mt-auto">
                     <a href="/"
                       class="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-700 hover:bg-gray-50 hover:text-indigo-600">
-                      <Cog6ToothIcon class="h-6 w-6 shrink-0 text-gray-400 group-hover:text-indigo-600"
+                      <ArrowLeftOnRectangleIcon class="h-6 w-6 shrink-0 text-gray-400 group-hover:text-indigo-600"
                         aria-hidden="true" />
                       Đăng xuất
                     </a>
@@ -107,7 +112,7 @@
           <ul role="list" class="flex flex-1 flex-col gap-y-7">
             <li>
               <ul role="list" class="-mx-2 space-y-1">
-                <li v-for="item in navigation" :key="item.name">
+                <li v-for="(item, index) in navigation" :key="index">
                   <button v-if="!item.children" @click="ToRouter(item.href)" :class="[
                     item.current
                       ? 'bg-gray-50 text-indigo-600'
@@ -117,17 +122,22 @@
                     <component :is="item.icon" :class="[
                       item.current
                         ? 'text-indigo-600'
-                        : 'text-gray-400 group-hover:text-indigo-600',
+                        : 'text-gray-400 ',
                       'h-6 w-6 shrink-0',
                     ]" aria-hidden="true" />
                     {{ item.name }}
                   </button>
                   <Disclosure as="div" v-else v-slot="{ open }">
                     <DisclosureButton :class="[
-                      item.current ? 'bg-gray-50' : 'hover:bg-gray-50',
+                      item.current ? 'bg-gray-50 text-indigo-600' : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50',
                       'flex items-center w-full text-left rounded-md p-2 gap-x-3 text-sm leading-6 font-semibold text-gray-700',
                     ]">
-                      <component :is="item.icon" class="h-6 w-6 shrink-0 text-gray-400" aria-hidden="true" />
+                      <component :is="item.icon" :class="[
+                        item.current
+                          ? 'text-indigo-600'
+                          : 'text-gray-400 ',
+                        'h-6 w-6 shrink-0',
+                      ]" aria-hidden="true" />
                       {{ item.name }}
                       <ChevronRightIcon :class="[
                         open ? 'rotate-90 text-gray-500' : 'text-gray-400',
@@ -138,9 +148,12 @@
                 <li v-for="subItem in item.children" :key="subItem.name">
                   <!-- 44px -->
                   <DisclosureButton as="a" @click="ToRouter(subItem.href)" :class="[
-                    subItem.current ? 'bg-gray-50' : 'hover:bg-gray-50',
+                    subItem.current
+                      ? 'bg-gray-50 text-indigo-600'
+                      : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50',
                     'block rounded-md py-2 pr-2 pl-9 text-sm leading-6 text-gray-700',
-                  ]">{{ subItem.name }}</DisclosureButton>
+                  ]">{{ subItem.name }}
+                  </DisclosureButton>
                 </li>
                 </DisclosurePanel>
                 </Disclosure>
@@ -168,20 +181,33 @@
           <Bars3Icon class="h-6 w-6" aria-hidden="true" />
         </button>
 
-        <!-- Separator -->
-        <div class="h-6 w-px bg-gray-200 lg:hidden" aria-hidden="true" />
+        <ol role="list" class="flex items-center space-x-4" v-if="store.currentPage.index >= 0">
+          <li>
+            <div>
+              <span class="text-gray-400 hover:text-gray-500">
+                <span>
+                  <component :is="navigation[store.currentPage.index].icon" class="h-5 w-5 flex-shrink-0"
+                    aria-hidden="true" />
+                  <span class="sr-only">{{ navigation[store.currentPage.index].name }}</span>
+                </span>
+              </span>
+            </div>
+          </li>
+          <li v-if="navigation[store.currentPage.index].children && store.currentPage.child != -1">
+            <div class="flex items-center">
+              <ChevronRightIcon class="h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
+              <span class="ml-4 text-sm font-medium text-gray-500 hover:text-gray-700">{{
+                navigation[store.currentPage.index].children[store.currentPage.child].name }}</span>
+            </div>
+          </li>
+
+        </ol>
+
+
 
         <div class="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
           <form class="relative flex flex-1" action="#" method="GET"></form>
           <div class="flex items-center gap-x-4 lg:gap-x-6">
-            <button type="button" class="-m-2.5 p-2.5 text-gray-400 hover:text-gray-500">
-              <span class="sr-only">View notifications </span>
-              <BellIcon class="h-6 w-6" aria-hidden="true" />
-            </button>
-
-            <!-- Separator -->
-            <div class="hidden lg:block lg:h-6 lg:w-px lg:bg-gray-200" aria-hidden="true" />
-
             <!-- Profile dropdown -->
             <Menu as="div" class="relative">
               <MenuButton class="-m-1.5 flex items-center p-1.5">
@@ -215,9 +241,10 @@
 
 <script setup>
 import { useRouter } from "vue-router";
-import { ref } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/vue";
 import { ChevronRightIcon, HomeIcon } from "@heroicons/vue/20/solid";
+import { useToken } from '../../store/tokenStore';
 import {
   Dialog,
   DialogPanel,
@@ -242,13 +269,14 @@ import {
 } from "@heroicons/vue/24/outline";
 import { ChevronDownIcon, MagnifyingGlassIcon } from "@heroicons/vue/20/solid";
 const router = useRouter();
-const navigation = [
+const store = useToken();
+const navigation = ref([
   { name: "Trang chủ", href: "/admin/home", icon: HomeIcon, current: true },
   {
     name: "Khách hàng",
     icon: UsersIcon,
     current: false,
-    children: [{ name: "Danh sách khách hàng", href: "/admin/user" }],
+    children: [{ name: "Danh sách khách hàng", href: "/admin/user", current: false }],
   },
   {
     name: "Quản lý sản phẩm",
@@ -258,10 +286,12 @@ const navigation = [
       {
         name: "Danh mục",
         href: "/admin/category",
+        current: false
       },
       {
         name: "Danh sách sản phẩm",
         href: "/admin/product",
+        current: false
       },
     ],
   },
@@ -273,6 +303,7 @@ const navigation = [
       {
         name: "Danh sách đơn hàng",
         href: "/admin/transactionList",
+        current: false
       },
     ],
   },
@@ -284,16 +315,69 @@ const navigation = [
       {
         name: "Tài khoản nhân viên",
         href: "/admin/account_staff",
+        current: false
       },
     ],
   },
-];
+]);
 const pages = [
   { name: "Projects", href: "#", current: false },
   { name: "Project Nero", href: "#", current: true },
 ];
 const sidebarOpen = ref(false);
+onMounted(() => {
+  if (store.id == -1) {
+    store.onSetGoToLogin(true);
+    return;
+  }
+  console.log("oke1");
+  if (store.role == 0) {
+    navigation.value.splice(4, 1);
+    navigation.value.splice(1, 1);
+  }
+
+})
+
 const ToRouter = (route) => {
   router.push(route);
 }
+
+watch(() => store.isGoToLogin, (newValue, oldValue) => {
+  if (newValue) {
+    ToRouter('/');
+    return;
+  }
+})
+
+watch(() => store.currentPage, (newValue, oldValue) => {
+  resetCurrentSelectPage();
+
+  if (newValue.index != -1) {
+    try {
+      navigation.value[newValue.index].current = true;
+      if (navigation.value[newValue.index].children && newValue.child != -1) {
+        try {
+          navigation.value[newValue.index].children[newValue.child].current = true;
+        } catch (error) {
+          console.error(error);
+        }
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  console.log(newValue, navigation);
+})
+
+const resetCurrentSelectPage = () => {
+  navigation.value.forEach(x => {
+    x.current = false;
+    if (x.children) {
+      x.children.forEach(y => {
+        y.current = false;
+      })
+    }
+  })
+}
+
 </script>

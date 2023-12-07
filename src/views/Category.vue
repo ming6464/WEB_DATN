@@ -1,8 +1,8 @@
 
 <template>
   <div class="px-4 sm:px-6 lg:px-8">
-    <div class="px-4 sm:px-6 lg:px-8">
-      <div class="flex justify-between items-center border-gray-300 py-4">
+    <div class="px-4 sm:px-6 lg:px-8 bg-white -mt-2" style="position: fixed;top : 70px;right: 0px;left: 0px;">
+      <div class="flex justify-between items-center border-gray-300 py-4 lg:ml-72">
         <div class="flex items-center space-x-4 flex-grow">
           <input type="text" v-model="searchTerm" placeholder="Tìm kiếm ..."
             class="rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring focus:border-indigo-500 flex-grow" />
@@ -14,11 +14,12 @@
             <option value="name">Tên</option>
           </select>
           <div class="mt-4 sm:ml-16 sm:mt-0 self-end">
-            <button type="button" @click="openAddModal(false)"
+            <button type="button" @click="openAddModal(false)" v-if='store.role == 1'
               class="inline-flex items-center gap-x-1.5 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
               <PlusIcon class="h-5 w-5" aria-hidden="true" />
               Thêm danh mục
             </button>
+            <div v-else class="opacity-0 px-3 py-2"></div>
           </div>
 
         </div>
@@ -82,7 +83,8 @@
               <th scope="col" class="py-3 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
                 Tên Sản Phẩm
               </th>
-              <th scope="col" class="py-3 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
+              <th scope="col" class="py-3 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
+                v-if='store.role == 1'>
                 Hoạt động
               </th>
             </tr>
@@ -102,7 +104,7 @@
               <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
                 <div class="font-medium text-gray-900">{{ person.name }}</div>
               </td>
-              <td>
+              <td v-if='store.role == 1'>
                 <div class="mx-4 space-x-3">
                   <button @click="openEditModal(person)" class="text-indigo-600 hover:text-indigo-900">
                     <PencilSquareIcon class="h-5 w-5" aria-hidden="true" />
@@ -225,6 +227,7 @@
 </template>
 
 <script setup>
+import { useToken } from '../store/tokenStore';
 import { FwbSpinner } from 'flowbite-vue'
 import { ref, onMounted, computed } from "vue";
 import { PlusIcon } from "@heroicons/vue/20/solid";
@@ -284,8 +287,19 @@ const isShowDeleteModal = ref(false);
 const selectedFilter = ref("id"); // Giá trị mặc định của bộ lọc
 const searchTerm = ref("");
 let indexDelete = -1;
-
+const store = useToken();
 onMounted(() => {
+  if (store.id == -1) {
+    store.onSetGoToLogin(true);
+    return;
+  }
+  if (store.role == 1) {
+    store.onSetCurrentPage({ index: 2, child: 0 });
+  } else {
+    store.onSetCurrentPage({ index: 1, child: 0 });
+  }
+
+
   updateCategories();
 });
 
