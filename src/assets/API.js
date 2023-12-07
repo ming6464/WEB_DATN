@@ -56,3 +56,8 @@ export const PUTAccount = `${http}/admin`;
 export const DELAccount = `${http}/admin`;
 export const SignIn = `${http}/admin/signin`;
 // } account
+
+
+// statistics{
+export const statistics = `${http}/statistics`;
+ // } statistics
