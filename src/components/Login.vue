@@ -53,15 +53,12 @@
   </div>
 </template>
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import * as API from '../assets/API'
 import { showToast } from '../assets/Toastify'
-import { setAuthToken } from '../assets/axios-instance'
+import { setAuthToken, instance } from '../assets/axios-instance'
 import { useRouter } from "vue-router";
-import axios from "axios";
 const router = useRouter();
-
-
 const errors = ref({
   userName: null,
   password: null,
@@ -72,8 +69,11 @@ const formData = ref({
   password: "",
 });
 
-const submitForm = async () => {
+onMounted(() => {
+  setAuthToken('');
+})
 
+const submitForm = async () => {
   let check = false;
   errors.value = {}; // Reset errors
 
@@ -95,7 +95,7 @@ const submitForm = async () => {
 
 const login = async (toMain, form) => {
 
-  await axios.post(API.SignIn, form)
+  await instance.post(API.SignIn, form)
     .then(res => {
       if (toMain) {
         router.push("/admin/home");
