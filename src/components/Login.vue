@@ -101,11 +101,14 @@ const login = async (toMain, form) => {
   await instance.post(API.SignIn, form)
     .then(res => {
       if (toMain) {
-        router.push("/admin/home");
+        if (store.role == 1) {
+          router.push("/admin/home");
+        } else {
+          router.push('/admin/transactionList');
+        }
+
       } else {
-        store.onSetToken(res.data.data.token);
-        store.onSetRole(res.data.data.admin.role);
-        store.onSetID(res.data.data.admin.id);
+        store.onSetFullPro(res.data.data);
         login(true, form);
       }
     })

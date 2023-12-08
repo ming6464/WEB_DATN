@@ -202,9 +202,6 @@
           </li>
 
         </ol>
-
-
-
         <div class="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
           <form class="relative flex flex-1" action="#" method="GET"></form>
           <div class="flex items-center gap-x-4 lg:gap-x-6">
@@ -212,12 +209,10 @@
             <Menu as="div" class="relative">
               <MenuButton class="-m-1.5 flex items-center p-1.5">
                 <span class="sr-only">Open user menu</span>
-                <img class="h-8 w-8 rounded-full bg-gray-50"
-                  src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                  alt="" />
+                <img class="h-8 w-8 rounded-full bg-gray-50" :src='store.avatar' alt="" />
                 <span class="hidden lg:flex lg:items-center">
-                  <a href="/admin/userEdit" class="ml-4 text-sm font-semibold leading-6 text-gray-900"
-                    aria-hidden="true">Tom Cook</a>
+                  <button @click="ToRouter('/admin/userEdit')" class="ml-4 text-sm font-semibold leading-6 text-gray-900"
+                    aria-hidden="true">{{ store.fullName }}</button>
                 </span>
               </MenuButton>
               <transition enter-active-class="transition ease-out duration-100"
@@ -321,10 +316,7 @@ const navigation = ref([
     ],
   },
 ]);
-const pages = [
-  { name: "Projects", href: "#", current: false },
-  { name: "Project Nero", href: "#", current: true },
-];
+
 const sidebarOpen = ref(false);
 onMounted(() => {
   if (store.id == -1) {
@@ -335,8 +327,9 @@ onMounted(() => {
   if (store.role == 0) {
     navigation.value.splice(4, 1);
     navigation.value.splice(1, 1);
+    navigation.value.splice(0, 1);
   }
-
+  console.log(store.fullName, "fullname")
 })
 
 const ToRouter = (route) => {

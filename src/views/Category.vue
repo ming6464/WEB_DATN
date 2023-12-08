@@ -296,7 +296,7 @@ onMounted(() => {
   if (store.role == 1) {
     store.onSetCurrentPage({ index: 2, child: 0 });
   } else {
-    store.onSetCurrentPage({ index: 1, child: 0 });
+    store.onSetCurrentPage({ index: 0, child: 0 });
   }
 
 
