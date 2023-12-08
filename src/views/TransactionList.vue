@@ -49,6 +49,12 @@
                 scope="col"
                 class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:pl-0"
               >
+                Số điện thoại
+              </th>
+              <th
+                scope="col"
+                class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:pl-0"
+              >
                 Địa chỉ
               </th>
               <th
@@ -88,6 +94,11 @@
                 class="whitespace-nowrap px-3 py-4 text-sm text-gray-900 sm:pl-0"
               >
                 {{ person.datetime }}
+              </td>
+              <td
+                class="whitespace-nowrap px-3 py-4 text-sm text-gray-900 sm:pl-0"
+              >
+                {{ person.phone }}
               </td>
               <td
                 class="whitespace-nowrap px-3 py-4 text-sm text-gray-900 sm:pl-0"

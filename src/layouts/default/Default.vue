@@ -391,6 +391,10 @@ const navigation = [
         name: "Danh sách đơn hàng",
         href: "/admin/transactionList",
       },
+      {
+        name: "Danh sách cập nhật trạng thái đơn hàng",
+        href: "/admin/oder_status",
+      },
     ],
   },
   {
