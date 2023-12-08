@@ -30,9 +30,14 @@ const routes = [
         component: () => import('../views/TransactionList.vue'),
       },
       {
+        path: 'oder_status',
+        component: () => import('../views/OrderStatusTracker.vue'),
+      },
+      {
         path: 'userEdit',
         component: () => import('../views/UserProfileEdit.vue'),
       },
+
     ],
   },
   {
