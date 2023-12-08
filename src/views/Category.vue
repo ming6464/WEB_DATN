@@ -310,8 +310,9 @@ const updateCategories = async () => {
       categories.value = res.data.data;
     })
     .catch(err => {
-      console.error(err);
       showToast("Lỗi", true);
+      console.error(err);
+
     });
   updateLoading(false);
 }
@@ -374,8 +375,9 @@ const submitEditForm = async () => {
       showToast("Cập nhật thành công", false);
     })
     .catch(err => {
-      console.error(err);
       showToast("Lỗi", true);
+      console.error(err);
+
     });
 
   updateLoading(false);

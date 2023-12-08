@@ -8,7 +8,7 @@ export const useToken = defineStore('tokenStoreID', {
         id: -1,
         isGoToLogin: false,
         currentPage: { index: -1, child: -1 },
-        fullName: 'Admin',
+        fullName: '',
         avatar: '',
     }),
 
@@ -36,7 +36,7 @@ export const useToken = defineStore('tokenStoreID', {
         onSetAvatar(avatar) {
             this.avatar = avatar;
         },
-        onSetFullPro(user) {
+        onSetFullProperty(user) {
             console.log('--------------', user.admin.id, user.admin.role, user.admin.fullname, user.admin.avatar);
             this.token = user.token;
             this.id = user.admin.id;

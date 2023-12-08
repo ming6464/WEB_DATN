@@ -212,7 +212,7 @@
                   <span>Lựa chọn ảnh đại diện cho sản phẩm</span>
                   <span type="submit"
                     class="rounded-md bg-indigo-600 mt-2 py-2 text-sm font-semibold
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 text-white shadow-sm hover:bg-indigo-500 text-center w-20">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   text-white shadow-sm hover:bg-indigo-500 text-center w-20">
                     Chọn ảnh
                   </span>
                 </label>
@@ -884,9 +884,10 @@ const submitEditForm = async () => {
           onCloseUpdateProduct();
         })
         .catch(err => {
-          console.error(err);
           showToast("Lỗi", true);
           updateLoading(false);
+          console.error(err);
+
           return;
         });
     }
@@ -905,9 +906,10 @@ const submitEditForm = async () => {
         onCloseUpdateProduct();
       })
       .catch(err => {
-        console.error(err);
         showToast("Lỗi", true);
         updateLoading(false);
+        console.error(err);
+
         return;
       });
   }
@@ -979,17 +981,19 @@ const UpAPIColorSize = async (isPost, api, data) => {
   if (isPost) {
     await instance.post(api, data)
       .catch(err => {
-        console.error(err);
         showToast("Lỗi", true);
         updateLoading(false);
+        console.error(err);
+
         return;
       });
   } else {
     await instance.put(api, data)
       .catch(err => {
-        console.error(err);
         showToast("Lỗi", true);
         updateLoading(false);
+        console.error(err);
+
         return;
       });
   }
@@ -1058,16 +1062,18 @@ const deleteProduct = async () => {
           products.value.splice(index, 1);
         })
         .catch(err => {
-          console.error(err);
           showToast("Lỗi", true);
           updateLoading(false);
+          console.error(err);
+
           return;
         });
     }
   } catch (error) {
-    console.error(err);
     showToast("Lỗi", true);
     updateLoading(false);
+    console.error(err);
+
     return;
   }
   updateLoading(false);
@@ -1193,8 +1199,9 @@ const applyFilter = async () => {
       products.value = res.data.data.products;
     })
     .catch(err => {
-      console.error(err);
       products.value = [];
+      console.error(err);
+
     });
 
   updateLoading(false);

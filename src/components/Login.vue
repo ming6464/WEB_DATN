@@ -108,13 +108,13 @@ const login = async (toMain, form) => {
         }
 
       } else {
-        store.onSetFullPro(res.data.data);
+        store.onSetFullProperty(res.data.data);
         login(true, form);
       }
     })
     .catch(err => {
-      console.error(err);
       showToast("Tài khoản hoặc mật khẩu không hơp lệ", true);
+      console.error(err);
       return;
     })
 }

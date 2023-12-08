@@ -35,7 +35,7 @@
                   Id
                 </th>
                 <th scope="col" class="py-3.5 text-left text-sm font-semibold text-gray-900">
-                  Tên
+                  Tên đầy đủ
                 </th>
                 <th scope="col" class="py-3.5 text-left text-sm font-semibold text-gray-900">
                   Tên tài khoản
@@ -77,7 +77,7 @@
                 <td class="py-4 text-sm">
                   <span
                     class="rounded-md text-center bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
-                    Nhân viên
+                    {{ person.role == 1 ? "Admin" : "Nhân viên" }}
                   </span>
                 </td>
                 <td class="flex whitespace-nowrap py-5 text-right text-sm font-medium">
@@ -151,6 +151,15 @@
                     class="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
                 </div>
               </div> -->
+
+              <div class="sm:col-span-2" v-if="roleSelected == 1 && IdSelected >= 0">
+                <label for="password2" class="block text-sm font-semibold leading-6 text-gray-900">Mật khẩu xác
+                  nhận</label>
+                <div class="mt-2.5">
+                  <input type="text" name="password2" v-model="password2" id="phone" autocomplete="password2"
+                    class="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                </div>
+              </div>
 
               <div class="sm:col-span-2">
                 <label for="password" class="block text-sm font-semibold leading-6 text-gray-900">{{ IdSelected >=
@@ -349,6 +358,7 @@ const isDeleteModalOpen = ref(false);
 const isShowDeleteModal = ref(false);
 const password2 = ref("");
 const IdSelected = ref(-1);
+const roleSelected = ref(-1);
 const staffEdit = ref({});
 const isAnySwitchOn = ref(true);
 
@@ -371,14 +381,13 @@ const loadData = async () => {
       staffs.value = [];
       console.log(res.data);
       res.data.data.forEach(x => {
-        if (x.role == 0) {
-          staffs.value.push(x);
-        }
+        staffs.value.push(x);
       });
     })
     .catch(err => {
-      console.error(err);
       showToast("Lỗi", true);
+      console.error(err);
+
       return;
     })
   updateLoad(false);
@@ -391,12 +400,12 @@ const openModal = async (id) => {
   if (staffEdit.value.fileImage) {
     staffEdit.value.fileImage = null;
   }
+  password2.value = "";
   if (id >= 0) {
     const editAcc = staffs.value.find(x => x.id == IdSelected.value);
     staffEdit.value = { ...editAcc };
     staffEdit.value.password = '';
   } else {
-    password2.value = "";
     staffEdit.value = {
       "username": "",
       "password": "",
@@ -405,13 +414,9 @@ const openModal = async (id) => {
       "avatar": "",
     };
   }
+  roleSelected.value = staffEdit.value.role;
   await delay(100);
   isShowModal.value = true;
-};
-
-const handlePhoneNumberInput = () => {
-  // Loại bỏ các ký tự không phải số khỏi chuỗi số điện thoại
-  staffEdit.value.phone = staffEdit.value.phone.replace(/\D/g, "");
 };
 
 const submitEditForm = async () => {
@@ -440,6 +445,32 @@ const submitEditForm = async () => {
       formAccount.append('password', staffEdit.value.password.toString().trim());
     }
 
+    if (roleSelected.value == 1) {
+      if (password2.value.toString().trim().length == 0) {
+        showToast("Thông tin bị thiếu", true);
+        updateLoad(false);
+        return;
+      }
+
+      const formLogin = new FormData();
+      formLogin.append("username", staffEdit.value.username);
+      formLogin.append("password", password2.value);
+      let check = false;
+      await instance.post(API.SignIn, formLogin)
+        .catch(err => {
+          check = true;
+          console.error(err);
+        })
+      if (check) {
+        password2.value = '';
+        updateLoad(false);
+        showToast("Mật khẩu xác nhận không chính xác ", true);
+        return;
+      } else {
+        checkEdit = true;
+      }
+    }
+
     if (checkEdit) {
       await instance.put(`${API.PUTAccount}/${IdSelected.value}`, formAccount)
         .then(res => {
@@ -447,8 +478,8 @@ const submitEditForm = async () => {
           showToast("Cập nhật thành công");
         })
         .catch(err => {
-          console.error(err);
           showToast("Lỗi", true);
+          console.error(err);
         })
     }
 
@@ -468,8 +499,9 @@ const submitEditForm = async () => {
         loadData();
       })
       .catch(err => {
-        console.error(err);
         showToast("Lỗi", true);
+        console.error(err);
+
       })
   }
   closeEditModal();
@@ -509,10 +541,15 @@ const updateAccountWithId = async (id) => {
     .then(res => {
       const index = staffs.value.findIndex(x => x.id == id);
       staffs.value[index] = res.data.data;
+      if (id == store.id) {
+        store.onSetAvatar(res.data.data.avatar);
+        store.onSetFullName(res.data.data.fullname);
+      }
     })
     .catch(err => {
-      console.error(err);
       showToast("Lỗi");
+      console.error(err);
+
     })
 }
 

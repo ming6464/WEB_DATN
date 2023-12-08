@@ -306,16 +306,19 @@ const submitEditPasswordForm = async () => {
   const formLogin = new FormData();
   formLogin.append('password', personEdit.value.password0);
   formLogin.append('username', user.value.username);
+  let check = false;
   await instance.post(API.SignIn, formLogin)
     .then(res => {
       store.onSetToken(res.data.data.token);
     })
     .catch(err => {
       console.error(err);
-      showToast("Mật khẩu cũ không chính xác ", true);
-      updateLoading(false);
-      return;
+      check = true;
     })
+  if (check) {
+    showToast("Mật khẩu cũ không chính xác ", true);
+    updateLoading(false);
+  }
 
 
   const form = new FormData();

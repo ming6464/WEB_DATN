@@ -207,12 +207,12 @@
           <div class="flex items-center gap-x-4 lg:gap-x-6">
             <!-- Profile dropdown -->
             <Menu as="div" class="relative">
-              <MenuButton class="-m-1.5 flex items-center p-1.5">
+              <MenuButton class="-m-1.5 flex items-center p-1.5" @click="ToRouter('/admin/userEdit')">
                 <span class="sr-only">Open user menu</span>
                 <img class="h-8 w-8 rounded-full bg-gray-50" :src='store.avatar' alt="" />
-                <span class="hidden lg:flex lg:items-center">
-                  <button @click="ToRouter('/admin/userEdit')" class="ml-4 text-sm font-semibold leading-6 text-gray-900"
-                    aria-hidden="true">{{ store.fullName }}</button>
+                <span class="hidden lg:flex lg:items-center ml-4 text-sm font-semibold leading-6 text-gray-900">
+                  {{ store.fullName
+                  }}
                 </span>
               </MenuButton>
               <transition enter-active-class="transition ease-out duration-100"
