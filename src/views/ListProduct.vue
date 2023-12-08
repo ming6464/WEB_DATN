@@ -385,6 +385,7 @@
       </div>
     </div>
     <!-- delete modal -->
+    <!-- sale modal -->
     <div v-show="isSaleModalOpen" class="fixed inset-0 overflow-y-auto">
       <div class="flex items-center justify-center min-h-screen">
         <div class="fixed inset-0 bg-gray-500 bg-opacity-75"></div>
