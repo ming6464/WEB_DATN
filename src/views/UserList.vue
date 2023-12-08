@@ -51,6 +51,20 @@
       </div>
     </div>
   </div>
+  <!-- loadding -->
+  <div v-if="ShowLoading" class="w-full h-full flex justify-center items-center"
+    style="position: fixed; top: 0; left: 0;">
+    <div class="flex justify-center items-center">
+      <!-- Phần background với độ mờ -->
+      <div class="bg-gray-500" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.3;">
+      </div>
+      <!-- Nội dung loading spinner -->
+      <div class="spinner-border text-white" role="status">
+        <fwb-spinner color="blue" size="12" class="lg:ml-64 mt-10" />
+      </div>
+    </div>
+  </div>
+  <!-- loadding -->
 </template>
 <script setup>
 import { ref, onMounted } from "vue";
@@ -59,6 +73,7 @@ import { instance } from '../assets/axios-instance';
 import { useToken } from "../store/tokenStore";
 import * as API from '../assets/API'
 const store = useToken();
+const ShowLoading = ref(false);
 const user = ref([
   {
     id: "1",
@@ -109,15 +124,18 @@ onMounted(() => {
     store.onSetCurrentPage({ index: 1, child: 0 });
   }
 
-
+  LoadCustomerList();
 })
 
 const LoadCustomerList = async () => {
+  ShowLoading.value = true;
   await instance.get(API.GETCustomer)
     .then(res => {
       user.value = res.data.data;
     })
     .catch(err => console.error(err));
+  ShowLoading.value = false;
+
 }
 
 </script>
