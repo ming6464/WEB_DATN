@@ -1,6 +1,5 @@
 <template>
   <div class="px-4 sm:px-6 lg:px-8">
-
     <div class="px-4 sm:px-6 lg:px-8 bg-white -mt-2" style="position: fixed;top : 70px;right: 0px;left: 0px;">
       <div class="flex justify-between items-center border-gray-300 py-4 lg:ml-72">
         <div class="flex items-center space-x-4 flex-grow">
@@ -49,7 +48,7 @@
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-200 bg-white">
-              <tr v-for="(person, index) in filteredStaffs" :key="index">
+              <tr v-for="(person, index) in listIemShow" :key="index">
                 <td class="py-4 text-sm text-gray-500">
                   <div class="font-medium text-gray-900">{{ person.id }}</div>
                 </td>
@@ -96,6 +95,10 @@
         </div>
       </div>
     </div>
+    <nav v-if="filteredList.length > itemOnPage" class="flex justify-end">
+      <v-pagination v-model="currentPage" :pages="totalPages" :range-size="1" active-color="#DCEDFF"
+        @update:modelValue="onPageChange" />
+    </nav>
   </div>
   <!-- Edit Modal -->
   <div v-show="isOpenModal">
@@ -336,6 +339,8 @@
 </template>
 
 <script setup>
+import VPagination from "@hennge/vue3-pagination";
+import "@hennge/vue3-pagination/dist/vue3-pagination.css";
 import { useToken } from "../store/tokenStore";
 import { TrashIcon, PencilSquareIcon, PlusIcon } from "@heroicons/vue/20/solid";
 import { ref, watch, computed, onMounted } from "vue";
@@ -376,6 +381,14 @@ const roleSelected = ref(-1);
 const staffEdit = ref({});
 const isAnySwitchOn = ref(true);
 
+// phân trang và search
+const listIemShow = ref([]);
+const filteredList = ref([]);
+const itemOnPage = ref(10);
+const currentPage = ref(1);
+const totalPages = ref(7);
+//phân trang
+
 onMounted(() => {
   if (store.id == -1) {
     store.onSetGoToLogin(true);
@@ -388,15 +401,11 @@ onMounted(() => {
   loadData();
 });
 
-const loadData = async () => {
+const loadData = async (isDelete) => {
   updateLoad(true);
   await instance.get(API.GETAccounts)
     .then(res => {
-      staffs.value = [];
-      console.log(res.data);
-      res.data.data.forEach(x => {
-        staffs.value.push(x);
-      });
+      staffs.value = res.data.data;
     })
     .catch(err => {
       showToast("Lỗi", true);
@@ -404,8 +413,53 @@ const loadData = async () => {
 
       return;
     })
+  updateList(false, isDelete ? true : false);
   updateLoad(false);
 }
+
+// search  và update phân trang
+const onPageChange = (page) => {
+  const start = (page - 1) * itemOnPage.value; // Giả sử mỗi trang có x phần tử
+  let end = start + itemOnPage.value;
+  if (start < filteredList.value.length) {
+    currentPage.value = page;
+    if (end > filteredList.value.length) end = filteredList.value.length;
+    listIemShow.value = filteredList.value.slice(start, end);
+  } else {
+    listIemShow.value = [];
+  }
+};
+
+watch(() => searchTerm.value, (newValue, oldValue) => {
+  updateList(true);
+})
+const updateList = (isSearch, isDelete) => {
+  const term = searchTerm.value.toString().toLowerCase().trim();
+  switch (selectedFilter.value.toLowerCase()) {
+    case "id":
+      filteredList.value = staffs.value.filter((person) =>
+        person.id.toString().toLowerCase().includes(term)
+      );
+      break;
+    case "name":
+      filteredList.value = staffs.value.filter(
+        (person) =>
+          person.name.toString().toLowerCase().includes(term)
+      );
+      break;
+  }
+  totalPages.value = Math.ceil(filteredList.value.length / itemOnPage.value);
+  if (isSearch) {
+    onPageChange(1);
+  } else {
+    let page = currentPage.value;
+    if (isDelete) {
+      if (page > totalPages.value) page = totalPages.value;
+    }
+    onPageChange(page);
+  }
+};
+// search  và update phân trang
 
 const openModal = async (id) => {
   isAnySwitchOn.value = true;
@@ -488,7 +542,8 @@ const submitEditForm = async () => {
     if (checkEdit) {
       await instance.put(`${API.PUTAccount}/${IdSelected.value}`, formAccount)
         .then(res => {
-          updateAccountWithId(IdSelected.value);
+          //updateAccountWithId(IdSelected.value);
+          loadData();
           showToast("Cập nhật thành công");
         })
         .catch(err => {
@@ -550,23 +605,6 @@ const checkvalidate = (isEdit) => {
   return true;
 }
 
-const updateAccountWithId = async (id) => {
-  await instance.get(`${API.GETAccount}/${id}`)
-    .then(res => {
-      const index = staffs.value.findIndex(x => x.id == id);
-      staffs.value[index] = res.data.data;
-      if (id == store.id) {
-        store.onSetAvatar(res.data.data.avatar);
-        store.onSetFullName(res.data.data.fullname);
-      }
-    })
-    .catch(err => {
-      showToast("Lỗi");
-      console.error(err);
-
-    })
-}
-
 const showDeleteModal = async (id, role) => {
   password2.value = '';
   IdSelected.value = id;
@@ -612,8 +650,7 @@ const deleteStaff = async () => {
     await instance.delete(`${API.DELAccount}/${IdSelected.value}`)
       .then(res => {
         showToast("Xoá thành công");
-        const index = staffs.value.findIndex(x => x.id == IdSelected.value);
-        staffs.value.splice(index, 1);
+        loadData(true);
       })
       .catch(err => {
         showToast("Lỗi", true);

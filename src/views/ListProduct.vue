@@ -33,7 +33,7 @@
               class="flex items-center justify-between border border-gray-400 border-r-0 rounded-md shadow-sm md:w-8/12 sm:w-6/12">
               <input type="text" v-model="filterVal.keyword" placeholder="Tìm kiếm ..."
                 class="rounded-md w-full rounded-r-none border-0 px-3 py-2 text-sm focus:border-gray-50 focus:border-0" />
-              <button type="button" @click="applyFilter"
+              <button type="button" @click="loadFilter"
                 class="inline-flex items-center rounded-md rounded-l-none bg-indigo-600 px-1 py-1 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
                 <MagnifyingGlassIcon class="h-7 w-7" aria-hidden="true" />
               </button>
@@ -94,7 +94,7 @@
                 </tr>
               </thead>
               <tbody class="divide-y divide-gray-200 bg-white">
-                <tr v-for="product in products" :key="product.id">
+                <tr v-for="product in listIemShow" :key="product.id">
                   <td v-if="optionModal.id" class="whitespace-nowrap mr-4 text-left py-5 text-sm text-gray-500">
                     <div class="text-gray-900">{{ product.id }}</div>
                   </td>
@@ -157,7 +157,12 @@
           </div>
         </div>
       </div>
+      <nav v-if="products.length > itemOnPage" class="flex justify-end">
+        <v-pagination v-model="currentPage" :pages="totalPages" :range-size="1" active-color="#DCEDFF"
+          @update:modelValue="onPageChange" />
+      </nav>
     </div>
+
     <!-- Layout List Product -->
 
     <!-- update product -->
@@ -212,7 +217,7 @@
                   <span>Lựa chọn ảnh đại diện cho sản phẩm</span>
                   <span type="submit"
                     class="rounded-md bg-indigo-600 mt-2 py-2 text-sm font-semibold
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   text-white shadow-sm hover:bg-indigo-500 text-center w-20">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         text-white shadow-sm hover:bg-indigo-500 text-center w-20">
                     Chọn ảnh
                   </span>
                 </label>
@@ -455,7 +460,7 @@
           </h3>
 
           <!-- Form for adding a new product -->
-          <form @submit.prevent="applyFilter">
+          <form @submit.prevent="loadFilter">
             <div class="mb-4">
               <label for="priceRange" class="block text-sm font-medium text-gray-700">
                 Khoảng giá
@@ -606,6 +611,8 @@
 </template>
 
 <script setup>
+import VPagination from "@hennge/vue3-pagination";
+import "@hennge/vue3-pagination/dist/vue3-pagination.css";
 import VueApexCharts from "vue3-apexcharts";
 import moment from 'moment';
 import { FwbSpinner } from 'flowbite-vue'
@@ -724,7 +731,7 @@ const filterVal = ref({
   categoryId: -1,
   sortPrice: 2,
   page: 0,
-  pageSize: 10,
+  pageSize: 10000,
   keyword: '',
   minPrice: 0,
   maxPrice: 0,
@@ -732,10 +739,19 @@ const filterVal = ref({
 });
 const numberFilter = ref(0);
 const isOpenFilterModal = ref(false);
-
 const isOpenOptionModal = ref(false);
 // } filter option
 const store = useToken();
+
+
+// phân trang và search
+const listIemShow = ref([]);
+const itemOnPage = ref(10);
+const currentPage = ref(1);
+const totalPages = ref(7);
+//phân trang
+
+
 
 // load Data {
 onMounted(() => {
@@ -749,30 +765,16 @@ onMounted(() => {
     store.onSetCurrentPage({ index: 0, child: 1 });
   }
 
-  updateListProduct();
+  loadFilter(true);
   updateCategories();
   updateSizes();
   updateColors();
 });
 
-const updateListProduct = async () => {
-  updateLoading(true);
-  await instance.get(API.GETProducts)
-    .then(res => {
-      products.value = res.data.data;
-    })
-    .catch(err => {
-      showToast("Lỗi", true);
-    });
-  updateLoading(false);
-
-}
-
 const updateCategories = async () => {
   await instance.get(API.GETCategories).then(res => {
     categories.value = res.data.data;
     categoriesFilter.value = res.data.data;
-    categoriesFilter.value.unshift({ id: -1, name: "Không có" });
   }).catch(err => console.log(err));
 }
 
@@ -790,6 +792,37 @@ const updateColors = async () => {
     })
     .catch(err => console.log(err));
 }
+
+// search  và update phân trang
+const updateList = (isSearch, isDelete) => {
+  totalPages.value = Math.ceil(products.value.length / itemOnPage.value);
+  if (isSearch) {
+    onPageChange(1);
+  } else {
+    let page = currentPage.value;
+    if (isDelete) {
+      if (page > totalPages.value) page = totalPages.value;
+    }
+    onPageChange(page);
+  }
+};
+
+const onPageChange = (page) => {
+  const start = (page - 1) * itemOnPage.value; // Giả sử mỗi trang có x phần tử
+  let end = start + itemOnPage.value;
+  if (start < products.value.length) {
+    currentPage.value = page;
+    if (end > products.value.length) end = products.value.length;
+    listIemShow.value = products.value.slice(start, end);
+  } else {
+    listIemShow.value = [];
+  }
+};
+
+
+// search  và update phân trang
+
+
 // } load Data 
 
 
@@ -879,8 +912,7 @@ const submitEditForm = async () => {
       await instance.put(`${API.PUTProduct}/${updateProduct.value.id}`, formProduct)
         .then(res => {
           showToast("Cập nhật thành công", false);
-          updateListProduct();
-          updateProductWithId(updateProduct.value.id);
+          loadFilter(true);
           updateColorSize(updateProduct.value.id);
           onCloseUpdateProduct();
         })
@@ -888,7 +920,6 @@ const submitEditForm = async () => {
           showToast("Lỗi", true);
           updateLoading(false);
           console.error(err);
-
           return;
         });
     }
@@ -902,7 +933,7 @@ const submitEditForm = async () => {
     await instance.post(API.POSTProduct, formProduct)
       .then(res => {
         updateColorSize(res.data.data.id);
-        updateListProduct();
+        loadFilter(true);
         showToast("Cập nhật thành công", false);
         onCloseUpdateProduct();
       })
@@ -1060,7 +1091,8 @@ const deleteProduct = async () => {
     if (index !== -1) {
       await instance.delete(`${API.DELProduct}/${idDelete}`)
         .then(res => {
-          products.value.splice(index, 1);
+          loadFilter(true, true);
+          showToast("Xoá thành công");
         })
         .catch(err => {
           showToast("Lỗi", true);
@@ -1074,7 +1106,6 @@ const deleteProduct = async () => {
     showToast("Lỗi", true);
     updateLoading(false);
     console.error(err);
-
     return;
   }
   updateLoading(false);
@@ -1137,7 +1168,7 @@ const submitSaleModal = async () => {
   await instance.put(`${API.PUTSale}/${idSale}`, formSale)
     .then(res => {
       showToast("Tạo giảm giá thành công", false);
-      updateProductWithId(idSale);
+      loadFilter(true);
       closeSaleModal();
       return;
     })
@@ -1156,10 +1187,10 @@ const changeSort = () => {
   if (filterVal.value.sortPrice > 2) {
     filterVal.value.sortPrice = 0;
   }
-  applyFilter();
+  loadFilter();
 }
 
-const applyFilter = async () => {
+const loadFilter = async (isLoadCurrentPage, isDeleteItem) => {
   updateLoading(true);
   const params = {};
   if (filterVal.value.sortPrice < 2) {
@@ -1202,8 +1233,11 @@ const applyFilter = async () => {
     .catch(err => {
       products.value = [];
       console.error(err);
-
     });
+
+  console.log(params);
+
+  updateList(isLoadCurrentPage ? false : true, isDeleteItem ? true : false);
 
   updateLoading(false);
 
@@ -1287,20 +1321,7 @@ const validateQuantityPrice = () => {
     updateProduct.value.price = 0;
   }
 };
-const updateProductWithId = async (id) => {
-  await instance(`${API.GETProduct}/${id}`)
-    .then(res => {
-      const index = products.value.findIndex(x => x.id == id);
-      if (index < 0) {
-        updateListProduct();
-        return;
-      }
-      products.value[index] = res.data.data;
-    })
-    .catch(err => {
-      updateListProduct();
-    });
-}
+
 
 const getPrice = (product) => {
   if (product.saleStart) {

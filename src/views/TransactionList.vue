@@ -309,7 +309,8 @@
 
 <script setup>
 import moment from "moment";
-import { ref, watch, computed } from "vue";
+import { useToken } from "../store/tokenStore";
+import { ref, watch, computed, onMounted } from "vue";
 import {
   Bars3Icon,
   CheckCircleIcon,
@@ -321,6 +322,7 @@ import {
   AdjustmentsVerticalIcon
 } from "@heroicons/vue/20/solid";
 import { TrashIcon, PaperClipIcon } from "@heroicons/vue/20/solid";
+const store = useToken();
 const orders = ref([
   {
     id: 19,
@@ -486,15 +488,23 @@ const getAddressFull = (addressData) => {
   return `${addressData.street}, ${addressData.commune}, ${addressData.district}, ${addressData.city}`;
 };
 
+onMounted(() => {
+  if (store.id == -1) {
+    store.onSetGoToLogin(true);
+    return;
+  }
+  if (store.role == 1) {
+    store.onSetCurrentPage({ index: 3, child: 0 });
+  } else {
+    store.onSetCurrentPage({ index: 1, child: 0 });
+  }
+})
+
 //search
 
 const selectedFilter = ref("id"); // Giá trị mặc định của bộ lọc
 
 const searchTerm = ref("");
-
-watch(selectedFilter, (newVal, oldVal) => {
-  console.log("Bộ lọc được chọn:", newVal);
-});
 
 const filteredOrders = computed(() => {
   const term = searchTerm.value.toString().toLowerCase().trim();

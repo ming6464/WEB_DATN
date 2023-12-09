@@ -301,10 +301,6 @@ const navigation = ref([
         href: "/admin/transactionList",
         current: false
       },
-      {
-        name: "Danh sách cập nhật trạng thái đơn hàng",
-        href: "/admin/oder_status",
-      },
     ],
   },
   {

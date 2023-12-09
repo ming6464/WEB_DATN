@@ -6,7 +6,6 @@
         <div class="flex items-center space-x-4 flex-grow">
           <input type="text" v-model="searchTerm" placeholder="Tìm kiếm ..."
             class="rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring focus:border-indigo-500 flex-grow" />
-
           <!-- Dropdown filter -->
           <select v-model="selectedFilter"
             class="rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring focus:border-indigo-500">
@@ -21,7 +20,6 @@
             </button>
             <div v-else class="opacity-0 px-3 py-2"></div>
           </div>
-
         </div>
       </div>
     </div>
@@ -75,7 +73,7 @@
           <thead>
             <tr>
               <th scope="col" class="py-3 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
-                STT
+                ID
               </th>
               <th scope="col" class="py-3.5 pl-6 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-4">
                 Ảnh
@@ -90,7 +88,7 @@
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-200 bg-white">
-            <tr v-for="(person, index) in filteredStaffs" :key="person.id">
+            <tr v-for="(person) in listIemShow" :key="person.id">
               <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
                 <div class="font-medium text-gray-900">{{ person.id }}</div>
               </td>
@@ -110,7 +108,7 @@
                     <PencilSquareIcon class="h-5 w-5" aria-hidden="true" />
                     <span class="sr-only">{{ person.id }},</span>
                   </button>
-                  <button @click="openDeleteModal(index)" class="text-red-700 hover:text-indigo-900">
+                  <button @click="openDeleteModal(person.id)" class="text-red-700 hover:text-indigo-900">
                     <TrashIcon class="h-5 w-5" aria-hidden="true" />
                     <span class="sr-only">, {{ person.id }}</span>
                   </button>
@@ -122,6 +120,10 @@
       </div>
     </div>
   </div>
+  <nav v-if="filteredList.length > itemOnPage" class="flex justify-end">
+    <v-pagination v-model="currentPage" :pages="totalPages" :range-size="1" active-color="#DCEDFF"
+      @update:modelValue="onPageChange" />
+  </nav>
   <!-- Edit Modal -->
   <div v-if="isEditModalOpen" class="fixed inset-0 overflow-y-auto">
     <div class="flex items-center justify-center min-h-screen">
@@ -227,9 +229,11 @@
 </template>
 
 <script setup>
+import VPagination from "@hennge/vue3-pagination";
+import "@hennge/vue3-pagination/dist/vue3-pagination.css";
 import { useToken } from '../store/tokenStore';
 import { FwbSpinner } from 'flowbite-vue'
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { PlusIcon } from "@heroicons/vue/20/solid";
 import { PencilSquareIcon } from "@heroicons/vue/20/solid";
 import { TrashIcon } from "@heroicons/vue/20/solid";
@@ -237,46 +241,11 @@ import { instance } from '../assets/axios-instance';
 import * as API from "../assets/API";
 import { showToast } from '../assets/Toastify'
 const ShowLoading = ref(false);
-const categories = ref([
-  {
-    id: "1",
-    name: "Áo len",
-    image:
-      "https://image.uniqlo.com/UQ/ST3/AsianCommon/imagesgoods/460950/sub/goods_460950_sub14.jpg?width=750",
-  },
-  {
-    id: "2",
-    name: "Áo thun",
-    image:
-      "https://media.coolmate.me/cdn-cgi/image/quality=80,format=auto/uploads/April2023/Ao_thun_oversize_basic_84RISINGshawdo4.jpg",
-  },
-  {
-    id: "3",
-    name: "Áo sơ mi",
-    image:
-      "https://image.uniqlo.com/UQ/ST3/AsianCommon/imagesgoods/462384/sub/goods_462384_sub14.jpg?width=750",
-  },
-  {
-    id: "4",
-    name: "Áo nỉ",
-    image:
-      "https://image.uniqlo.com/UQ/ST3/AsianCommon/imagesgoods/460322/item/goods_31_460322.jpg?width=750",
-  },
-  {
-    id: "5",
-    name: "Áo Polo",
-    image:
-      "https://image.uniqlo.com/UQ/ST3/AsianCommon/imagesgoods/433041/item/goods_69_433041.jpg?width=750",
-  },
-  {
-    id: "6",
-    name: "Áo khoác",
-    image:
-      "https://image.uniqlo.com/UQ/ST3/AsianCommon/imagesgoods/450195/sub/goods_450195_sub14.jpg?width=750",
-  },
-]);
+const categories = ref([]);
+const listIemShow = ref([]);
+const filteredList = ref([]);
 const isEditModalOpen = ref(false);
-const selectedIndex = ref(null);
+const selectedId = ref(-1);
 const editedPerson = ref({
   id: null,
   name: "",
@@ -286,8 +255,16 @@ const isDeleteModalOpen = ref(false);
 const isShowDeleteModal = ref(false);
 const selectedFilter = ref("id"); // Giá trị mặc định của bộ lọc
 const searchTerm = ref("");
-let indexDelete = -1;
 const store = useToken();
+
+
+// phân trang và search
+const itemOnPage = ref(10);
+const currentPage = ref(1);
+const totalPages = ref(7);
+//phân trang
+
+
 onMounted(() => {
   if (store.id == -1) {
     store.onSetGoToLogin(true);
@@ -298,16 +275,15 @@ onMounted(() => {
   } else {
     store.onSetCurrentPage({ index: 0, child: 0 });
   }
-
-
   updateCategories();
 });
 
-const updateCategories = async () => {
+const updateCategories = async (isDelete) => {
   updateLoading(true);
   await instance.get(API.GETCategories)
     .then(res => {
       categories.value = res.data.data;
+      updateList(false, isDelete ? true : false);
     })
     .catch(err => {
       showToast("Lỗi", true);
@@ -317,11 +293,57 @@ const updateCategories = async () => {
   updateLoading(false);
 }
 
+// search  và update phân trang
+const onPageChange = (page) => {
+  const start = (page - 1) * itemOnPage.value; // Giả sử mỗi trang có x phần tử
+  let end = start + itemOnPage.value;
+  if (start < filteredList.value.length) {
+    currentPage.value = page;
+    if (end > filteredList.value.length) end = filteredList.value.length;
+    listIemShow.value = filteredList.value.slice(start, end);
+  } else {
+    listIemShow.value = [];
+  }
+};
+
+watch(() => searchTerm.value, (newValue, oldValue) => {
+  updateList(true);
+})
+const updateList = (isSearch, isDelete) => {
+  const term = searchTerm.value.toString().toLowerCase().trim();
+  switch (selectedFilter.value.toLowerCase()) {
+    case "id":
+      filteredList.value = categories.value.filter((person) =>
+        person.id.toString().toLowerCase().includes(term)
+      );
+      break;
+    case "name":
+      filteredList.value = categories.value.filter(
+        (person) =>
+          person.name.toString().toLowerCase().includes(term)
+      );
+      break;
+  }
+  totalPages.value = Math.ceil(filteredList.value.length / itemOnPage.value);
+  if (isSearch) {
+    onPageChange(1);
+  } else {
+    let page = currentPage.value;
+    if (isDelete) {
+      if (page > totalPages.value) page = totalPages.value;
+    }
+    onPageChange(page);
+  }
+  console.log(categories.value, filteredList.value)
+
+};
+// search  và update phân trang
+
 const imageInputRef = ref(null);
 //delete modal 
 
-const openDeleteModal = async (index) => {
-  indexDelete = index;
+const openDeleteModal = async (id) => {
+  selectedId.value = id;
   isDeleteModalOpen.value = true;
   await delay(100);
   isShowDeleteModal.value = true;
@@ -330,10 +352,15 @@ const openDeleteModal = async (index) => {
 const deleteCategory = async () => {
   updateLoading(true);
   try {
-    await instance.delete(`${API.DELCategories}/${categories.value[indexDelete].id}`)
+    await instance.delete(`${API.DELCategories}/${selectedId.value}`)
       .then(res => {
-        categories.value.splice(indexDelete, 1);
-        showToast("Xoá thành công", false);
+        const index = categories.value.findIndex(x => x.id === selectedId.value);
+        if (index != -1) {
+          updateCategories(true);
+          showToast("Xoá thành công", false);
+        } else {
+          showToast("Lỗi", true);
+        }
       })
       .catch(err => {
         showToast("Xoá thành công", false);
@@ -352,7 +379,7 @@ const closeDeleteCategoryModal = async () => {
 
 function openEditModal(person) {
   editedPerson.value = { ...person };
-  selectedIndex.value = categories.value.indexOf(person);
+  selectedId.value = categories.value.indexOf(person);
   isEditModalOpen.value = true;
 }
 
@@ -370,8 +397,9 @@ const submitEditForm = async () => {
     }
   })
     .then(res => {
-      console.log(res);
-      categories.value.splice(selectedIndex.value, 1, res.data.data);
+      let index = categories.value.findIndex(x => x.id == selectedId);
+      categories.value.splice(index, 1, res.data.data);
+      updateCategories();
       showToast("Cập nhật thành công", false);
     })
     .catch(err => {
@@ -382,7 +410,6 @@ const submitEditForm = async () => {
 
   updateLoading(false);
 }
-
 
 function closeEditModal() {
   isEditModalOpen.value = false;
@@ -421,11 +448,9 @@ const openAddModal = () => {
   };
   isAddModalOpen.value = true;
 };
-
 const closeAddModal = () => {
   isAddModalOpen.value = false;
 };
-
 const addNewProduct = async () => {
   if (!newProduct.value.file || !newProduct.value.name || newProduct.value.name.toString().length == 0) {
     showToast("Thông tin thiếu", true);
@@ -462,33 +487,11 @@ const handleImageUploadADD = (event) => {
   }
 };
 
-// search {
-
-const filteredStaffs = computed(() => {
-  const term = searchTerm.value.toString().toLowerCase().trim();
-
-  switch (selectedFilter.value.toLowerCase()) {
-    case "id":
-      return categories.value.filter((person) =>
-        person.id.toString().toLowerCase().includes(term)
-      );
-    case "name":
-      return categories.value.filter(
-        (person) =>
-          person.name.toString().toLowerCase().includes(term)
-      );
-  }
-});
-
-// } search
-
 
 //loading {
-
 const updateLoading = (check) => {
   ShowLoading.value = check;
 }
-
 // } Loading
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 

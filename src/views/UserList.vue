@@ -24,11 +24,11 @@
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-200 bg-white">
-              <tr v-for="(person, index) in user" :key="index">
-                <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
+              <tr v-for="(person, index) in users_" :key="index">
+                <td class="whitespace-nowrap px-3 py-3 text-sm text-gray-500">
                   <div class="text-gray-900">{{ person.userId }}</div>
                 </td>
-                <td class="whitespace-nowrap py-5 pl-4 pr-3 text-sm sm:pl-0">
+                <td class="whitespace-nowrap py-3 pl-4 pr-3 text-sm sm:pl-0">
                   <div class="flex items-center">
                     <div class="h-20 w-20 flex-shrink-0">
                       <img class="h-18 w-20 rounded-full" :src="person.picture" alt="" />
@@ -50,6 +50,10 @@
         </div>
       </div>
     </div>
+    <nav v-if="users.length > 7" class="flex justify-end">
+      <v-pagination v-model="currentPage" :pages="totalPages" :range-size="1" active-color="#DCEDFF"
+        @update:modelValue="onPageChange" />
+    </nav>
   </div>
   <!-- loadding -->
   <div v-if="ShowLoading" class="w-full h-full flex justify-center items-center"
@@ -67,6 +71,8 @@
   <!-- loadding -->
 </template>
 <script setup>
+import VPagination from "@hennge/vue3-pagination";
+import "@hennge/vue3-pagination/dist/vue3-pagination.css";
 import { ref, onMounted } from "vue";
 import { PencilSquareIcon, TrashIcon, PlusIcon } from "@heroicons/vue/20/solid";
 import { instance } from '../assets/axios-instance';
@@ -74,45 +80,11 @@ import { useToken } from "../store/tokenStore";
 import * as API from '../assets/API'
 const store = useToken();
 const ShowLoading = ref(false);
-const user = ref([
-  {
-    id: "1",
-    userId: '10029',
-    name: "Linh",
-    email: "linnn@gmail.com",
-    picture:
-      "https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-    dob: '12/12/2012',
-  },
-  {
-    id: "2",
-    userId: '10030',
-    name: "Linh",
-    email: "linnn@gmail.com",
-    picture:
-      "https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-    dob: '12/12/2012',
-  },
-  {
-    id: "3",
-    userId: '10031',
-    name: "Linh",
-    email: "linnn@gmail.com",
-    picture:
-      "https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-    dob: '12/12/2012',
-  },
-  {
-    id: "4",
-    userId: '10032',
-    name: "Linh",
-    email: "linnn@gmail.com",
-    picture:
-      "https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-    dob: '12/12/2012',
-  },
-]);
-
+const users = ref([]);
+const users_ = ref();
+const itemOnPage = ref(10);
+const currentPage = ref(1);
+const totalPages = ref(7);
 onMounted(() => {
   if (store.id == -1) {
     store.onSetGoToLogin(true);
@@ -124,14 +96,52 @@ onMounted(() => {
     store.onSetCurrentPage({ index: 1, child: 0 });
   }
 
-  LoadCustomerList();
+  //fake data
+  fakeData(100);
+
+  //LoadCustomerList();
+
+  totalPages.value = Math.ceil(users.value.length / itemOnPage.value);
+  onPageChange(1);
 })
+
+const fakeData = (size) => {
+  users.value = [];
+  for (let i = 0; i < size; i++) {
+    users.value.push(
+      {
+        id: i,
+        userId: 100 + i,
+        name: "Linh " + i,
+        email: "linnn@gmail.com",
+        picture:
+          "https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+        dob: '12/12/2012',
+      }
+    )
+  }
+}
+
+const onPageChange = (page) => {
+  const start = (page - 1) * itemOnPage.value; // Giả sử mỗi trang có x phần tử
+  const end = start + itemOnPage.value;
+  if (start < users.value.length) {
+    if (end < users.value.length) {
+      users_.value = users.value.slice(start, end);
+    } else {
+      users_.value = users.value.slice(start, users.value.length - 1);
+    }
+
+  } else {
+    console.error("Start index out of bounds.");
+  }
+};
 
 const LoadCustomerList = async () => {
   ShowLoading.value = true;
   await instance.get(API.GETCustomer)
     .then(res => {
-      user.value = res.data.data;
+      users.value = res.data.data;
     })
     .catch(err => console.error(err));
   ShowLoading.value = false;
