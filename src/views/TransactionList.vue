@@ -1,20 +1,24 @@
 <template>
   <div v-if="!isOpenDetailOrder">
-    <div class="px-4 sm:px-6 lg:px-8">
-      <div class="sm:flex sm:items-center mt-4">
-        <div class="flex items-center space-x-4 flex-grow">
-          <input type="text" v-model="searchTerm" placeholder="Tìm kiếm ..."
-            class="rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring focus:border-indigo-500 flex-grow" />
-
-          <!-- Dropdown filter -->
-          <select v-model="selectedFilter"
-            class="rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring focus:border-indigo-500">
-            <option value="id">ID</option>
-            <option value="name">Tên</option>
-          </select>
+    <div class="-mt-2 bg-white border-b border-gray-200 " style="position: fixed;top : 70px;right: 0px;left: 0px;">
+      <div class="lg:ml-72 px-4">
+        <div class="flex justify-around items-center border-gray-300 py-4">
+          <div
+            class="flex items-center justify-between border border-gray-400 border-r-0 rounded-md shadow-sm md:w-8/12 sm:w-6/12">
+            <input type="text" placeholder="Tìm kiếm ..." v-model="searchTerm"
+              class="rounded-md w-full rounded-r-none border-0 px-3 py-2 text-sm focus:border-gray-50 focus:border-0" />
+            <select v-model="selectedFilter" class="border-0 px-3 py-2 text-sm focus:outline-0">
+              <option value="id">ID</option>
+            </select>
+            <button type="button" @click="applyFilter()"
+              class="inline-flex items-center rounded-md rounded-l-none bg-indigo-600 px-1 py-1 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+              <MagnifyingGlassIcon class="h-7 w-7" aria-hidden="true" />
+            </button>
+          </div>
         </div>
       </div>
     </div>
+
     <!-- ... (existing code) ... -->
     <div class="mt-8 flow-root">
       <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-7 lg:-mx-4">
@@ -87,8 +91,8 @@
                 <td v-else class="whitespace-nowrap px-3 py-4 text-sm text-gray-900 sm:pl-0">
                   Huỷ
                 </td>
-                <td class="flex flex-row gap-x-2 py-4">
-                  <button class=" hover:text-indigo-900" @click="showDetails(order)">
+                <td class="py-4">
+                  <button class=" hover:text-indigo-900 ml-10" @click="showDetails(order)">
                     <AdjustmentsVerticalIcon class="h-5 w-5" aria-hidden="true" />
                     <span class="sr-only">, {{ order.id }}</span>
                   </button>
@@ -311,17 +315,8 @@
 import moment from "moment";
 import { useToken } from "../store/tokenStore";
 import { ref, watch, computed, onMounted } from "vue";
-import {
-  Bars3Icon,
-  CheckCircleIcon,
-  XCircleIcon,
-} from "@heroicons/vue/20/solid";
-import {
-  PencilSquareIcon,
-  ExclamationTriangleIcon,
-  AdjustmentsVerticalIcon
-} from "@heroicons/vue/20/solid";
-import { TrashIcon, PaperClipIcon } from "@heroicons/vue/20/solid";
+import { TrashIcon, PhotoIcon, AdjustmentsVerticalIcon, ExclamationTriangleIcon, PencilSquareIcon, PlusIcon, UserCircleIcon, BookmarkIcon, XCircleIcon, CheckIcon, MagnifyingGlassIcon, AdjustmentsHorizontalIcon, FunnelIcon } from "@heroicons/vue/20/solid";
+
 const store = useToken();
 const orders = ref([
   {
@@ -479,6 +474,9 @@ const options = [
   { value: 4, label: 'Đã giao' },
   { value: 0, label: 'Hủy' },
 ];
+
+const filteredOrders = ref();
+
 const formattedDateTime = (time) => {
   // Sử dụng moment để định dạng thời gian
   return moment(time).format("DD/MM/yyyy HH:mm");
@@ -498,6 +496,7 @@ onMounted(() => {
   } else {
     store.onSetCurrentPage({ index: 1, child: 0 });
   }
+  applyFilter();
 })
 
 //search
@@ -506,20 +505,22 @@ const selectedFilter = ref("id"); // Giá trị mặc định của bộ lọc
 
 const searchTerm = ref("");
 
-const filteredOrders = computed(() => {
+const applyFilter = () => {
   const term = searchTerm.value.toString().toLowerCase().trim();
 
   switch (selectedFilter.value) {
     case "id":
-      return orders.value.filter((order) =>
+      filteredOrders.value = orders.value.filter((order) =>
         order.id.toString().toLowerCase().includes(term)
       );
+      break;
     case "name":
-      return orders.value.filter((order) =>
+      filteredOrders.value = orders.value.filter((order) =>
         order.name.toString().toLowerCase().includes(term)
       );
+      break;
   }
-});
+};
 
 //search
 // Status

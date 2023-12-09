@@ -1,29 +1,33 @@
 <template>
   <div class="px-4 sm:px-6 lg:px-8">
-    <div class="px-4 sm:px-6 lg:px-8 bg-white -mt-2" style="position: fixed;top : 70px;right: 0px;left: 0px;">
-      <div class="flex justify-between items-center border-gray-300 py-4 lg:ml-72">
-        <div class="flex items-center space-x-4 flex-grow">
-          <input type="text" v-model="searchTerm" placeholder="Tìm kiếm ..."
-            class="rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring focus:border-indigo-500 flex-grow" />
 
-          <!-- Dropdown filter -->
-          <select v-model="selectedFilter"
-            class="rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring focus:border-indigo-500">
-            <option value="id">ID</option>
-            <option value="name">Tên</option>
-          </select>
-          <div class="mt-4 sm:ml-16 sm:mt-0 self-end">
-            <button type="button" @click="openModal(-1)"
-              class="inline-flex items-center gap-x-1.5 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-              <PlusIcon class="h-5 w-5" aria-hidden="true" />
-              Thêm tài khoản
 
+    <div class="-mt-2 bg-white border-b border-gray-200 " style="position: fixed;top : 70px;right: 0px;left: 0px;">
+      <div class="lg:ml-72 px-4">
+        <div class="flex justify-center gap-x-2 items-center border-gray-300 py-4">
+          <div
+            class="flex items-center justify-between border border-gray-400 border-r-0 rounded-md shadow-sm md:w-8/12 sm:w-6/12">
+            <input type="text" placeholder="Tìm kiếm ..." v-model="searchTerm"
+              class="rounded-md w-full rounded-r-none border-0 px-3 py-2 text-sm focus:border-gray-50 focus:border-0" />
+            <select v-model="selectedFilter" class="border-0 px-3 py-2 text-sm focus:outline-0">
+              <option value="id">ID</option>
+              <option value="name">Tên</option>
+            </select>
+            <button type="button" @click="applyFilter()"
+              class="inline-flex items-center rounded-md rounded-l-none bg-indigo-600 px-1 py-1 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+              <MagnifyingGlassIcon class="h-7 w-7" aria-hidden="true" />
             </button>
           </div>
-
+          <button type="button" @click="openModal(-1)"
+            class="inline-flex self-end items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+            <PlusIcon class="h-5 w-5" aria-hidden="true" />
+            Thêm tài khoản
+          </button>
         </div>
       </div>
     </div>
+
+
     <div class="mt-8 flow-root">
       <div class="-mx-4 -my-2 overflow-auto sm:-mx-6 lg:-mx-8">
         <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
@@ -342,7 +346,8 @@
 import VPagination from "@hennge/vue3-pagination";
 import "@hennge/vue3-pagination/dist/vue3-pagination.css";
 import { useToken } from "../store/tokenStore";
-import { TrashIcon, PencilSquareIcon, PlusIcon } from "@heroicons/vue/20/solid";
+import { TrashIcon, PhotoIcon, PencilSquareIcon, PlusIcon, UserCircleIcon, BookmarkIcon, XCircleIcon, CheckIcon, MagnifyingGlassIcon, AdjustmentsHorizontalIcon, FunnelIcon } from "@heroicons/vue/20/solid";
+
 import { ref, watch, computed, onMounted } from "vue";
 import {
   Switch,
@@ -430,9 +435,10 @@ const onPageChange = (page) => {
   }
 };
 
-watch(() => searchTerm.value, (newValue, oldValue) => {
+const applyFilter = () => {
   updateList(true);
-})
+}
+
 const updateList = (isSearch, isDelete) => {
   const term = searchTerm.value.toString().toLowerCase().trim();
   switch (selectedFilter.value.toLowerCase()) {
@@ -444,7 +450,7 @@ const updateList = (isSearch, isDelete) => {
     case "name":
       filteredList.value = staffs.value.filter(
         (person) =>
-          person.name.toString().toLowerCase().includes(term)
+          person.fullname.toString().toLowerCase().includes(term)
       );
       break;
   }
