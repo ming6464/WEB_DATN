@@ -181,6 +181,10 @@
                   {{ option.label }}
                 </option>
               </select>
+              <button type="button" v-if="selectedOrder.status1 != selectedOrder.status"
+                class="rounded-md ml-3 bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline  focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                Xác nhận
+              </button>
             </dd>
             <dd v-else-if="selectedOrder.status == 0" class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
               Hủy
@@ -519,9 +523,6 @@ const applyFilter = () => {
 };
 
 //search
-// Status
-const selectedStatus = ref("pending");
-// status
 
 const showDetails = (order) => {
   isOpenDetailOrder.value = true;
@@ -533,20 +534,9 @@ const closeDetails = () => {
   isOpenDetailOrder.value = false;
   //selectedOrder.value = null;
 };
-const filteredPeopleByStatus = computed(() => {
-  if (selectedStatus.value === "all") {
-    // Return all orders if "all" status is selected
-    return filteredOrders.value;
-  }
-
-  return filteredOrders.value.filter(
-    (order) => order.status === selectedStatus.value
-  );
-});
-
 const onChangeStatusOrder = (index, isSelectOrder) => {
-  indexChangeStatus.value = index;
   if (!isSelectOrder) {
+    indexChangeStatus.value = index;
     showWarningModal();
   }
 }

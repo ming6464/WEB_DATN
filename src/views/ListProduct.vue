@@ -137,10 +137,16 @@
                         <PencilSquareIcon class="h-5 w-5" aria-hidden="true" />
                         <span class="sr-only">Edit, {{ product.id }}</span>
                       </button>
+
                       <button @click="openDeleteModal(product.id)" class="text-red-700 hover:text-indigo-900">
                         <TrashIcon class="h- w-5" aria-hidden="true" />
-                        <span class="sr-only">Delete, {{ product.id }}</span>
+                        <span class="sr-only">Play, {{ product.id }}</span>
                       </button>
+
+                      <!-- <button @click="openDeleteModal(product.id)" class="text-green-700 hover:text-indigo-900">
+                        <PlayCircleIcon class="h- w-5" aria-hidden="true" />
+                        <span class="sr-only">Play, {{ product.id }}</span>
+                      </button> -->
 
                       <button @click="openSaleModal(product.id)">
                         <img class="h-5 w-5"
@@ -216,7 +222,7 @@
                   <span>Lựa chọn ảnh đại diện cho sản phẩm</span>
                   <span type="submit"
                     class="rounded-md bg-indigo-600 mt-2 py-2 text-sm font-semibold
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               text-white shadow-sm hover:bg-indigo-500 text-center w-20">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       text-white shadow-sm hover:bg-indigo-500 text-center w-20">
                     Chọn ảnh
                   </span>
                 </label>
@@ -328,9 +334,9 @@
         <h2 class=" lg:ml-72 text-base font-semibold">Xác nhận quá trình ?</h2>
         <div class="flex gap-x-6">
           <button type="button" @click="onCloseUpdateProduct"
-            class="flex rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600">
-            <XCircleIcon class="h-5 w-5" aria-hidden="true" />
-            Huỷ
+            class="flex rounded-md bg-gray-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600">
+            <BackspaceIcon class="h-5 w-5" aria-hidden="true" />
+            Trở về
           </button>
           <button type="submit"
             class="flex rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline  focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
@@ -349,8 +355,7 @@
         role="dialog" aria-modal="true">
         <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
         <div class="fixed inset-0 z-10 w-screen">
-          <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0"
-            @click="closeDeleteProductModal">
+          <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
             <div
               class="relative transform rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg lg:ml-64 mt-10">
               <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
@@ -365,7 +370,7 @@
                   </div>
                   <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
                     <h3 class="text-base font-semibold leading-6 text-gray-900" id="modal-title">
-                      Xoá tài khoản
+                      Xoá sản phẩm
                     </h3>
                     <div class="mt-2">
                       <p class="text-sm text-gray-500">
@@ -383,6 +388,11 @@
                   <TrashIcon class="h-5 w-5" aria-hidden="true" />
                   Xoá
                 </button>
+                <button type="button" @click="closeDeleteProductModal"
+                  class="inline-flex w-full justify-center rounded-md px-3 py-2 text-sm font-semibold text-gray-500 shadow-sm hover:bg-gray-100 sm:ml-3 sm:w-auto">
+                  Huỷ
+                </button>
+
               </div>
             </div>
           </div>
@@ -422,6 +432,7 @@
               <input type="number" v-model="salePrice" @input="validateQuantityPriceSale()" id="salePrice"
                 name="salePrice" placeholder="Giá bán"
                 class="mt-1 p-1.5 px-2.5 w-full border border-gray-200 rounded-md" />
+              <p class="text-sm font-normal">Giá tiền : {{ FormatCurrencyVND(salePrice) }}</p>
             </div>
 
             <div class="flex justify-between">
@@ -618,7 +629,11 @@ import moment from 'moment';
 import { FwbSpinner } from 'flowbite-vue'
 import { showToast } from '../assets/Toastify'
 import { instance } from '../assets/axios-instance';
-import { TrashIcon, PhotoIcon, PencilSquareIcon, PlusIcon, UserCircleIcon, BookmarkIcon, XCircleIcon, CheckIcon, MagnifyingGlassIcon, AdjustmentsHorizontalIcon, FunnelIcon } from "@heroicons/vue/20/solid";
+import {
+  TrashIcon, PhotoIcon, PencilSquareIcon, PlusIcon,
+  UserCircleIcon, BookmarkIcon, XCircleIcon, CheckIcon, MagnifyingGlassIcon,
+  AdjustmentsHorizontalIcon, FunnelIcon, BackspaceIcon, PlayCircleIcon, PauseCircleIcon
+} from "@heroicons/vue/20/solid";
 import * as API from "../assets/API";
 import { computed, ref, onMounted, watch } from "vue";
 import { useToken } from "../store/tokenStore";
