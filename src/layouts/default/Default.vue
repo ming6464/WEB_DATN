@@ -84,12 +84,12 @@
                   </ul>
                   </li>
                   <li class="mt-auto">
-                    <a href="/"
+                    <button @click="logOut"
                       class="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-700 hover:bg-gray-50 hover:text-indigo-600">
                       <ArrowLeftOnRectangleIcon class="h-6 w-6 shrink-0 text-gray-400 group-hover:text-indigo-600"
                         aria-hidden="true" />
                       Đăng xuất
-                    </a>
+                    </button>
                   </li>
                   </ul>
                 </nav>
@@ -320,7 +320,7 @@ const navigation = ref([
 const sidebarOpen = ref(false);
 onMounted(() => {
   if (store.id == -1) {
-    store.onSetGoToLogin(true);
+    logOut();
     return;
   }
   console.log("oke1");
@@ -332,13 +332,17 @@ onMounted(() => {
   console.log(store.fullName, "fullname")
 })
 
+const logOut = () => {
+  store.onSetGoToLogin(true);
+}
+
 const ToRouter = (route) => {
   router.push(route);
 }
 
 watch(() => store.isGoToLogin, (newValue, oldValue) => {
   if (newValue) {
-    ToRouter('/');
+    window.location.href = '/';
     return;
   }
 })

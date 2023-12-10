@@ -143,10 +143,6 @@ const currentPage = ref(1);
 const totalPages = ref(7);
 
 onMounted(() => {
-  if (store.id == -1) {
-    store.onSetGoToLogin(true);
-    return;
-  }
   if (store.role == 1) {
     store.onSetCurrentPage({ index: 1, child: 0 });
   } else {

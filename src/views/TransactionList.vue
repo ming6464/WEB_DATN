@@ -487,10 +487,6 @@ const getAddressFull = (addressData) => {
 };
 
 onMounted(() => {
-  if (store.id == -1) {
-    store.onSetGoToLogin(true);
-    return;
-  }
   if (store.role == 1) {
     store.onSetCurrentPage({ index: 3, child: 0 });
   } else {

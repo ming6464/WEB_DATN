@@ -185,10 +185,6 @@ const user = ref({
 const store = useToken();
 
 onMounted(() => {
-  if (store.id == -1) {
-    store.onSetGoToLogin(true);
-    return;
-  }
   loadData();
 })
 

@@ -11,7 +11,6 @@ export const useToken = defineStore('tokenStoreID', {
         fullName: '',
         avatar: '',
     }),
-
     actions: {
         onSetToken(tokenNew) {
             this.token = tokenNew;
@@ -37,7 +36,6 @@ export const useToken = defineStore('tokenStoreID', {
             this.avatar = avatar;
         },
         onSetFullProperty(user) {
-            console.log('--------------', user.admin.id, user.admin.role, user.admin.fullname, user.admin.avatar);
             this.token = user.token;
             this.id = user.admin.id;
             this.role = user.admin.role;
@@ -53,6 +51,15 @@ export const useToken = defineStore('tokenStoreID', {
             this.avatar = '';
             this.fullName = '';
         },
+        onGetAllStore() {
+            return { 'token': this.token, 'id': this.id, 'role': this.role, 'fullName': this.fullName, 'avatar': this.avatar }
+        }
 
+    },
+    persist: {
+        enabled: true,
+        strategies: [
+            { storage: sessionStorage, paths: ['token', 'role', 'id', 'fullName', 'avatar'] },
+        ],
     }
 })
