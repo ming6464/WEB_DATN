@@ -71,7 +71,7 @@
                   {{ order.addressData.phone }}
                 </td>
                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-900 sm:pl-0">
-                  {{ order.paymentData.total }}
+                  {{ FormatCurrencyVND(order.paymentData.total) }}
                 </td>
                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-900 sm:pl-0">
                   {{ order.paymentData.paymentType }}
@@ -150,7 +150,7 @@
               Tổng tiền
             </dt>
             <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
-              {{ selectedOrder.paymentData.total }}
+              {{ FormatCurrencyVND(selectedOrder.paymentData.total) }}
             </dd>
           </div>
           <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-4">
@@ -243,7 +243,7 @@
                     }}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap">
-                    {{ item.orderProductSizeColorData.price }}
+                    {{ FormatCurrencyVND(item.orderProductSizeColorData.price) }}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap">
                     {{ item.orderProductSizeColorData.colorData.name }}
@@ -252,7 +252,7 @@
                     {{ item.orderProductSizeColorData.sizeData.name }}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap">{{ item.amount }}</td>
-                  <td class="px-6 py-4 whitespace-nowrap">{{ item.price }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap">{{ FormatCurrencyVND(item.price) }}</td>
                 </tr>
               </tbody>
             </table>
@@ -316,7 +316,7 @@ import moment from "moment";
 import { useToken } from "../store/tokenStore";
 import { ref, watch, computed, onMounted } from "vue";
 import { TrashIcon, PhotoIcon, AdjustmentsVerticalIcon, ExclamationTriangleIcon, PencilSquareIcon, PlusIcon, UserCircleIcon, BookmarkIcon, XCircleIcon, CheckIcon, MagnifyingGlassIcon, AdjustmentsHorizontalIcon, FunnelIcon } from "@heroicons/vue/20/solid";
-
+import { FormatCurrencyVND } from "../assets/formatCurrency";
 const store = useToken();
 const orders = ref([
   {

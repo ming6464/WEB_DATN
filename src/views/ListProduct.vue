@@ -113,7 +113,7 @@
                   </td>
 
                   <td v-if="optionModal.priceDefault" class="whitespace-nowrap text-center py-5 text-sm text-gray-500">
-                    <div class="text-gray-900">{{ product.price }}</div>
+                    <div class="text-gray-900">{{ FormatCurrencyVND(product.price) }}</div>
                   </td>
                   <td v-if="optionModal.timeSale" class="whitespace-nowrap text-center py-5 text-sm text-gray-500">
                     <div v-if="product.saleStart">
@@ -123,13 +123,13 @@
                     <div class="text-gray-900" v-else>Null</div>
                   </td>
                   <td v-if="optionModal.priceSale" class="whitespace-nowrap text-center py-5 text-sm text-gray-500">
-                    <div class="text-gray-900" v-if="product.salePrice">{{ product.salePrice }}</div>
+                    <div class="text-gray-900" v-if="product.salePrice">{{ FormatCurrencyVND(product.salePrice) }}</div>
                     <div class="text-gray-900" v-else>Null</div>
                   </td>
                   <td v-if="optionModal.price" class="whitespace-nowrap text-center py-5 text-sm">
                     <div
                       :class="{ 'text-red-600 font-semibold text-base': getPrice(product).isSale, 'text-gray-900': !getPrice(product).isSale }">
-                      {{ getPrice(product).value }}</div>
+                      {{ FormatCurrencyVND(getPrice(product).value) }}</div>
                   </td>
                   <td>
                     <div class="flex justify-center gap-x-3" v-if="store.role == 1">
@@ -216,7 +216,7 @@
                   <span>Lựa chọn ảnh đại diện cho sản phẩm</span>
                   <span type="submit"
                     class="rounded-md bg-indigo-600 mt-2 py-2 text-sm font-semibold
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             text-white shadow-sm hover:bg-indigo-500 text-center w-20">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               text-white shadow-sm hover:bg-indigo-500 text-center w-20">
                     Chọn ảnh
                   </span>
                 </label>
@@ -251,6 +251,7 @@
                     name="first-name" id="first-name" autocomplete="given-name"
                     class="block w-full pl-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
                 </div>
+                <p class="text-sm font-normal">Giá tiền: {{ FormatCurrencyVND(updateProduct.price) }}</p>
               </div>
               <!-- Giá bán lẻ -->
               <!-- thêm số lượng sản phẩm -->
@@ -629,6 +630,7 @@ import {
   ComboboxOption,
   ComboboxOptions,
 } from "@headlessui/vue";
+import { FormatCurrencyVND } from "../assets/formatCurrency";
 const ShowLoading = ref(false);
 const products = ref([
   {
