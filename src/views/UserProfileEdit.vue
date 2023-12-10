@@ -1,139 +1,130 @@
 <template>
-  <div class="max-w-lg mx-auto mt-10">
-    <div class="px-4 sm:px-0">
-      <h1 class="text-2xl font-semibold leading-7 text-gray-900">
-        Thông tin cá nhân
-      </h1>
-    </div>
-    <div class="mt-6 border-t border-gray-100">
-      <dl class="divide-y divide-gray-100">
-        <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-          <dt class="text-sm font-medium leading-6 text-gray-900">
-            Ảnh đại diện
-          </dt>
-          <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
-            <img class="h-24 w-24" :src="user.avatar" alt="" />
-          </dd>
+  <div>
+    <div class="divide-y divide-gray-200">
+      <div class="grid max-w-7xl grid-cols-1 gap-x-8 gap-y-10 px-4 py-16 sm:px-6 md:grid-cols-3 lg:px-8">
+        <div>
+          <h2 class="text-base font-semibold leading-7 text-gray-700">Thông tin cá nhân</h2>
+          <p class="mt-1 text-sm leading-6 text-gray-500">Cập nhật thông tin cá nhân liên quan đến tài khoản của bạn.</p>
         </div>
-        <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0 flex flex-col">
-          <dt class="text-sm font-medium leading-6 text-gray-900">ID</dt>
-          <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
-            {{ user.id }}
-          </dd>
-        </div>
-        <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-          <dt class="text-sm font-medium leading-6 text-gray-900">
-            Tên tài khoản
-          </dt>
-          <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
-            {{ user.username }}
-          </dd>
-        </div>
-        <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-          <dt class="text-sm font-medium leading-6 text-gray-900">
-            Tên người dùng
-          </dt>
-          <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
-            {{ user.fullname }}
-          </dd>
-        </div>
-        <div class="mt-8 flex">
-          <button type="button" @click="openEditModal"
-            class="rounded-md bg-indigo-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500">
-            Sửa
-          </button>
-        </div>
-      </dl>
-    </div>
-  </div>
 
-  <!-- Edit Modal -->
-  <div v-if="isEditModalOpen" class="fixed inset-0 overflow-y-auto">
-    <div class="flex items-center justify-center min-h-screen">
-      <div class="fixed inset-0 bg-gray-500 bg-opacity-75"></div>
+        <form class="md:col-span-2" @submit.prevent="submitEditForm">
+          <div class="grid grid-cols-1 gap-x-6 gap-y-8 sm:max-w-xl sm:grid-cols-6">
+            <div class="col-span-full flex items-center gap-x-8">
+              <img :src="personEdit.avatar" alt="avatar"
+                class="h-32 w-32 flex-none rounded-lg bg-gray-800 object-cover" />
+              <label for="image-upload" class="text-sm flex flex-col">
+                <span type="submit"
+                  class="rounded-md bg-indigo-600 mt-2 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 text-center w-20">
+                  Chọn ảnh
+                </span>
+                <span>Lựa chọn ảnh đại diện</span>
+              </label>
+              <input @change="handleImageUpload" type="file" id="image-upload" accept="image/*" class="hidden" />
+            </div>
 
-      <div class="relative bg-white p-8 rounded-lg w-96 lg:ml-64 mt-10">
-        <h3 class="text-lg font-semibold mb-4 text-center">Chỉnh sửa</h3>
+            <div class="sm:col-span-3">
+              <label for="id" class="block text-sm font-medium leading-6 text-gray-700">Mã người dùng</label>
+              <div class="mt-2">
+                <input type="text" v-model="user.id" disabled name="id" id="id" autocomplete="id"
+                  class="block w-full rounded-md border-0 bg-gray-100 py-1.5 text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6" />
+              </div>
+            </div>
+            <div class="sm:col-span-3">
+              <label for="role" class="block text-sm font-medium leading-6 text-gray-700">Quyền hạn</label>
+              <div class="mt-2">
+                <input type="text" :value="user.role == 1 ? 'admin' : 'nhân viên'" disabled name="role" id="role"
+                  autocomplete="role"
+                  class="block w-full rounded-md border-0 bg-gray-100 py-1.5 text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6" />
+              </div>
+            </div>
 
-        <!-- Form for editing person details -->
-        <form @submit.prevent="submitEditForm">
-          <div class="mb-4 flex justify-center">
-            <label for="image-upload" class="block text-sm font-medium text-gray-700">
-              <img alt="" :src="personEdit.avatar" class="h-20 w-24 object-cover" />
-            </label>
-            <input type="file" id="image-upload" ref="imageInputRef" @change="handleImageUpload" accept="image/*"
-              class="hidden" />
+            <div class="col-span-full">
+              <label for="username" class="block text-sm font-medium leading-6 text-gray-700">Tên tài khoản</label>
+              <div class="mt-2">
+                <input id="username" v-model="user.username" name="username" type="text" autocomplete="username" disabled
+                  class="block w-full rounded-md border-0 bg-gray-100 py-1.5 text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6" />
+              </div>
+            </div>
+
+            <div class="col-span-full">
+              <label for="fullname" class="flex items-center gap-x-2 text-sm font-medium leading-6 text-gray-700">
+                <span>Tên đầy đủ</span>
+                <PencilSquareIcon class="h-3.5 w-3.5" />
+              </label>
+              <div class="mt-2">
+                <input id="fullname" v-model="personEdit.fullname" name="fullname" type="text" autocomplete="fullname"
+                  class="block w-full rounded-md border-0 bg-gray-100 py-1.5 text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6" />
+              </div>
+            </div>
+
+
           </div>
-          <div class="mb-4">
-            <label for="editedName" class="block text-base font-medium text-gray-700">
-              Tên người dùng
-            </label>
-            <input type="text" id="editedName" name="editedName" v-model="personEdit.fullname"
-              class="mt-1 p-2 w-full border rounded-md" />
-          </div>
-          <div class="mb-4">
-            <button type="button" @click="openEditPasswordModal"
-              class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-500">
-              Cập nhật mật khẩu
-            </button>
-          </div>
-          <div class="flex justify-end">
-            <button type="button" class="mr-2 text-gray-500 hover:text-gray-700 mx-3" @click="closeEditModal">
-              Thoát
-            </button>
-            <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-500">
+
+          <div class="mt-8 flex">
+            <button type="submit"
+              class="flex rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold
+                                                                    gap-x-2
+                                                                     text-white shadow-sm hover:bg-indigo-500 focus-visible:outline
+                                                                      focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+              <BookmarkIcon class="h-5 w-5" aria-hidden="true" />
               Lưu
             </button>
           </div>
         </form>
       </div>
-    </div>
-  </div>
 
+      <div class="grid max-w-7xl grid-cols-1 gap-x-8 gap-y-10 px-4 py-16 sm:px-6 md:grid-cols-3 lg:px-8">
+        <div>
+          <h2 class="text-base font-semibold leading-7 text-gray-700">Thay đổi mật khẩu</h2>
+          <p class="mt-1 text-sm leading-6 text-gray-500">Cập nhật mật khẩu liên quan đến tài khoản của bạn.</p>
+        </div>
 
-  <!-- Edit password Modal -->
-  <div v-if="isEditPasswordModalOpen" class="fixed inset-0 overflow-y-auto">
-    <div class="flex items-center justify-center min-h-screen">
-      <div class="fixed inset-0 bg-gray-500 bg-opacity-75"></div>
-
-      <div class="relative bg-white p-8 rounded-lg w-96 lg:ml-64 mt-10">
-        <h3 class="text-lg font-semibold mb-4 text-center">Cập nhật mật khẩu</h3>
-
-        <!-- Form for editing person details -->
-        <form @submit.prevent="submitEditPasswordForm">
-          <div class="mb-4 mt-2">
-            <label for="Password_" class="block text-base font-medium text-gray-700">
-              Đổi mật khẩu
-            </label>
-            <div id="Password_" name='Password_'>
+        <form class="md:col-span-2" @submit.prevent="submitEditPasswordForm">
+          <div class="grid grid-cols-1 gap-x-6 gap-y-8 sm:max-w-xl sm:grid-cols-6">
+            <div class="col-span-full">
+              <label for="current-password" class="flex items-center gap-x-2 text-sm font-medium leading-6 text-gray-700">
+                <span>Mật khẩu hiện tại</span>
+                <PencilSquareIcon class="h-3.5 w-3.5" />
+              </label>
               <div class="mt-2">
-                <label for="editedName" class="block text-sm font-medium text-gray-700">
-                  Mật khẩu cũ
-                </label>
-                <input type="text" id="editedName" name="editedName" v-model="personEdit.password0"
-                  class="mt-1 p-2 w-full border rounded-md" />
+                <input id="current-password" v-model="personEdit.password0" name="current_password" type="password"
+                  autocomplete="current-password"
+                  class="block w-full rounded-md border-gray-300 bg-gray-100 py-1.5 text-gray-700 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
               </div>
-              <div class="mb-4">
-                <label for="editedName" class="block text-sm font-medium text-gray-700">
-                  Mật khẩu mới
-                </label>
-                <input type="text" id="editedName" name="editedName" v-model="personEdit.password1"
-                  class="mt-1 p-2 w-full border rounded-md" />
+            </div>
+
+            <div class="col-span-full">
+              <label for="new-password" class="flex items-center gap-x-2 text-sm font-medium leading-6 text-gray-700">
+                <span>Mật khẩu mới</span>
+                <PencilSquareIcon class="h-3.5 w-3.5" />
+              </label>
+              <div class="mt-2">
+                <input id="new-password" name="new_password" v-model="personEdit.password1" type="password"
+                  autocomplete="new-password"
+                  class="block w-full rounded-md border-gray-300 bg-gray-100 py-1.5 text-gray-700 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
               </div>
-              <div class="mb-4">
-                <label for="editedName" class="block text-sm font-medium text-gray-700">
-                  Nhập lại mật khẩu
-                </label>
-                <input type="text" id="editedName" name="editedName" v-model="personEdit.password1"
-                  class="mt-1 p-2 w-full border rounded-md" />
+            </div>
+
+            <div class="col-span-full">
+              <label for="confirm-password" class="flex items-center gap-x-2 text-sm font-medium leading-6 text-gray-700">
+                <span>Xác nhận mật khẩu</span>
+                <PencilSquareIcon class="h-3.5 w-3.5" />
+              </label>
+              <div class="mt-2">
+                <input id="confirm-password" name="confirm_password" v-model="personEdit.password2" type="password"
+                  autocomplete="new-password"
+                  class="block w-full rounded-md border-gray-300 bg-gray-100 py-1.5 text-gray-700 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
               </div>
             </div>
           </div>
-          <div class="flex justify-end">
-            <button type="button" class="mr-2 text-gray-500 hover:text-gray-700 mx-3" @click="closeEditPasswordModal">
-              Thoát
-            </button>
-            <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-500">
+
+          <div class="mt-8 flex">
+            <button type="submit"
+              class="flex rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold
+                                                                  gap-x-2
+                                                                   text-white shadow-sm hover:bg-indigo-500 focus-visible:outline
+                                                                    focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+              <BookmarkIcon class="h-5 w-5" aria-hidden="true" />
               Lưu
             </button>
           </div>
@@ -154,30 +145,31 @@
       </div>
     </div>
   </div>
+  <!-- loadding -->
 </template>
 
 <script setup>
 import { FwbSpinner } from 'flowbite-vue'
 import { ref, onMounted } from "vue";
 import { useToken } from "../store/tokenStore";
-import { PencilSquareIcon } from "@heroicons/vue/20/solid";
+import { PencilSquareIcon, BookmarkIcon } from "@heroicons/vue/20/solid";
 import { PaperClipIcon } from "@heroicons/vue/20/solid";
 import { instance } from "../assets/axios-instance";
 import * as API from '../assets/API'
 import * as validate from '../assets/validate'
 import { showToast } from "../assets/Toastify";
-const isEditModalOpen = ref(false);
-const isEditPasswordModalOpen = ref(false);
 const ShowLoading = ref(false);
 const personEdit = ref({
   avatar: '',
-  fullname: 'tom cook',
+  fileImage: null,
+  fullname: '',
   password1: '',
   password2: '',
   password0: '',
 });
 const user = ref({
   "id": 1,
+  'role': 1,
   "username": "admin",
   "fullname": "admin",
   "avatar": "http://res.cloudinary.com/dbsfgxrjz/image/upload/v1701961064/admin-image/myeu6h3aquyqhg40d1qi.jpg",
@@ -185,6 +177,15 @@ const user = ref({
 const store = useToken();
 
 onMounted(() => {
+  store.onSetCurrentPage({ index: 99, child: 99 });
+  personEdit.value = {
+    avatar: '',
+    fileImage: null,
+    fullname: '',
+    password1: '',
+    password2: '',
+    password0: '',
+  }
   loadData();
 })
 
@@ -193,6 +194,8 @@ const loadData = async () => {
   await instance.get(`${API.GETAccount}/${store.id}`)
     .then(res => {
       user.value = res.data.data;
+      personEdit.value.fullname = user.value.fullname;
+      personEdit.value.avatar = user.value.avatar;
     })
     .catch(err => {
       console.error(err);
@@ -205,6 +208,8 @@ const updateData = async () => {
   await instance.get(`${API.GETAccount}/${store.id}`)
     .then(res => {
       user.value = res.data.data;
+      personEdit.value.fullname = user.value.fullname;
+      personEdit.value.avatar = user.value.avatar;
       store.onSetFullName(res.data.data.fullname);
       store.onSetAvatar(res.data.data.avatar);
     })
@@ -227,7 +232,6 @@ const handleImageUpload = (event) => {
 };
 
 const submitEditForm = async () => {
-  updateLoading(true);
   const form = new FormData();
   let check = false;
   if (personEdit.value.fileImage) {
@@ -241,16 +245,12 @@ const submitEditForm = async () => {
       form.append("fullname", personEdit.value.fullname);
     } else {
       showToast("Tên không đúng định dạng", true);
-      updateLoading(false);
       return;
     }
 
   }
-
-  if (!check) {
-    closeEditModal();
-    return;
-  }
+  if (!check) return;
+  updateLoading(true);
 
   await instance.put(`${API.PUTAccount}/${user.value.id}`, form)
     .then(res => {
@@ -261,34 +261,12 @@ const submitEditForm = async () => {
       showToast("Lỗi", true);
       console.error(err);
     })
-  closeEditModal();
-}
-
-const openEditModal = () => {
-  isEditModalOpen.value = true;
-  personEdit.value = { ...user.value };
-  personEdit.value.fileImage = null;
-}
-
-const closeEditModal = () => {
-  isEditModalOpen.value = false;
   updateLoading(false);
 }
 
-
-const closeEditPasswordModal = () => {
-  isEditPasswordModalOpen.value = false;
-  updateLoading(false);
-}
-const openEditPasswordModal = () => {
-  isEditPasswordModalOpen.value = true;
-  personEdit.value.password0 = '';
-  personEdit.value.password1 = '';
-  personEdit.value.password2 = '';
-}
 const submitEditPasswordForm = async () => {
 
-  if (!personEdit.value.password1 || personEdit.value.password1.toString().length == 0) {
+  if (personEdit.value.password1.toString().length == 0 || personEdit.value.password2.toString().length == 0 || personEdit.value.password0.toString().length == 0) {
     showToast("Dữ liệu bị thiếu", true);
     return;
   }
@@ -296,7 +274,6 @@ const submitEditPasswordForm = async () => {
     showToast("Mật khẩu không giống nhau");
     return;
   }
-
   updateLoading(true);
 
   const formLogin = new FormData();
@@ -314,6 +291,7 @@ const submitEditPasswordForm = async () => {
   if (check) {
     showToast("Mật khẩu cũ không chính xác ", true);
     updateLoading(false);
+    return;
   }
 
 
@@ -322,13 +300,15 @@ const submitEditPasswordForm = async () => {
   await instance.put(`${API.PUTAccount}/${user.value.id}`, form)
     .then(res => {
       showToast("Cập nhật thành công", false);
+      personEdit.value.password0 = '';
+      personEdit.value.password1 = '';
+      personEdit.value.password2 = '';
     })
     .catch(err => {
       showToast("Lỗi", true);
       console.error(err);
     })
-
-  closeEditPasswordModal();
+  updateLoading(false);
 }
 const updateLoading = (check) => {
   ShowLoading.value = check;

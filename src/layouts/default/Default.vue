@@ -185,19 +185,31 @@
           <li>
             <div>
               <span class="text-gray-400 hover:text-gray-500">
-                <span>
+                <span v-if="store.currentPage.index != -1 && store.currentPage.index != 99">
                   <component :is="navigation[store.currentPage.index].icon" class="h-5 w-5 flex-shrink-0"
                     aria-hidden="true" />
                   <span class="sr-only">{{ navigation[store.currentPage.index].name }}</span>
                 </span>
+                <span v-else-if="store.currentPage.index == 99">
+                  <component :is="userEditNavi.icon" class="h-5 w-5 flex-shrink-0" aria-hidden="true" />
+                  <span class="sr-only">{{ userEditNavi.name }}</span>
+                </span>
               </span>
             </div>
           </li>
-          <li v-if="navigation[store.currentPage.index].children && store.currentPage.child != -1">
+          <li
+            v-if="store.currentPage.index != -1 && store.currentPage.index != 99 && navigation[store.currentPage.index].children && store.currentPage.child != -1">
             <div class="flex items-center">
               <ChevronRightIcon class="h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
               <span class="ml-4 text-sm font-medium text-gray-500 hover:text-gray-700">{{
                 navigation[store.currentPage.index].children[store.currentPage.child].name }}</span>
+            </div>
+          </li>
+          <li v-else-if="store.currentPage.index == 99">
+            <div class="flex items-center">
+              <ChevronRightIcon class="h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
+              <span class="ml-4 text-sm font-medium text-gray-500 hover:text-gray-700">{{
+                userEditNavi.name }}</span>
             </div>
           </li>
 
@@ -239,7 +251,7 @@
 import { useRouter } from "vue-router";
 import { ref, onMounted, watch } from "vue";
 import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/vue";
-import { ChevronRightIcon, HomeIcon } from "@heroicons/vue/20/solid";
+import { ChevronRightIcon, HomeIcon, UserCircleIcon } from "@heroicons/vue/20/solid";
 import { useToken } from '../../store/tokenStore';
 import {
   Dialog,
@@ -316,7 +328,10 @@ const navigation = ref([
     ],
   },
 ]);
-
+const userEditNavi = {
+  name: "Tài khoản cá nhân",
+  icon: UserCircleIcon,
+}
 const sidebarOpen = ref(false);
 onMounted(() => {
   if (store.id == -1) {
@@ -350,7 +365,7 @@ watch(() => store.isGoToLogin, (newValue, oldValue) => {
 watch(() => store.currentPage, (newValue, oldValue) => {
   resetCurrentSelectPage();
 
-  if (newValue.index != -1) {
+  if (newValue.index != -1 || newValue.index != 99) {
     try {
       navigation.value[newValue.index].current = true;
       if (navigation.value[newValue.index].children && newValue.child != -1) {

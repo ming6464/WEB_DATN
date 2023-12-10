@@ -4,7 +4,7 @@ import { useToken } from '../store/tokenStore';
 import * as API from './API';
 
 const instance = axios.create({
-    timeout: 7000, // Timeout cho mỗi yêu cầu
+    timeout: 20000, // Timeout cho mỗi yêu cầu
 });
 
 instance.interceptors.request.use(

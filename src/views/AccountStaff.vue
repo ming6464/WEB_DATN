@@ -1,7 +1,5 @@
 <template>
   <div class="px-4 sm:px-6 lg:px-8">
-
-
     <div class="-mt-2 bg-white border-b border-gray-200 " style="position: fixed;top : 70px;right: 0px;left: 0px;">
       <div class="lg:ml-72 px-4">
         <div class="flex justify-center gap-x-2 items-center border-gray-300 py-4">
@@ -26,37 +24,39 @@
         </div>
       </div>
     </div>
-
-
     <div class="mt-8 flow-root">
-      <div class="-mx-4 -my-2 overflow-auto sm:-mx-6 lg:-mx-8">
-        <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+      <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-7 lg:-mx-4">
+        <div class="inline-block min-w-full py-2 align-middle">
           <table class="min-w-full divide-y divide-gray-300">
             <thead>
               <tr>
-                <th scope="col" class="py-3.5 text-left text-sm font-semibold text-gray-900">
+                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
                   Id
                 </th>
-                <th scope="col" class="py-3.5 text-left text-sm font-semibold text-gray-900">
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:pl-0">
                   Tên đầy đủ
                 </th>
-                <th scope="col" class="py-3.5 text-left text-sm font-semibold text-gray-900">
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:pl-0">
                   Tên tài khoản
                 </th>
-                <th scope="col" class="py-3.5 text-left text-sm font-semibold text-gray-900">
-                  Chức vụ cao nhất
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:pl-0">
+                  Quyền hạn
                 </th>
-                <th scope="col" class="py-3.5 text-left text-sm font-semibold text-gray-900">
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:pl-0">
+                  Trạng thái
+                </th>
+                <th scope="col" class="py-3 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
                   Hoạt động
                 </th>
               </tr>
             </thead>
+
             <tbody class="divide-y divide-gray-200 bg-white">
               <tr v-for="(person, index) in listIemShow" :key="index">
-                <td class="py-4 text-sm text-gray-500">
+                <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-900 sm:pl-2">
                   <div class="font-medium text-gray-900">{{ person.id }}</div>
                 </td>
-                <td class="whitespace-nowrap py-5 text-sm">
+                <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-gray-900 sm:pl-0">
                   <div class="flex items-center">
                     <div class="h-11 w-11 flex-shrink-0">
                       <img class="h-11 w-11 rounded-full" :src="person.avatar" alt="" />
@@ -68,22 +68,22 @@
                     </div>
                   </div>
                 </td>
-
-                <td class="whitespace-nowrap py-4 text-sm">
-                  <div class="flex items-center">
-                    <div class="font-medium text-gray-900">
-                      {{ person.username }}
-                    </div>
-                  </div>
+                <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-900 sm:pl-2">
+                  <div class="font-medium text-gray-900">{{ person.username }}</div>
                 </td>
-
-                <td class="py-4 text-sm">
+                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-900 sm:pl-0">
                   <span
                     class="rounded-md text-center bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
                     {{ person.role == 1 ? "Admin" : "Nhân viên" }}
                   </span>
                 </td>
-                <td class="flex whitespace-nowrap py-5 text-right text-sm font-medium">
+                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-900 sm:pl-0">
+                  <span
+                    class="rounded-md text-center bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
+                    Hoạt động
+                  </span>
+                </td>
+                <td class="py-4 text-sm font-medium  gap-x-3">
                   <button type="button" @click="openModal(person.id)" class="text-indigo-600 hover:text-indigo-900 mr-1">
                     <PencilSquareIcon class="h-5 w-5" aria-hidden="true" />
                     <span class="sr-only">Edit, {{ person.id }}</span>
@@ -94,6 +94,7 @@
                   </button>
                 </td>
               </tr>
+              <!-- ... (existing code) ... -->
             </tbody>
           </table>
         </div>
@@ -120,60 +121,49 @@
           <!-- Form for editing person details -->
           <form @submit.prevent="submitEditForm" class="mx-auto mt-8 w-96 sm:mt-7">
             <div class="grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2">
-              <div class="col-span-full flex items-center gap-x-8">
-                <label for="image-upload" class="cursor-pointer">
-                  <img :src="staffEdit.avatar" alt="" class="h-24 w-24 flex-none rounded-lg bg-gray-800 object-cover" />
-                </label>
-                <input type="file" id="image-upload" @change="handleImageUpload" accept="image/*" class="hidden" />
+              <div class="col-span-full flex items-center flex-row gap-x-4">
+                <img v-if='staffEdit.avatar && staffEdit.avatar.toString().length > 0' :src="staffEdit.avatar" alt=""
+                  class="h-24 w-24 flex-none rounded-lg bg-gray-800 object-cover" />
+                <div class="p-4 rounded-lg border border-dashed mr-5 border-gray-900/25" v-else>
+                  <PhotoIcon class="h-20 w-23 object-cover opacity-50" />
+                </div>
+                <div v-if='IdSelected < 0'>
+                  <label for="image-upload" class="text-sm flex flex-col">
+                    <span>Lựa chọn ảnh đại diện</span>
+                    <span type="submit"
+                      class="rounded-md bg-indigo-600 mt-2 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 text-center w-20">
+                      Chọn ảnh
+                    </span>
+                  </label>
+                  <input :disabled="IdSelected >= 0" type="file" id="image-upload" @change="handleImageUpload"
+                    accept="image/*" class="hidden" />
+                </div>
+
               </div>
 
               <div class="sm:col-span-2">
                 <label for="fullName" class="block text-sm font-semibold leading-6 text-gray-900">Tên đầy đủ</label>
                 <div class="mt-2.5">
-                  <input type="text" name="fullName" v-model="staffEdit.fullname" id="fullName" autocomplete="fullName"
+                  <input type="text" name="fullName" :disabled="IdSelected >= 0" v-model="staffEdit.fullname"
+                    id="fullName" autocomplete="fullName"
                     class="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
                 </div>
               </div>
 
-              <div class="sm:col-span-2" v-show="IdSelected < 0">
+              <div class="sm:col-span-2">
                 <label for="userName" class="block text-sm font-semibold leading-6 text-gray-900">Tài khoản</label>
                 <div class="mt-2.5">
-                  <input type="text" name="userName" v-model="staffEdit.username" id="userName" autocomplete="userName"
+                  <input type="text" name="userName" :disabled="IdSelected >= 0" v-model="staffEdit.username"
+                    id="userName" autocomplete="userName"
                     class="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
                 </div>
               </div>
 
-              <!-- <div class="sm:col-span-2">
-                <label for="email" class="block text-sm font-semibold leading-6 text-gray-900">Email</label>
+              <div class="sm:col-span-2" v-if="IdSelected < 0">
+                <label for="password" class="block text-sm font-semibold leading-6 text-gray-900">Mật khẩu</label>
                 <div class="mt-2.5">
-                  <input type="email" name="email" required v-model="staffEdit.email" id="email" autocomplete="email"
-                    class="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
-                </div>
-              </div>
-
-              <div class="sm:col-span-2">
-                <label for="phone" class="block text-sm font-semibold leading-6 text-gray-900">Số điện thoại</label>
-                <div class="mt-2.5">
-                  <input type="text" name="phone" @input="handlePhoneNumberInput" required v-model="staffEdit.phone"
-                    id="phone" autocomplete="phone"
-                    class="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
-                </div>
-              </div> -->
-
-              <div class="sm:col-span-2" v-if="roleSelected == 1 && IdSelected >= 0">
-                <label for="password2" class="block text-sm font-semibold leading-6 text-gray-900">Mật khẩu xác
-                  nhận</label>
-                <div class="mt-2.5">
-                  <input type="text" name="password2" v-model="password2" id="phone" autocomplete="password2"
-                    class="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
-                </div>
-              </div>
-
-              <div class="sm:col-span-2">
-                <label for="password" class="block text-sm font-semibold leading-6 text-gray-900">{{ IdSelected >=
-                  0 ? 'Mật khẩu mới' : 'Mật khẩu' }}</label>
-                <div class="mt-2.5">
-                  <input type="text" name="password" v-model="staffEdit.password" id="password" autocomplete="password"
+                  <input type="password" name="password" v-model="staffEdit.password" id="password"
+                    autocomplete="password"
                     class="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
                 </div>
               </div>
@@ -182,79 +172,46 @@
                 <label for="password2" class="block text-sm font-semibold leading-6 text-gray-900">Nhập lại mật
                   khẩu</label>
                 <div class="mt-2.5">
-                  <input type="text" name="password2" v-model="password2" id="phone" autocomplete="password2"
+                  <input type="password" name="password2" v-model="password2" id="phone" autocomplete="password2"
                     class="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
                 </div>
               </div>
 
               <!-- phân quyền động -->
-              <!-- <div class="sm:col-span-2">
-                <div class="sm:col-span-2">
-                  <div>
-                    <SwitchGroup as="div" class="flex items-center justify-between">
-                      <span class="flex flex-grow flex-col">
-                        <SwitchDescription as="span" class="text-sm text-gray-500">Shiper</SwitchDescription>
-                      </span>
-                      <Switch v-model="staffEdit.isShiper" :class="[
-                        staffEdit.isShiper ? 'bg-indigo-600' : 'bg-gray-200',
-                        'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2',
-                      ]">
-                        <span aria-hidden="true" :class="[
-                          staffEdit.isShiper
-                            ? 'translate-x-5'
-                            : 'translate-x-0',
-                          'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
-                        ]" />
-                      </Switch>
-                    </SwitchGroup>
-                  </div>
-
-                  <div class="mt-2">
-                    <SwitchGroup as="div" class="flex items-center justify-between">
-                      <span class="flex flex-grow flex-col">
-                        <SwitchDescription as="span" class="text-sm text-gray-500">Staff</SwitchDescription>
-                      </span>
-                      <Switch v-model="staffEdit.isStaff" :class="[
-                        staffEdit.isStaff ? 'bg-indigo-600' : 'bg-gray-200',
-                        'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2',
-                      ]">
-                        <span aria-hidden="true" :class="[
-                          staffEdit.isStaff
-                            ? 'translate-x-5'
-                            : 'translate-x-0',
-                          'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
-                        ]" />
-                      </Switch>
-                    </SwitchGroup>
-                  </div>
-
-                  <div class="mt-2">
-                    <SwitchGroup as="div" class="flex items-center justify-between">
-                      <span class="flex flex-grow flex-col">
-                        <SwitchDescription as="span" class="text-sm text-gray-500">Admin</SwitchDescription>
-                      </span>
-                      <Switch v-model="staffEdit.isAdmin" :class="[
-                        staffEdit.isAdmin ? 'bg-indigo-600' : 'bg-gray-200',
-                        'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2',
-                      ]">
-                        <span aria-hidden="true" :class="[
-                          staffEdit.isAdmin
-                            ? 'translate-x-5'
-                            : 'translate-x-0',
-                          'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
-                        ]" />
-                      </Switch>
-                    </SwitchGroup>
-                  </div>
+              <div class="sm:col-span-2">
+                <label for="role" class="block text-sm font-semibold leading-6 text-gray-900">Quền hạn</label>
+                <div class="mt-2" id='role' name='role'>
+                  <SwitchGroup as="div" class="flex items-center justify-between">
+                    <span class="flex flex-grow flex-col">
+                      <SwitchDescription as="span" class="block text-sm font-normal leading-6 text-gray-900">Admin
+                      </SwitchDescription>
+                    </span>
+                    <Switch v-model="staffEdit.isAdmin" :disabled="roleSelected == 1" :class="[
+                      staffEdit.isAdmin ? 'bg-indigo-600' : 'bg-gray-200',
+                      'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2',
+                    ]">
+                      <span aria-hidden="true" :class="[
+                        staffEdit.isAdmin
+                          ? 'translate-x-5'
+                          : 'translate-x-0',
+                        'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
+                      ]" />
+                    </Switch>
+                  </SwitchGroup>
                 </div>
-              </div> -->
+              </div>
             </div>
             <div class="mt-8 flex">
               <button type="button" @click="closeEditModal"
-                class="rounded-md bg-red-500 px-3 py-2 mr-2 text-sm font-semibold text-white shadow-sm hover:bg-red-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500">
-                Huỷ
+                class="rounded-md  px-3 py-2 mr-2 text-sm font-semibold text-white shadow-sm
+                                                                                                                       focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 "
+                :class="{
+                  'bg-indigo-500 focus-visible:outline-indigo-500 hover:bg-indigo-400': roleSelected != 0,
+                  'bg-red-500 focus-visible:outline-red-500 hover:bg-red-400': roleSelected == 0
+                }">
+                {{ roleSelected == 0 ? 'Huỷ' : 'Trở về' }}
               </button>
-              <button type="submit"
+              <button type="submit" v-if="roleSelected == 0"
                 class="rounded-md bg-indigo-500 px-3 py-2 ml-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500">
                 Lưu
               </button>
@@ -302,7 +259,7 @@
             <div class="sm:col-span-2 mx-16 my-2" v-if="roleSelected == 1">
               <label for="password2" class="block text-sm font-semibold leading-6 text-gray-900">Mật khẩu xác nhận</label>
               <div class="mt-2">
-                <input type="text" name="password2" v-model="password2" id="phone" autocomplete="password2"
+                <input type="password" name="password2" v-model="password2" id="phone" autocomplete="password2"
                   class="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
               </div>
             </div>
@@ -398,7 +355,6 @@ onMounted(() => {
   if (store.role == 1) {
     store.onSetCurrentPage({ index: 4, child: 0 });
   }
-
   loadData();
 });
 
@@ -470,11 +426,12 @@ const openModal = async (id) => {
   if (staffEdit.value.fileImage) {
     staffEdit.value.fileImage = null;
   }
-  password2.value = "";
+  password2.value = '';
   if (id >= 0) {
     const editAcc = staffs.value.find(x => x.id == IdSelected.value);
     staffEdit.value = { ...editAcc };
     staffEdit.value.password = '';
+    staffEdit.value.isAdmin = staffEdit.value.role == 1 ? true : false;
   } else {
     staffEdit.value = {
       "username": "",
@@ -482,6 +439,7 @@ const openModal = async (id) => {
       "role": 0,
       "fullname": "",
       "avatar": "",
+      'isAdmin': false,
     };
   }
   roleSelected.value = staffEdit.value.role;
@@ -499,48 +457,10 @@ const submitEditForm = async () => {
   if (IdSelected.value >= 0) {
     const oldAcc = staffs.value.find(x => x.id == IdSelected.value);
     let checkEdit = false;
-
-    if (oldAcc.fullname != staffEdit.value.fullname) {
+    if (staffEdit.value.isAdmin && oldAcc.role == 0) {
       checkEdit = true;
-      formAccount.append('fullname', staffEdit.value.fullname);
+      formAccount.append('role', 1);
     }
-
-    if (staffEdit.value.fileImage) {
-      checkEdit = true;
-      formAccount.append('avatar', staffEdit.value.fileImage);
-    }
-
-    if (staffEdit.value.password.toString().trim().length > 0) {
-      checkEdit = true;
-      formAccount.append('password', staffEdit.value.password.toString().trim());
-    }
-
-    if (roleSelected.value == 1) {
-      if (password2.value.toString().trim().length == 0) {
-        showToast("Thông tin bị thiếu", true);
-        updateLoad(false);
-        return;
-      }
-
-      const formLogin = new FormData();
-      formLogin.append("username", staffEdit.value.username);
-      formLogin.append("password", password2.value);
-      let check = false;
-      await instance.post(API.SignIn, formLogin)
-        .catch(err => {
-          check = true;
-          console.error(err);
-        })
-      if (check) {
-        password2.value = '';
-        updateLoad(false);
-        showToast("Mật khẩu xác nhận không chính xác ", true);
-        return;
-      } else {
-        checkEdit = true;
-      }
-    }
-
     if (checkEdit) {
       await instance.put(`${API.PUTAccount}/${IdSelected.value}`, formAccount)
         .then(res => {
@@ -562,7 +482,7 @@ const submitEditForm = async () => {
     formAccount.append('username', staffEdit.value.username);
     formAccount.append('password', staffEdit.value.password);
     formAccount.append('fullname', staffEdit.value.fullname);
-    formAccount.append('role', 0);
+    formAccount.append('role', staffEdit.value.isAdmin ? 1 : 0);
     formAccount.append('avatar', staffEdit.value.fileImage);
     await instance.post(API.POSTAccount, formAccount)
       .then(res => {
@@ -690,25 +610,6 @@ const handleImageUpload = (event) => {
     reader.readAsDataURL(file);
   }
 };
-//search
-
-const filteredStaffs = computed(() => {
-  const term = searchTerm.value.toString().toLowerCase().trim();
-
-  switch (selectedFilter.value.toLowerCase()) {
-    case "id":
-      return staffs.value.filter((person) =>
-        person.id.toString().toLowerCase().includes(term)
-      );
-    case "name":
-      return staffs.value.filter(
-        (person) =>
-          person.fullname.toString().toLowerCase().includes(term)
-      );
-  }
-});
-
-//search
 
 const updateLoad = (check) => {
   ShowLoading.value = check;

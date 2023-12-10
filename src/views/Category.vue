@@ -107,13 +107,24 @@
               class="mt-1 p-2 w-full border rounded-md" />
           </div>
           <div class="mb-4">
-            Ảnh Sản Phẩm
-            <label for="image-upload" class="block text-sm font-medium text-gray-700">
-              <img :src="newProduct.image" alt="" class="h-20 w-24 object-cover" />
-            </label>
-            <input type="file" id="image-upload" ref="imageInputRef" style="display: none" @change="handleImageUploadADD"
-              accept="image/*" />
+            <label for="cover-photo" class="block text-sm font-medium leading-6 text-gray-900">Ảnh sản phẩm</label>
+            <div class="flex items-center flex-row mt-1" id='cover-photo'>
+              <img :src="newProduct.image" v-if="newProduct.image && newProduct.image.length > 0"
+                class="h-32 max-w-xs object-cover mr-5 rounded-lg" />
+              <div v-else class="p-5 rounded-lg border border-dashed mr-5 border-gray-900/25">
+                <PhotoIcon class="h-32 max-w-xs object-cover opacity-50" />
+              </div>
+              <label for="image-upload" class="text-sm flex flex-col">
+                <span type="submit"
+                  class="rounded-md bg-indigo-600 mt-2 py-2 text-sm font-semibold                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                text-white shadow-sm hover:bg-indigo-500 text-center w-20">
+                  Chọn ảnh
+                </span>
+              </label>
+              <input type="file" id="image-upload" ref="imageInputRef" @change="handleImageUploadADD" accept="image/*"
+                class="hidden" />
+            </div>
           </div>
+
 
           <!-- ... other fields ... -->
 
@@ -150,15 +161,24 @@
               class="mt-1 p-2 w-full border rounded-md" />
           </div>
           <div class="mb-4">
-            <label for="image-upload" class="block text-sm font-medium text-gray-700">
-              Ảnh Sản Phẩm
-              <img :src="editedPerson.image" alt="" class="h-20 w-24 object-cover" />
-            </label>
-            <input type="file" id="image-upload" ref="imageInputRef" @change="handleImageUpload" accept="image/*"
-              class="hidden" />
+            <label for="cover-photo" class="block text-sm font-medium leading-6 text-gray-900">Ảnh sản phẩm</label>
+            <div class="flex items-center flex-row mt-1" id='cover-photo'>
+              <img :src="editedPerson.image" v-if="editedPerson.image && editedPerson.image.length > 0"
+                class="h-32  max-w-xs object-cover mr-5 rounded-lg" />
+              <div v-else class="p-5 rounded-lg border border-dashed mr-5 border-gray-900/25">
+                <PhotoIcon class="h-32 max-w-xs object-cover opacity-50" />
+              </div>
+              <label for="image-upload" class="text-sm flex flex-col">
+                <span type="submit"
+                  class="rounded-md bg-indigo-600 mt-2 py-2 text-sm font-semibold                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                text-white shadow-sm hover:bg-indigo-500 text-center w-20">
+                  Chọn ảnh
+                </span>
+              </label>
+              <input type="file" id="image-upload" ref="imageInputRef" @change="handleImageUpload" accept="image/*"
+                class="hidden" />
+            </div>
           </div>
           <!-- ... other fields ... -->
-
           <div class="flex justify-end">
             <button type="button" class="mr-2 text-gray-500 hover:text-gray-700 mx-3" @click="closeEditModal">
               Thoát
@@ -389,17 +409,19 @@ function openEditModal(person) {
 
 const submitEditForm = async () => {
   if (!editedPerson.value) return;
+  const oldCategory = categories.value.find(x => x.id == editedPerson.value.id);
+  if (!oldCategory) return;
   updateLoading(true);
   const formData = new FormData();
-  formData.append('image', editedPerson.value.file);
-  formData.append('name', editedPerson.value.name);
+  if (editedPerson.value.file) {
+    formData.append('image', editedPerson.value.file);
+  }
+  if (oldCategory.name != editedPerson.value.name) {
+    formData.append('name', editedPerson.value.name);
+  }
   isEditModalOpen.value = false;
   // Update the person in the array
-  await instance.put(`${API.PUTCategories}/${editedPerson.value.id}`, formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    }
-  })
+  await instance.put(`${API.PUTCategories}/${editedPerson.value.id}`, formData)
     .then(res => {
       let index = categories.value.findIndex(x => x.id == selectedId);
       categories.value.splice(index, 1, res.data.data);
@@ -425,12 +447,12 @@ function handleImageUpload() {
 
     if (fileInput.files.length > 0) {
       const file = fileInput.files[0];
-
+      editedPerson.value.file = file;
       const reader = new FileReader();
       reader.onload = (e) => {
         if (e.target.result) {
           editedPerson.value.image = e.target.result;
-          editedPerson.value.file = file;
+
         } else {
           console.error("Image loading failed.", file);
         }
@@ -456,7 +478,7 @@ const closeAddModal = () => {
   isAddModalOpen.value = false;
 };
 const addNewProduct = async () => {
-  if (!newProduct.value.file || !newProduct.value.name || newProduct.value.name.toString().length == 0) {
+  if (!newProduct.value.file || !newProduct.value.name || newProduct.value.name.toString().trim().length == 0) {
     showToast("Thông tin thiếu", true);
     return;
   }
