@@ -49,90 +49,87 @@
         </div>
       </div>
       <div class="mt-8 flow-root">
-        <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-          <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+        <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-7 lg:-mx-4">
+          <div class="inline-block min-w-full py-2 align-middle">
             <table class="min-w-full divide-y divide-gray-300">
               <thead>
                 <tr>
                   <th v-if="optionModal.id" scope="col"
-                    class=" w-min- py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
+                    class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
                     ID
                   </th>
                   <th v-if="optionModal.picture" scope="col"
-                    class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-4">
+                    class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:pl-0">
                     Ảnh
                   </th>
                   <th v-if="optionModal.name" scope="col"
-                    class="text-center py-3.5 text-sm font-semibold text-gray-900 sm:pl-0">
+                    class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:pl-0">
                     Tên sản phẩm
                   </th>
                   <th v-if="optionModal.category" scope="col"
-                    class=" py-3.5 text-center text-sm font-semibold text-gray-900 sm:pl-0">
+                    class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:pl-0">
                     Danh mục
                   </th>
                   <th v-if="optionModal.priceDefault" scope="col"
-                    class=" py-3.5 text-center text-sm font-semibold text-gray-900 sm:pl-6">
+                    class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:pl-0">
                     Giá ban đầu
                   </th>
                   <th v-if="optionModal.timeSale" scope="col"
-                    class="py-3.5 text-center text-sm font-semibold text-gray-900 sm:pl-6">
+                    class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:pl-0">
                     Thời gian Sale
                   </th>
                   <th v-if="optionModal.priceSale" scope="col"
-                    class="py-3.5 text-center text-sm font-semibold text-gray-900 sm:pl-6">
+                    class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:pl-0">
                     Giá Sale
                   </th>
                   <th v-if="optionModal.price" scope="col"
-                    class="py-3.5 text-center text-sm font-semibold text-gray-900 sm:pl-6">
+                    class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:pl-0">
                     Giá bán
                   </th>
-                  <th scope="col" class="py-3.5 text-center text-sm font-semibold text-gray-900 sm:pl-0"
-                    v-if="store.role == 1">
+                  <th v-if="store.role == 1" scope="col"
+                    class="p-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
                     Hoạt động
                   </th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-gray-200 bg-white">
                 <tr v-for="product in listIemShow" :key="product.id">
-                  <td v-if="optionModal.id" class="whitespace-nowrap mr-4 text-left py-5 text-sm text-gray-500">
-                    <div class="text-gray-900">{{ product.id }}</div>
+                  <td v-if="optionModal.id" class="whitespace-nowrap px-3 py-5 text-sm text-gray-900 sm:pl-2">
+                    {{ product.id }}
                   </td>
-                  <td v-if="optionModal.picture" class="whitespace-nowrap py-5 text-sm sm:pl-0">
+                  <td v-if="optionModal.picture" class="whitespace-nowrap py-5 pl-4 pr-3 text-sm sm:pl-0">
                     <div class="flex items-center">
                       <div class="h-20 w-20 flex-shrink-0">
                         <img class="h-20 w-24" :src="product.mainImage" alt="" />
                       </div>
                     </div>
                   </td>
-                  <td v-if="optionModal.name" class="whitespace-nowrap text-center py-5 text-sm text-gray-500">
-                    <div class="text-gray-900">{{ product.name }}</div>
+                  <td v-if="optionModal.name" class="whitespace-nowrap px-3 py-4 text-sm text-gray-900 sm:pl-0">
+                    {{ makeShortText(product.name, 40) }}
                   </td>
-
-                  <td v-if="optionModal.category" class="whitespace-nowrap text-center py-5 text-sm text-gray-500">
-                    <div class="text-gray-900">{{ product.categoryData.name }}</div>
+                  <td v-if="optionModal.category" class="whitespace-nowrap px-3 py-4 text-sm text-gray-900 sm:pl-0">
+                    {{ makeShortText(product.categoryData.name, 40) }}
                   </td>
-
-                  <td v-if="optionModal.priceDefault" class="whitespace-nowrap text-center py-5 text-sm text-gray-500">
-                    <div class="text-gray-900">{{ FormatCurrencyVND(product.price) }}</div>
+                  <td v-if="optionModal.priceDefault" class="whitespace-nowrap px-3 py-4 text-sm text-gray-900 sm:pl-0">
+                    {{ FormatCurrencyVND(product.price) }}
                   </td>
-                  <td v-if="optionModal.timeSale" class="whitespace-nowrap text-center py-5 text-sm text-gray-500">
+                  <td v-if="optionModal.timeSale" class="whitespace-nowrap px-3 py-4 text-sm text-gray-900 sm:pl-0">
                     <div v-if="product.saleStart">
-                      <div class="text-gray-900">{{ formatTime(product.saleStart) }}</div>
-                      <div class="text-gray-900">{{ formatTime(product.saleEnd) }}</div>
+                      <div>{{ formatTime(product.saleStart) }}</div>
+                      <div>{{ formatTime(product.saleEnd) }}</div>
                     </div>
-                    <div class="text-gray-900" v-else>Null</div>
+                    <divv-else>Null</divv-else>
                   </td>
-                  <td v-if="optionModal.priceSale" class="whitespace-nowrap text-center py-5 text-sm text-gray-500">
-                    <div class="text-gray-900" v-if="product.salePrice">{{ FormatCurrencyVND(product.salePrice) }}</div>
-                    <div class="text-gray-900" v-else>Null</div>
+                  <td v-if="optionModal.priceSale" class="whitespace-nowrap px-3 py-4 text-sm text-gray-900 sm:pl-0">
+                    <div v-if="product.salePrice">{{ FormatCurrencyVND(product.salePrice) }}</div>
+                    <div v-else>Null</div>
                   </td>
-                  <td v-if="optionModal.price" class="whitespace-nowrap text-center py-5 text-sm">
-                    <div
-                      :class="{ 'text-red-600 font-semibold text-base': getPrice(product).isSale, 'text-gray-900': !getPrice(product).isSale }">
+                  <td v-if="optionModal.price" class="whitespace-nowrap px-3 py-4 text-sm text-gray-900 sm:pl-0">
+                    <div :class="{ 'text-red-600 font-semibold text-base': getPrice(product).isSale }">
                       {{ FormatCurrencyVND(getPrice(product).value) }}</div>
                   </td>
-                  <td>
-                    <div class="flex justify-center gap-x-3" v-if="store.role == 1">
+                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-900 sm:pl-0">
+                    <div class="flex justify-start gap-x-3" v-if="store.role == 1">
                       <button @click="openUpdateProduct(true, product)" class="text-indigo-600 hover:text-indigo-900">
                         <PencilSquareIcon class="h-5 w-5" aria-hidden="true" />
                         <span class="sr-only">Edit, {{ product.id }}</span>
@@ -148,10 +145,8 @@
                         <span class="sr-only">Play, {{ product.id }}</span>
                       </button> -->
 
-                      <button @click="openSaleModal(product.id)">
-                        <img class="h-5 w-5"
-                          src="https://img.icons8.com/external-prettycons-flat-prettycons/47/external-sale-commerce-prettycons-flat-prettycons.png"
-                          alt="external-sale-commerce-prettycons-flat-prettycons" />
+                      <button @click="openSaleModal(product.id)" class="text-orange-400 hover:text-indigo-900">
+                        <BoltIcon class="h- w-5" aria-hidden="true" />
                       </button>
 
                     </div>
@@ -162,7 +157,7 @@
           </div>
         </div>
       </div>
-      <nav v-if="products.length > itemOnPage" class="flex justify-end">
+      <nav v-if="products.length > itemOnPage" class="flex justify-end mt-5">
         <v-pagination v-model="currentPage" :pages="totalPages" :range-size="1" active-color="#DCEDFF"
           @update:modelValue="onPageChange" />
       </nav>
@@ -222,7 +217,7 @@
                   <span>Lựa chọn ảnh đại diện cho sản phẩm</span>
                   <span type="submit"
                     class="rounded-md bg-indigo-600 mt-2 py-2 text-sm font-semibold
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       text-white shadow-sm hover:bg-indigo-500 text-center w-20">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           text-white shadow-sm hover:bg-indigo-500 text-center w-20">
                     Chọn ảnh
                   </span>
                 </label>
@@ -630,9 +625,9 @@ import { FwbSpinner } from 'flowbite-vue'
 import { showToast } from '../assets/Toastify'
 import { instance } from '../assets/axios-instance';
 import {
-  TrashIcon, PhotoIcon, PencilSquareIcon, PlusIcon,
+  TrashIcon, PhotoIcon, PencilSquareIcon, PlusIcon, BoltIcon,
   UserCircleIcon, BookmarkIcon, XCircleIcon, CheckIcon, MagnifyingGlassIcon,
-  AdjustmentsHorizontalIcon, FunnelIcon, BackspaceIcon, PlayCircleIcon, PauseCircleIcon
+  AdjustmentsHorizontalIcon, FunnelIcon, BackspaceIcon, PlayCircleIcon, PauseCircleIcon, FireIcon
 } from "@heroicons/vue/20/solid";
 import * as API from "../assets/API";
 import { computed, ref, onMounted, watch } from "vue";
@@ -1353,6 +1348,13 @@ const updateLoading = (check) => {
 
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-
+const makeShortText = (text, numberCharacter) => {
+  let shortText = text.toString().trim();
+  if (shortText.length > numberCharacter) {
+    shortText = shortText.substring(0, numberCharacter);
+    shortText += '...';
+  }
+  return shortText;
+}
 
 </script>

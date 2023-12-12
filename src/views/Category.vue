@@ -61,8 +61,8 @@
                   </div>
                 </div>
               </td>
-              <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
-                <div class="font-medium text-gray-900">{{ person.name }}</div>
+              <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-900 sm:pl-0">
+                <div>{{ makeShortText(person.name, 40) }}</div>
               </td>
               <td v-if='store.role == 1'>
                 <div class="mx-4 space-x-3">
@@ -82,7 +82,7 @@
       </div>
     </div>
   </div>
-  <nav v-if="filteredList.length > itemOnPage" class="flex justify-end">
+  <nav v-if="filteredList.length > itemOnPage" class="flex justify-end t-5">
     <v-pagination v-model="currentPage" :pages="totalPages" :range-size="1" active-color="#DCEDFF"
       @update:modelValue="onPageChange" />
   </nav>
@@ -520,6 +520,15 @@ const updateLoading = (check) => {
 }
 // } Loading
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const makeShortText = (text, numberCharacter) => {
+  let shortText = text.toString().trim();
+  if (shortText.length > numberCharacter) {
+    shortText = shortText.substring(0, numberCharacter);
+    shortText += '...';
+  }
+  return shortText;
+}
 
 </script>
 i

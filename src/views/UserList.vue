@@ -89,7 +89,7 @@
         </div>
       </div>
     </div>
-    <nav v-if="filteredList.length > 7" class="flex justify-end">
+    <nav v-if="filteredList.length > 7" class="flex justify-end mt-5">
       <v-pagination v-model="currentPage" :pages="totalPages" :range-size="1" active-color="#DCEDFF"
         @update:modelValue="onPageChange" />
     </nav>

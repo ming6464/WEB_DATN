@@ -61,14 +61,18 @@
           </div>
 
           <div class="mt-8 flex">
-            <button type="submit"
-              class="flex rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold
-                                                                    gap-x-2
-                                                                     text-white shadow-sm hover:bg-indigo-500 focus-visible:outline
-                                                                      focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+            <button type="submit" v-if="personEdit.fileImage || personEdit.fullname != user.fullname" class="flex rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold 
+                                  gap-x-2 text-white shadow-sm hover:bg-indigo-500 
+                                  focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2
+                                   focus-visible:outline-indigo-600">
               <BookmarkIcon class="h-5 w-5" aria-hidden="true" />
               Lưu
             </button>
+            <span v-else class="flex rounded-md bg-gray-400 px-3 py-2 text-sm font-semibold 
+                                    gap-x-2 text-gray-300 shadow-sm">
+              <BookmarkIcon class="h-5 w-5" aria-hidden="true" />
+              Lưu
+            </span>
           </div>
         </form>
       </div>
@@ -120,13 +124,19 @@
 
           <div class="mt-8 flex">
             <button type="submit"
+              v-if="personEdit.password1.length > 0 && personEdit.password2.length > 0 && personEdit.password0.length > 0"
               class="flex rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold
-                                                                  gap-x-2
-                                                                   text-white shadow-sm hover:bg-indigo-500 focus-visible:outline
-                                                                    focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                                                                                                      gap-x-2
+                                                                                                       text-white shadow-sm hover:bg-indigo-500 focus-visible:outline
+                                                                                                        focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
               <BookmarkIcon class="h-5 w-5" aria-hidden="true" />
               Lưu
             </button>
+            <span v-else class="flex rounded-md bg-gray-400 px-3 py-2 text-sm font-semibold 
+                                      gap-x-2 text-gray-300 shadow-sm">
+              <BookmarkIcon class="h-5 w-5" aria-hidden="true" />
+              Lưu
+            </span>
           </div>
         </form>
       </div>
@@ -196,6 +206,10 @@ const loadData = async () => {
       user.value = res.data.data;
       personEdit.value.fullname = user.value.fullname;
       personEdit.value.avatar = user.value.avatar;
+      personEdit.value.fileImage = null;
+      personEdit.value.password1 = '';
+      personEdit.value.password2 = '';
+      personEdit.value.password0 = '';
     })
     .catch(err => {
       console.error(err);
@@ -210,6 +224,7 @@ const updateData = async () => {
       user.value = res.data.data;
       personEdit.value.fullname = user.value.fullname;
       personEdit.value.avatar = user.value.avatar;
+      personEdit.value.fileImage = null;
       store.onSetFullName(res.data.data.fullname);
       store.onSetAvatar(res.data.data.avatar);
     })

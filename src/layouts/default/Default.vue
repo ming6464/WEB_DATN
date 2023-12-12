@@ -365,7 +365,7 @@ watch(() => store.isGoToLogin, (newValue, oldValue) => {
 watch(() => store.currentPage, (newValue, oldValue) => {
   resetCurrentSelectPage();
 
-  if (newValue.index != -1 || newValue.index != 99) {
+  if (newValue.index != -1 && newValue.index != 99) {
     try {
       navigation.value[newValue.index].current = true;
       if (navigation.value[newValue.index].children && newValue.child != -1) {
@@ -379,7 +379,6 @@ watch(() => store.currentPage, (newValue, oldValue) => {
       console.error(error);
     }
   }
-  console.log(newValue, navigation);
 })
 
 const resetCurrentSelectPage = () => {

@@ -1,8 +1,9 @@
-const FormatCurrencyVND = (vnd) => {
-    // Sử dụng options để định cấu hình định dạng số
-    const options = { style: 'currency', currency: 'VND', minimumFractionDigits: 0, maximumFractionDigits: 0, useGrouping: true };
+const FormatCurrencyVND = (vnd, check) => {
+    const haveTail = check ? false : true;
+    const options = { style: 'currency', currency: 'VND', minimumFractionDigits: 0, maximumFractionDigits: 3, useGrouping: true };
+    const options1 = { minimumFractionDigits: 0, maximumFractionDigits: 3, useGrouping: true };
 
-    return vnd.toLocaleString('vi-VN', options);
+    return vnd.toLocaleString('vi-VN', haveTail ? options : options1);
 };
 
 export { FormatCurrencyVND }

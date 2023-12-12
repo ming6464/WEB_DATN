@@ -62,14 +62,14 @@
                       <img class="h-11 w-11 rounded-full" :src="person.avatar" alt="" />
                     </div>
                     <div class="ml-4">
-                      <div class="font-medium text-gray-900">
-                        {{ person.fullname }}
+                      <div>
+                        {{ makeShortText(person.fullname, 40) }}
                       </div>
                     </div>
                   </div>
                 </td>
                 <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-900 sm:pl-2">
-                  <div class="font-medium text-gray-900">{{ person.username }}</div>
+                  <div>{{ person.username }}</div>
                 </td>
                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-900 sm:pl-0">
                   <span
@@ -100,7 +100,7 @@
         </div>
       </div>
     </div>
-    <nav v-if="filteredList.length > itemOnPage" class="flex justify-end">
+    <nav v-if="filteredList.length > itemOnPage" class="flex justify-end mt-5">
       <v-pagination v-model="currentPage" :pages="totalPages" :range-size="1" active-color="#DCEDFF"
         @update:modelValue="onPageChange" />
     </nav>
@@ -204,7 +204,7 @@
             <div class="mt-8 flex">
               <button type="button" @click="closeEditModal"
                 class="rounded-md  px-3 py-2 mr-2 text-sm font-semibold text-white shadow-sm
-                                                                                                                       focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 "
+                                                                                                                             focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 "
                 :class="{
                   'bg-indigo-500 focus-visible:outline-indigo-500 hover:bg-indigo-400': roleSelected != 0,
                   'bg-red-500 focus-visible:outline-red-500 hover:bg-red-400': roleSelected == 0
@@ -616,4 +616,14 @@ const updateLoad = (check) => {
 }
 
 // modal
+
+
+const makeShortText = (text, numberCharacter) => {
+  let shortText = text.toString().trim();
+  if (shortText.length > numberCharacter) {
+    shortText = shortText.substring(0, numberCharacter);
+    shortText += '...';
+  }
+  return shortText;
+}
 </script>
