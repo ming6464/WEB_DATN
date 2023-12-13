@@ -165,7 +165,7 @@
       </div>
       <nav v-if="filterVal.totalPages > 0" class="flex justify-end mt-5">
         <v-pagination v-model="filterVal.page" :pages="filterVal.totalPages" :range-size="1" active-color="#DCEDFF"
-          @update:modelValue="loadFilter1" />
+          @update:modelValue="loadFilter" />
       </nav>
     </div>
 
@@ -223,7 +223,7 @@
                   <span>Lựa chọn ảnh đại diện cho sản phẩm</span>
                   <span type="submit"
                     class="rounded-md bg-indigo-600 mt-2 py-2 text-sm font-semibold
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       text-white shadow-sm hover:bg-indigo-500 text-center w-20">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       text-white shadow-sm hover:bg-indigo-500 text-center w-20">
                     Chọn ảnh
                   </span>
                 </label>
@@ -478,21 +478,21 @@
           <!-- Form for adding a new product -->
           <form @submit.prevent="searchOrApplyFilterModal">
             <div class="mb-4">
-              <label for="priceRange" class="block text-sm font-medium text-gray-700">
-                Khoảng giá
+              <label for="priceRange" class="block text-base font-medium text-gray-700">
+                Khoảng giá :
               </label>
               <div id="priceRange" name='priceRange' class="flex items-center justify-between mt-1 gap-x-3">
                 <div>
-                  <label for="minPrice" class="block text-xs font-medium text-gray-700">
-                    Tối thiểu
+                  <label for="minPrice" class="block text-sm font-medium text-gray-700">
+                    Tối thiểu :
                   </label>
                   <input v-model="filterVal.minPrice" type="number" min="0" id="minPrice" name="minPrice"
                     class="mt-1 p-2 w-full border rounded-md" />
                   <p class="text-sm font-normal">Giá tiền: {{ FormatCurrencyVND(filterVal.minPrice) }}</p>
                 </div>
                 <div>
-                  <label for="maxPrice" class="block text-xs font-medium text-gray-700">
-                    tối đa
+                  <label for="maxPrice" class="block text-sm font-medium text-gray-700">
+                    Tối đa :
                   </label>
                   <input v-model="filterVal.maxPrice" type="number" min="0" id="maxPrice" name="maxPrice"
                     class="mt-1 p-2 w-full border rounded-md" />
@@ -502,8 +502,8 @@
             </div>
 
             <div class="mb-4">
-              <label for="category" class="block text-sm font-medium text-gray-700">
-                Danh mục
+              <label for="category" class="block text-base font-medium text-gray-700">
+                Danh mục :
               </label>
               <div class="relative mt-1 rounded-md" id="category" name="category">
                 <select v-model="filterVal.categoryId"
@@ -516,10 +516,32 @@
             </div>
 
             <div class="mb-4">
-              <label for="status" class="block text-sm font-medium text-gray-700">
-                Tình trạng
+              <label for="status" class="block text-base font-medium text-gray-700">
+                Tình trạng :
               </label>
               <input type="checkbox" v-model="filterVal.isNew" /> Hàng mới
+            </div>
+
+            <div class="mb-4">
+              <label for="status" class="block text-base font-medium text-gray-700">
+                Trạng thái sản phẩm :
+              </label>
+              <RadioGroup v-model="filterVal.statusProduct" class="mt-2">
+                <div class="grid grid-cols-3 gap-3">
+                  <RadioGroupOption as="template" v-for="option in statusProducts" :key="option.name" :value="option"
+                    :disabled="!option.inStock" v-slot="{ active, checked }">
+                    <div
+                      class="cursor-pointer focus:outline-none flex items-center 
+                                                                                  justify-center rounded-md py-3 px-1 text-xs sm:flex-1 font-normal"
+                      :class="[
+                        active ? 'ring-2 ring-indigo-600 ring-offset-2' : '',
+                        checked ? 'bg-indigo-600 text-white hover:bg-indigo-500' :
+                          'ring-1 ring-inset ring-gray-300 bg-white text-gray-900 hover:bg-gray-50']">
+                      <RadioGroupLabel as="span">{{ option.name }}</RadioGroupLabel>
+                    </div>
+                  </RadioGroupOption>
+                </div>
+              </RadioGroup>
             </div>
 
             <div class="flex justify-between items-center">
@@ -629,6 +651,7 @@
 </template>
 
 <script setup>
+import { RadioGroup, RadioGroupLabel, RadioGroupOption } from '@headlessui/vue'
 import VPagination from "@hennge/vue3-pagination";
 import "@hennge/vue3-pagination/dist/vue3-pagination.css";
 import VueApexCharts from "vue3-apexcharts";
@@ -731,8 +754,8 @@ const isDeleteModalOpen = ref(false);
 const isShowDeleteModal = ref(false);
 const selectedId = ref(0);
 const statusActive = [
-  { value: 1, label: "Đang hoạt động" },
-  { value: 0, label: "Ngừng hoạt động" },
+  { value: 1, label: "Mở bán" },
+  { value: 0, label: "Ngừng bán" },
 ]
 const statusSelected = ref(0);
 // } delete modal
@@ -746,6 +769,10 @@ let idSale = -1;
 // } sale
 
 // filter option {
+const statusProducts = [
+  { name: 'Mở bán', inStock: true },
+  { name: 'Ngừng bán', inStock: true },
+]
 const categoriesFilter = ref([
   { id: 1, name: "Áo polo" },
   { id: 2, name: "Áo thun" },
@@ -765,7 +792,17 @@ const filterVal = ref({
   minPrice: 0,
   maxPrice: 0,
   isNew: false,
+  statusProduct: statusProducts[0],
 });
+
+let filterVal_ = {
+  categoryId: -1,
+  minPrice: 0,
+  maxPrice: 0,
+  isNew: false,
+  keyword: '',
+  statusProduct: statusProducts[0],
+};
 const numberFilter = ref(0);
 const isOpenFilterModal = ref(false);
 const isOpenOptionModal = ref(false);
@@ -783,7 +820,7 @@ onMounted(() => {
   updateCategories();
   updateSizes();
   updateColors();
-  loadFilter1();
+  loadFilter();
 });
 
 const updateCategories = async () => {
@@ -899,7 +936,7 @@ const submitEditForm = async () => {
       await instance.put(`${API.PUTProduct}/${updateProduct.value.id}`, formProduct)
         .then(res => {
           showToast("Cập nhật thành công", false);
-          loadFilter1();
+          loadFilter();
           updateColorSize(updateProduct.value.id);
           onCloseUpdateProduct();
         })
@@ -920,7 +957,7 @@ const submitEditForm = async () => {
     await instance.post(API.POSTProduct, formProduct)
       .then(res => {
         updateColorSize(res.data.data.id);
-        loadFilter1();
+        loadFilter();
         showToast("Cập nhật thành công", false);
         onCloseUpdateProduct();
       })
@@ -1082,7 +1119,7 @@ const onChangeStatus = async () => {
           if (products.value.length == 1 && filterVal.value.page == filterVal.value.totalPages) {
             filterVal.value.page--;
           }
-          loadFilter1();
+          loadFilter();
           showToast("Xoá thành công");
         })
         .catch(err => {
@@ -1162,7 +1199,7 @@ const submitSaleModal = async () => {
   await instance.put(`${API.PUTSale}/${idSale}`, formSale)
     .then(res => {
       showToast("Tạo giảm giá thành công", false);
-      loadFilter1();
+      loadFilter();
       closeSaleModal();
       return;
     })
@@ -1179,19 +1216,18 @@ const submitSaleModal = async () => {
 
 const searchOrApplyFilterModal = () => {
   filterVal.value.page = 0;
-  loadFilter1();
+  loadFilter();
 }
-
 const changeSort = () => {
   filterVal.value.sortPrice++;
   if (filterVal.value.sortPrice > 2) {
     filterVal.value.sortPrice = 0;
   }
-  loadFilter1();
+  loadFilter();
 }
 
 
-const loadFilter1 = async () => {
+const loadFilter = async () => {
   updateLoading(true);
   const params = {};
   if (filterVal.value.sortPrice < 2) {
@@ -1224,6 +1260,7 @@ const loadFilter1 = async () => {
     params.isNew = filterVal.value.isNew;
     numberFilter.value++;
   }
+  UpdateValueFilter();
   closeFilterModal();
   await instance.get(API.GETFilter, {
     params: params,
@@ -1260,6 +1297,7 @@ const openFilterModal = () => {
 }
 
 const closeFilterModal = () => {
+  BackValueFilter();
   isOpenFilterModal.value = false;
 }
 
@@ -1268,6 +1306,23 @@ const ResetFilter = () => {
   filterVal.value.maxPrice = 0;
   filterVal.value.isNew = false;
   filterVal.value.categoryId = -1;
+  filterVal.value.statusProduct = statusProducts[0];
+}
+
+const BackValueFilter = () => {
+  filterVal.value.categoryId = filterVal_.categoryId;
+  filterVal.value.maxPrice = filterVal_.maxPrice;
+  filterVal.value.minPrice = filterVal_.minPrice;
+  filterVal.value.isNew = filterVal_.isNew;
+  filterVal.value.statusProduct = filterVal_.statusProduct;
+}
+
+const UpdateValueFilter = () => {
+  filterVal_.categoryId = filterVal.value.categoryId;
+  filterVal_.maxPrice = filterVal.value.maxPrice;
+  filterVal_.minPrice = filterVal.value.minPrice;
+  filterVal_.isNew = filterVal.value.isNew;
+  filterVal_.statusProduct = filterVal.value.statusProduct;
 }
 
 // } filter

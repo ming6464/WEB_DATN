@@ -3,6 +3,11 @@
     <div class="-mt-2 bg-white border-b border-gray-200 " style="position: fixed;top : 70px;right: 0px;left: 0px;">
       <div class="lg:ml-72 px-4">
         <div class="flex justify-center gap-x-2 items-center border-gray-300 py-4">
+          <div class="mr-2">
+            <button class="group flex items-center font-medium mr-2" @click="openFilterModal">
+              <FunnelIcon class="mr-2 h-5 w-5 flex-none text-gray-700 group-hover:text-gray-500" />
+            </button>
+          </div>
           <div
             class="flex items-center justify-between border border-gray-400 border-r-0 rounded-md shadow-sm md:w-8/12 sm:w-6/12">
             <input type="text" placeholder="Tìm kiếm ..." v-model="searchTerm"
@@ -37,7 +42,7 @@
                   Tên đầy đủ
                 </th>
                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:pl-0">
-                  Tên tài khoản
+                  Tên đăng nhập
                 </th>
                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:pl-0">
                   Quyền hạn
@@ -150,7 +155,7 @@
               </div>
 
               <div class="sm:col-span-2">
-                <label for="userName" class="block text-sm font-semibold leading-6 text-gray-900">Tài khoản</label>
+                <label for="userName" class="block text-sm font-semibold leading-6 text-gray-900">Tên đăng nhập</label>
                 <div class="mt-2.5">
                   <input type="text" name="userName" :disabled="IdSelected >= 0" v-model="staffEdit.username"
                     id="userName" autocomplete="userName"
@@ -203,7 +208,7 @@
             <div class="mt-8 flex">
               <button type="button" @click="closeUpdateModal"
                 class="rounded-md  px-3 py-2 mr-2 text-sm font-semibold text-white shadow-sm
-                                                                                                                                                                     focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 "
+                                                                                                                                                                                 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 "
                 :class="{
                   'bg-indigo-500 focus-visible:outline-indigo-500 hover:bg-indigo-400': roleSelected != 0,
                   'bg-red-500 focus-visible:outline-red-500 hover:bg-red-400': roleSelected == 0
@@ -285,6 +290,57 @@
     </div>
   </div>
 
+  <!-- filter modal -->
+  <div v-if="isOpenFilterModal" class="fixed inset-0 overflow-y-auto">
+    <div class="flex items-center justify-center min-h-screen">
+      <div class="fixed inset-0 bg-gray-500 bg-opacity-75"></div>
+
+      <div class="relative bg-white p-8 rounded-lg lg:ml-64 mt-10">
+        <h3 class="text-lg font-semibold mb-4 text-center">
+          Bộ lọc tìm kiếm
+        </h3>
+
+        <!-- Form for adding a new product -->
+        <form @submit.prevent="applyFilterModal">
+          <div class="mb-4">
+            <label for="status" class="block text-base font-medium text-gray-700">
+              Trạng thái sản phẩm :
+            </label>
+            <RadioGroup v-model="filterVal.statusProduct" class="mt-2">
+              <div class="grid grid-cols-3 gap-3">
+                <RadioGroupOption as="template" v-for="option in statusProducts" :key="option.name" :value="option"
+                  :disabled="!option.inStock" v-slot="{ active, checked }">
+                  <div
+                    class="cursor-pointer focus:outline-none flex items-center 
+                                                                                      justify-center rounded-md py-3 px-1 text-xs sm:flex-1 font-normal"
+                    :class="[
+                      active ? 'ring-2 ring-indigo-600 ring-offset-2' : '',
+                      checked ? 'bg-indigo-600 text-white hover:bg-indigo-500' :
+                        'ring-1 ring-inset ring-gray-300 bg-white text-gray-900 hover:bg-gray-50']">
+                    <RadioGroupLabel as="span">{{ option.name }}</RadioGroupLabel>
+                  </div>
+                </RadioGroupOption>
+              </div>
+            </RadioGroup>
+          </div>
+
+          <div class="flex justify-between items-center">
+            <div>
+              <button type="button" @click="closeFilterModal" class="mr-2 text-gray-500 hover:text-gray-700 mx-6">
+                Hủy
+              </button>
+              <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-500">
+                Áp dụng
+              </button>
+            </div>
+
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <!-- filter modal -->
+
   <!-- loadding -->
   <div v-if="ShowLoading" class="w-full h-full flex justify-center items-center"
     style="position: fixed; top: 0; left: 0;z-index: 100;">
@@ -305,7 +361,10 @@
 import VPagination from "@hennge/vue3-pagination";
 import "@hennge/vue3-pagination/dist/vue3-pagination.css";
 import { useToken } from "../store/tokenStore";
-import { TrashIcon, PhotoIcon, PencilSquareIcon, PlusIcon, UserCircleIcon, BookmarkIcon, XCircleIcon, CheckIcon, MagnifyingGlassIcon, AdjustmentsHorizontalIcon, FunnelIcon } from "@heroicons/vue/20/solid";
+import {
+  TrashIcon, PhotoIcon, PencilSquareIcon, PlusIcon, UserCircleIcon, BookmarkIcon, XCircleIcon,
+  CheckIcon, MagnifyingGlassIcon, AdjustmentsHorizontalIcon, FunnelIcon
+} from "@heroicons/vue/20/solid";
 
 import { ref, watch, computed, onMounted } from "vue";
 import {
@@ -351,6 +410,7 @@ const filteredList = ref([]);
 const itemOnPage = ref(10);
 const currentPage = ref(1);
 const totalPages = ref(7);
+const isOpenFilterModal = ref(false);
 //phân trang
 
 // trang thái
@@ -648,6 +708,22 @@ const updateLoad = (check) => {
 
 // modal
 
+
+// filter modal {
+
+const applyFilterModal = () => {
+
+}
+
+const openFilterModal = () => {
+  isOpenFilterModal.value = true;
+}
+
+const closeFilterModal = () => {
+  isOpenFilterModal.value = false;
+}
+
+// filter modal}
 
 const makeShortText = (text, numberCharacter) => {
   let shortText = text.toString().trim();

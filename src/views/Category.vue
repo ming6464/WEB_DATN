@@ -529,7 +529,7 @@ const addNewProduct = async () => {
       showToast("Lỗi", true);
       console.error(err);
     });
-  updateLoading(true);
+  updateLoading(false);
 
 };
 const handleImageUploadADD = (event) => {

@@ -39,7 +39,7 @@
             </div>
 
             <div class="col-span-full">
-              <label for="username" class="block text-sm font-medium leading-6 text-gray-700">Tên tài khoản</label>
+              <label for="username" class="block text-sm font-medium leading-6 text-gray-700">Tên đăng nhập</label>
               <div class="mt-2">
                 <input id="username" v-model="user.username" name="username" type="text" autocomplete="username" disabled
                   class="block w-full rounded-md border-0 bg-gray-100 py-1.5 text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6" />
@@ -62,14 +62,14 @@
 
           <div class="mt-8 flex">
             <button type="submit" v-if="personEdit.fileImage || personEdit.fullname != user.fullname" class="flex rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold 
-                                    gap-x-2 text-white shadow-sm hover:bg-indigo-500 
-                                    focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2
-                                     focus-visible:outline-indigo-600">
+                                      gap-x-2 text-white shadow-sm hover:bg-indigo-500 
+                                      focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2
+                                       focus-visible:outline-indigo-600">
               <BookmarkIcon class="h-5 w-5" aria-hidden="true" />
               Lưu
             </button>
             <span v-else class="flex rounded-md bg-gray-400 px-3 py-2 text-sm font-semibold 
-                                      gap-x-2 text-gray-300 shadow-sm">
+                                        gap-x-2 text-gray-300 shadow-sm">
               <BookmarkIcon class="h-5 w-5" aria-hidden="true" />
               Lưu
             </span>
@@ -126,14 +126,14 @@
             <button type="submit"
               v-if="personEdit.password1.length > 0 && personEdit.password2.length > 0 && personEdit.password0.length > 0"
               class="flex rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold
-                                                                                                        gap-x-2
-                                                                                                         text-white shadow-sm hover:bg-indigo-500 focus-visible:outline
-                                                                                                          focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                                                                                                          gap-x-2
+                                                                                                           text-white shadow-sm hover:bg-indigo-500 focus-visible:outline
+                                                                                                            focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
               <BookmarkIcon class="h-5 w-5" aria-hidden="true" />
               Lưu
             </button>
             <span v-else class="flex rounded-md bg-gray-400 px-3 py-2 text-sm font-semibold 
-                                        gap-x-2 text-gray-300 shadow-sm">
+                                          gap-x-2 text-gray-300 shadow-sm">
               <BookmarkIcon class="h-5 w-5" aria-hidden="true" />
               Lưu
             </span>

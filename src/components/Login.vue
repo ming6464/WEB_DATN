@@ -11,7 +11,7 @@
     <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
       <form class="space-y-6" @submit.prevent="submitForm">
         <div>
-          <label for="userName" class="block text-sm font-medium leading-6 text-gray-900">Tài khoản</label>
+          <label for="userName" class="block text-sm font-medium leading-6 text-gray-900">Tên đăng nhập</label>
           <div class="mt-2">
             <input id="userName" name="text" type="userName" autocomplete="userName" v-model="formData.userName"
               :class="{ 'border-2 border-red-500': errors.userName }" @input="clearError('userName')"
