@@ -96,7 +96,7 @@
   </div>
   <!-- loadding -->
   <div v-if="ShowLoading" class="w-full h-full flex justify-center items-center"
-    style="position: fixed; top: 0; left: 0;">
+    style="position: fixed; top: 0; left: 0;z-index: 100;">
     <div class="flex justify-center items-center">
       <!-- Phần background với độ mờ -->
       <div class="bg-gray-500" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.3;">

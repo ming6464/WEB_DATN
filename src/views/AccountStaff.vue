@@ -16,7 +16,7 @@
               <MagnifyingGlassIcon class="h-7 w-7" aria-hidden="true" />
             </button>
           </div>
-          <button type="button" @click="openModal(-1)"
+          <button type="button" @click="openUpdateModal(-1)"
             class="inline-flex self-end items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
             <PlusIcon class="h-5 w-5" aria-hidden="true" />
             Thêm tài khoản
@@ -78,23 +78,22 @@
                   </span>
                 </td>
                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-900 sm:pl-0">
-                  <span
-                    class="rounded-md text-center bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
-                    Hoạt động
-                  </span>
+                  <select :disabled="!canChangeStatus(person.id, person.role)" v-model="person.status1"
+                    @change="showChangeStatusModal(person.id, person.status1, person.role)"
+                    class="rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring focus:border-indigo-500">
+                    <option v-for="option in statusActive" :key="option.value" :value="option.value">
+                      {{ option.label }}
+                    </option>
+                  </select>
                 </td>
                 <td class="py-4 text-sm font-medium  gap-x-3">
-                  <button type="button" @click="openModal(person.id)" class="text-indigo-600 hover:text-indigo-900 mr-1">
+                  <button type="button" @click="openUpdateModal(person.id)"
+                    class="text-indigo-600 hover:text-indigo-900 mr-1">
                     <PencilSquareIcon class="h-5 w-5" aria-hidden="true" />
                     <span class="sr-only">Edit, {{ person.id }}</span>
                   </button>
-                  <button type="button" @click="showDeleteModal(person.id, person.role)" v-if='store.id != person.id'
-                    class="text-red-600 hover:text-red-900 ml-1">
-                    <TrashIcon class="h-5 w-5" aria-hidden="true" />
-                  </button>
                 </td>
               </tr>
-              <!-- ... (existing code) ... -->
             </tbody>
           </table>
         </div>
@@ -110,7 +109,7 @@
     <div :class="{ 'opacity-100': isShowModal }"
       class="fixed inset-0 transition-opacity ease-in-out duration-500 opacity-0">
       <div class="flex items-center justify-center min-h-screen">
-        <div class="fixed inset-0 bg-gray-500 bg-opacity-50" @click="closeEditModal"></div>
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-50"></div>
         <div
           class="relative bg-white p-6 rounded-lg max-w-5xl max-h-[600px] overflow-y-auto overflow-hidden lg:ml-64 mt-10">
           <h1 class="text-xl font-bold mb-4 text-center">
@@ -119,7 +118,7 @@
             }}
           </h1>
           <!-- Form for editing person details -->
-          <form @submit.prevent="submitEditForm" class="mx-auto mt-8 w-96 sm:mt-7">
+          <form @submit.prevent="submitUdpateForm" class="mx-auto mt-8 w-96 sm:mt-7">
             <div class="grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2">
               <div class="col-span-full flex items-center flex-row gap-x-4">
                 <img v-if='staffEdit.avatar && staffEdit.avatar.toString().length > 0' :src="staffEdit.avatar" alt=""
@@ -202,9 +201,9 @@
               </div>
             </div>
             <div class="mt-8 flex">
-              <button type="button" @click="closeEditModal"
+              <button type="button" @click="closeUpdateModal"
                 class="rounded-md  px-3 py-2 mr-2 text-sm font-semibold text-white shadow-sm
-                                                                                                                             focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 "
+                                                                                                                                                                     focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 "
                 :class="{
                   'bg-indigo-500 focus-visible:outline-indigo-500 hover:bg-indigo-400': roleSelected != 0,
                   'bg-red-500 focus-visible:outline-red-500 hover:bg-red-400': roleSelected == 0
@@ -244,13 +243,16 @@
                 </div>
                 <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
                   <h3 class="text-base font-semibold leading-6 text-gray-900" id="modal-title">
-                    Xoá tài khoản
+                    Thay đổi trạng thái
                   </h3>
                   <div class="mt-2">
-                    <p class="text-sm text-gray-500">
-                      Bạn có chắc chắn muốn xoá tài khoản này không? Tất cả dữ
-                      liệu sẽ bị xóa vĩnh viễn. Hành động này không thể được
-                      hoàn tác.
+                    <p class="text-sm text-gray-500" v-if="statusSelected == 0">
+                      Bạn có chắc chắn muốn chuyển sang trang thái ngừng hoạt động danh mục này không?
+                      Tất cả dữ tất cả dữ liệu sẽ bị ảnh hưởng
+                    </p>
+                    <p class="text-sm text-gray-500" v-else>
+                      Bạn có chắc chắn muốn chuyển sang trang thái hoạt động danh mục này không?
+                      Tất cả dữ tất cả dữ liệu sẽ bị ảnh hưởng
                     </p>
                   </div>
                 </div>
@@ -264,14 +266,14 @@
               </div>
             </div>
             <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-              <button type="button" @click="deleteStaff"
+              <button type="button" @click="onChangeStatus"
                 class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto">
                 <TrashIcon class="h-5 w-5" aria-hidden="true" />
                 Xoá
               </button>
               <button type="button"
                 class="inline-flex w-full justify-center rounded-md px-3 py-2 text-sm font-semibold text-gray-500 shadow-sm hover:text-gray-600 sm:w-auto"
-                @click="closeDeleteModal">
+                @click="closeChangeStatusModal">
                 <div class="h-5 w-5 opacity-0" aria-hidden="true" />
                 Hủy
               </button>
@@ -285,7 +287,7 @@
 
   <!-- loadding -->
   <div v-if="ShowLoading" class="w-full h-full flex justify-center items-center"
-    style="position: fixed; top: 0; left: 0;">
+    style="position: fixed; top: 0; left: 0;z-index: 100;">
     <div class="flex justify-center items-center">
       <!-- Phần background với độ mờ -->
       <div class="bg-gray-500" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.3;">
@@ -351,6 +353,14 @@ const currentPage = ref(1);
 const totalPages = ref(7);
 //phân trang
 
+// trang thái
+const statusSelected = ref(0);
+const statusActive = [
+  { value: 1, label: "Đang hoạt động" },
+  { value: 0, label: "Ngừng hoạt động" },
+]
+// trạng thái
+
 onMounted(() => {
   if (store.role == 1) {
     store.onSetCurrentPage({ index: 4, child: 0 });
@@ -363,6 +373,15 @@ const loadData = async (isDelete) => {
   await instance.get(API.GETAccounts)
     .then(res => {
       staffs.value = res.data.data;
+      staffs.value.forEach(x => {
+        if (x.deletedAt) {
+          x.status = 0;
+          x.status1 = 0;
+        } else {
+          x.status = 1;
+          x.status1 = 1;
+        }
+      })
     })
     .catch(err => {
       showToast("Lỗi", true);
@@ -372,6 +391,11 @@ const loadData = async (isDelete) => {
     })
   updateList(false, isDelete ? true : false);
   updateLoad(false);
+}
+
+const canChangeStatus = (id, role) => {
+  if (store.id == id) return false;
+  return true;
 }
 
 // search  và update phân trang
@@ -419,7 +443,7 @@ const updateList = (isSearch, isDelete) => {
 };
 // search  và update phân trang
 
-const openModal = async (id) => {
+const openUpdateModal = async (id) => {
   isAnySwitchOn.value = true;
   isOpenModal.value = true;
   IdSelected.value = id;
@@ -447,7 +471,7 @@ const openModal = async (id) => {
   isShowModal.value = true;
 };
 
-const submitEditForm = async () => {
+const submitUdpateForm = async () => {
 
   if (!checkvalidate(true)) return;
   updateLoad(true);
@@ -495,7 +519,7 @@ const submitEditForm = async () => {
 
       })
   }
-  closeEditModal();
+  closeUpdateModal();
   updateLoad(false);
 };
 
@@ -527,7 +551,15 @@ const checkvalidate = (isEdit) => {
   return true;
 }
 
-const showDeleteModal = async (id, role) => {
+const closeUpdateModal = async () => {
+  isShowModal.value = false;
+  await delay(500);
+  isOpenModal.value = false;
+  staffEdit.value = {};
+};
+
+const showChangeStatusModal = async (id, status, role) => {
+  statusSelected.value = status;
   password2.value = '';
   IdSelected.value = id;
   roleSelected.value = role;
@@ -536,7 +568,7 @@ const showDeleteModal = async (id, role) => {
   isShowDeleteModal.value = true;
 };
 
-const deleteStaff = async () => {
+const onChangeStatus = async () => {
   updateLoad(true)
   try {
 
@@ -571,7 +603,7 @@ const deleteStaff = async () => {
 
     await instance.delete(`${API.DELAccount}/${IdSelected.value}`)
       .then(res => {
-        showToast("Xoá thành công");
+        showToast("Thay đổi trạng thái thành công");
         loadData(true);
       })
       .catch(err => {
@@ -581,20 +613,19 @@ const deleteStaff = async () => {
 
   } catch (error) { }
   updateLoad(false);
-  closeDeleteModal();
+  closeChangeStatusModal();
 };
 
-const closeDeleteModal = async () => {
+const closeChangeStatusModal = async () => {
+  if (IdSelected.value >= 0) {
+    const index = listIemShow.value.findIndex(x => x.id == IdSelected.value);
+    if (index != -1) {
+      listIemShow.value[index].status1 = listIemShow.value[index].status;
+    }
+  }
   isShowDeleteModal.value = false;
   await delay(500);
   isDeleteModalOpen.value = false;
-};
-
-const closeEditModal = async () => {
-  isShowModal.value = false;
-  await delay(500);
-  isOpenModal.value = false;
-  staffEdit.value = {};
 };
 
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));

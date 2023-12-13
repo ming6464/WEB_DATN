@@ -51,15 +51,30 @@
       </form>
     </div>
   </div>
+  <!-- loadding -->
+  <div v-if="ShowLoading" class="w-full h-full flex justify-center items-center"
+    style="position: fixed; top: 0; left: 0;z-index: 100;">
+    <div class="flex justify-center items-center">
+      <!-- Phần background với độ mờ -->
+      <div class="bg-gray-500" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.3;">
+      </div>
+      <!-- Nội dung loading spinner -->
+      <div class="spinner-border text-white" role="status">
+        <fwb-spinner color="blue" size="12" class="lg:ml-64 mt-10" />
+      </div>
+    </div>
+  </div>
+  <!-- loadding -->
 </template>
 <script setup>
+import { FwbSpinner } from 'flowbite-vue'
 import { ref, onMounted } from "vue";
 import * as API from '../assets/API'
 import { showToast } from '../assets/Toastify'
 import { instance } from '../assets/axios-instance'
 import { useRouter } from "vue-router";
 import { useToken } from '../store/tokenStore';
-
+const ShowLoading = ref(false);
 const store = useToken();
 const router = useRouter();
 const errors = ref({
@@ -77,6 +92,7 @@ onMounted(() => {
 })
 
 const submitForm = async () => {
+
   let check = false;
   errors.value = {}; // Reset errors
 
@@ -90,10 +106,12 @@ const submitForm = async () => {
     check = true;
   }
   if (check) return;
+  ShowLoading.value = true;
   const formAccount = new FormData();
   formAccount.append('username', formData.value.userName);
   formAccount.append('password', formData.value.password);
-  login(false, formAccount);
+  await login(false, formAccount);
+  ShowLoading.value = false;
 }
 
 const login = async (toMain, form) => {

@@ -43,6 +43,9 @@
               <th scope="col" class="py-3 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
                 Tên Sản Phẩm
               </th>
+              <th scope="col" class="py-3 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
+                Trang thái
+              </th>
               <th scope="col" class="py-3 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
                 v-if='store.role == 1'>
                 Hoạt động
@@ -64,15 +67,19 @@
               <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-900 sm:pl-0">
                 <div>{{ makeShortText(person.name, 40) }}</div>
               </td>
+              <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-900 sm:pl-0">
+                <select v-model="person.status1" @change="showChangeStatusOrderModal(person.id, person.status1)"
+                  class="rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring focus:border-indigo-500">
+                  <option v-for="option in statusActive" :key="option.value" :value="option.value">
+                    {{ option.label }}
+                  </option>
+                </select>
+              </td>
               <td v-if='store.role == 1'>
                 <div class="mx-4 space-x-3">
                   <button @click="openEditModal(person)" class="text-indigo-600 hover:text-indigo-900">
                     <PencilSquareIcon class="h-5 w-5" aria-hidden="true" />
                     <span class="sr-only">{{ person.id }},</span>
-                  </button>
-                  <button @click="openDeleteModal(person.id)" class="text-red-700 hover:text-indigo-900">
-                    <TrashIcon class="h-5 w-5" aria-hidden="true" />
-                    <span class="sr-only">, {{ person.id }}</span>
                   </button>
                 </div>
               </td>
@@ -199,8 +206,7 @@
       role="dialog" aria-modal="true">
       <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
       <div class="fixed inset-0 z-10 w-screen">
-        <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0"
-          @click="closeDeleteCategoryModal">
+        <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
           <div
             class="relative lg:ml-64 mt-10 transform rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
             <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
@@ -215,24 +221,31 @@
                 </div>
                 <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
                   <h3 class="text-base font-semibold leading-6 text-gray-900" id="modal-title">
-                    Xoá tài khoản
+                    Thay đổi trạng thái
                   </h3>
                   <div class="mt-2">
-                    <p class="text-sm text-gray-500">
-                      Bạn có chắc chắn muốn xoá danh mục này không? Tất cả dữ
-                      liệu sẽ bị xóa vĩnh viễn. Hành động này không thể được
-                      hoàn tác.
+                    <p class="text-sm text-gray-500" v-if="statusSelected == 0">
+                      Bạn có chắc chắn muốn chuyển sang trang thái ngừng hoạt động danh mục này không?
+                      Tất cả dữ tất cả dữ liệu sẽ bị ảnh hưởng
+                    </p>
+                    <p class="text-sm text-gray-500" v-else>
+                      Bạn có chắc chắn muốn chuyển sang trang thái hoạt động danh mục này không?
+                      Tất cả dữ tất cả dữ liệu sẽ bị ảnh hưởng
                     </p>
                   </div>
                 </div>
               </div>
             </div>
             <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-              <button type="button" @click="deleteCategory"
+              <button type="button" @click="onChangeStatusOrder"
                 class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto">
-                <TrashIcon class="h-5 w-5" aria-hidden="true" />
-                Xoá
+                Xác nhận
               </button>
+              <button type="button" @click="closeChangeStatusOrderModal"
+                class="inline-flex w-full justify-center rounded-md  px-3 py-2 text-sm font-semibold text-gray-600 shadow-sm  sm:ml-3 sm:w-auto">
+                Huỷ
+              </button>
+
             </div>
           </div>
         </div>
@@ -242,7 +255,7 @@
 
   <!-- loadding -->
   <div v-if="ShowLoading" class="w-full h-full flex justify-center items-center"
-    style="position: fixed; top: 0; left: 0;">
+    style="position: fixed; top: 0; left: 0;z-index: 100;">
     <div class="flex justify-center items-center">
       <!-- Phần background với độ mờ -->
       <div class="bg-gray-500" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.3;">
@@ -263,7 +276,6 @@ import { useToken } from '../store/tokenStore';
 import { FwbSpinner } from 'flowbite-vue'
 import { ref, onMounted, watch } from "vue";
 import { TrashIcon, PhotoIcon, PencilSquareIcon, PlusIcon, UserCircleIcon, BookmarkIcon, XCircleIcon, CheckIcon, MagnifyingGlassIcon, AdjustmentsHorizontalIcon, FunnelIcon } from "@heroicons/vue/20/solid";
-
 import { instance } from '../assets/axios-instance';
 import * as API from "../assets/API";
 import { showToast } from '../assets/Toastify'
@@ -283,7 +295,11 @@ const isShowDeleteModal = ref(false);
 const selectedFilter = ref("id"); // Giá trị mặc định của bộ lọc
 const searchTerm = ref("");
 const store = useToken();
-
+const statusSelected = ref(0);
+const statusActive = [
+  { value: 1, label: "Đang hoạt động" },
+  { value: 0, label: "Ngừng hoạt động" },
+]
 
 // phân trang và search
 const itemOnPage = ref(10);
@@ -306,6 +322,15 @@ const updateCategories = async (isDelete) => {
   await instance.get(API.GETCategories)
     .then(res => {
       categories.value = res.data.data;
+      categories.value.forEach(x => {
+        if (x.deletedAt) {
+          x.status = 0;
+          x.status1 = 0;
+        } else {
+          x.status = 1;
+          x.status1 = 1;
+        }
+      })
       updateList(false, isDelete ? true : false);
     })
     .catch(err => {
@@ -358,48 +383,56 @@ const updateList = (isSearch, isDelete) => {
     }
     onPageChange(page);
   }
-  console.log(categories.value, filteredList.value)
 
 };
 // search  và update phân trang
 
 const imageInputRef = ref(null);
-//delete modal 
+//change status modal 
 
-const openDeleteModal = async (id) => {
+const showChangeStatusOrderModal = async (id, status) => {
+  statusSelected.value = status;
   selectedId.value = id;
   isDeleteModalOpen.value = true;
   await delay(100);
   isShowDeleteModal.value = true;
-};
+}
 
-const deleteCategory = async () => {
+const onChangeStatusOrder = async () => {
   updateLoading(true);
   try {
     await instance.delete(`${API.DELCategories}/${selectedId.value}`)
       .then(res => {
-        const index = categories.value.findIndex(x => x.id === selectedId.value);
+        const index = categories.value.findIndex(x => x.id == selectedId.value);
         if (index != -1) {
           updateCategories(true);
-          showToast("Xoá thành công", false);
+          showToast("Thay đổi trang thái thành công", false);
         } else {
           showToast("Lỗi", true);
         }
       })
       .catch(err => {
-        showToast("Xoá thành công", false);
+        showToast("Lỗi", true);
       });
-    closeDeleteCategoryModal();
+    closeChangeStatusOrderModal();
   } catch (error) { }
   updateLoading(false);
 }
 
-const closeDeleteCategoryModal = async () => {
+const closeChangeStatusOrderModal = async () => {
+  if (selectedId.value >= 0) {
+    const index = listIemShow.value.findIndex(x => x.id == selectedId.value);
+    if (index != -1) {
+      listIemShow.value[index].status1 = listIemShow.value[index].status;
+    }
+  }
+
+
   isShowDeleteModal.value = false;
   await delay(500);
   isDeleteModalOpen.value = false;
 }
-//delete modal 
+//change status modal 
 
 function openEditModal(person) {
   editedPerson.value = { ...person };

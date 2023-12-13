@@ -10,7 +10,7 @@
             <select v-model="selectedFilter" class="border-0 px-3 py-2 text-sm focus:outline-0">
               <option value="id">ID</option>
             </select>
-            <button type="button" @click="applyFilter()"
+            <button type="button" @click="loadFilter()"
               class="inline-flex items-center rounded-md rounded-l-none bg-indigo-600 px-1 py-1 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
               <MagnifyingGlassIcon class="h-7 w-7" aria-hidden="true" />
             </button>
@@ -19,7 +19,6 @@
       </div>
     </div>
 
-    <!-- ... (existing code) ... -->
     <div class="mt-8 flow-root">
       <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-7 lg:-mx-4">
         <div class="inline-block min-w-full py-2 align-middle">
@@ -56,7 +55,6 @@
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-200 bg-white">
-              <!-- ... (existing code) ... -->
               <tr v-for="(order, index) in filteredOrders" :key="index">
                 <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-900 sm:pl-2">
                   <div class="text-gray-900">{{ order.id }}</div>
@@ -74,15 +72,15 @@
                   {{ FormatCurrencyVND(order.paymentData.total) }}
                 </td>
                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-900 sm:pl-0">
-                  {{ order.paymentData.paymentType }}
+                  {{ getPaymentType(order.paymentData.paymentType) }}
                 </td>
                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-900 sm:pl-0">
-                  {{ order.paymentData.status }}
+                  {{ getPaymentStatus(order.paymentData.status) }}
                 </td>
                 <td v-if="order.status != 0">
                   <select v-model="order.status1" @change="onChangeStatusOrder(index, false)"
                     class="rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring focus:border-indigo-500">
-                    <option v-for="option in options" :key="option.value" :value="option.value"
+                    <option v-for="option in statusOrder" :key="option.value" :value="option.value"
                       :disabled="option.value != 0 && (option.value <= order.status || option.value > order.status + 1)">
                       {{ option.label }}
                     </option>
@@ -92,13 +90,12 @@
                   Huỷ
                 </td>
                 <td class="py-4">
-                  <button class=" hover:text-indigo-900 ml-10" @click="showDetails(order)">
+                  <button class=" hover:text-indigo-900 ml-10" @click="showDetails(order.id)">
                     <AdjustmentsVerticalIcon class="h-5 w-5" aria-hidden="true" />
                     <span class="sr-only">, {{ order.id }}</span>
                   </button>
                 </td>
               </tr>
-              <!-- ... (existing code) ... -->
             </tbody>
           </table>
         </div>
@@ -176,7 +173,7 @@
             <dd v-if="selectedOrder.status != 0">
               <select v-model="selectedOrder.status1" @change="onChangeStatusOrder(false, true)"
                 class="rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring focus:border-indigo-500">
-                <option v-for="option in options" :key="option.value" :value="option.value"
+                <option v-for="option in statusOrder" :key="option.value" :value="option.value"
                   :disabled="option.value != 0 && (option.value < selectedOrder.status || option.value > selectedOrder.status + 2)">
                   {{ option.label }}
                 </option>
@@ -313,14 +310,35 @@
       </div>
     </div>
   </div>
+
+
+  <!-- loadding -->
+  <div v-if="ShowLoading" class="w-full h-full flex justify-center items-center"
+    style="position: fixed; top: 0; left: 0;z-index: 100;">
+    <div class="flex justify-center items-center">
+      <!-- Phần background với độ mờ -->
+      <div class="bg-gray-500" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.3;">
+      </div>
+      <!-- Nội dung loading spinner -->
+      <div class="spinner-border text-white" role="status">
+        <fwb-spinner color="blue" size="12" class="lg:ml-64 mt-10" />
+      </div>
+    </div>
+  </div>
+  <!-- loadding -->
 </template>
 
 <script setup>
+import * as API from '../assets/API'
+import { FwbSpinner } from 'flowbite-vue'
 import moment from "moment";
 import { useToken } from "../store/tokenStore";
 import { ref, watch, computed, onMounted } from "vue";
 import { TrashIcon, PhotoIcon, AdjustmentsVerticalIcon, ExclamationTriangleIcon, PencilSquareIcon, PlusIcon, UserCircleIcon, BookmarkIcon, XCircleIcon, CheckIcon, MagnifyingGlassIcon, AdjustmentsHorizontalIcon, FunnelIcon } from "@heroicons/vue/20/solid";
 import { FormatCurrencyVND } from "../assets/formatCurrency";
+import { instance } from "../assets/axios-instance";
+import { showToast } from '../assets/Toastify';
+const ShowLoading = ref(false);
 const store = useToken();
 const orders = ref([
   {
@@ -471,43 +489,77 @@ const selectedOrder = ref({
   },
 });
 const isOpenDetailOrder = ref(false);
-const options = [
+const selectedFilter = ref("id"); // Giá trị mặc định của bộ lọc
+const searchTerm = ref("");
+const statusOrder = [
   { value: 1, label: 'Chờ xác nhận' },
   { value: 2, label: 'Đã Xác nhận' },
   { value: 3, label: 'Đang giao' },
   { value: 4, label: 'Đã giao' },
   { value: 0, label: 'Hủy' },
 ];
+const paymentType = [
+  { value: 0, label: 'Khi nhận hàng' },
+  { value: 1, label: 'VNPay' },
+]
 
-const filteredOrders = ref();
+const paymentStatus = [
+  { value: 0, label: 'Chưa thanh toán' },
+  { value: 1, label: 'Đã thanh toán' },
+]
+
+const filteredOrders = ref([]);
 
 const formattedDateTime = (time) => {
   // Sử dụng moment để định dạng thời gian
-  return moment(time).format("DD/MM/yyyy HH:mm");
+  return moment(time).format("HH:mm - DD/MM/yyyy");
 };
 const getAddressFull = (addressData) => {
   if (!addressData) return "";
   return `${addressData.street}, ${addressData.commune}, ${addressData.district}, ${addressData.city}`;
 };
 
-onMounted(() => {
+const getPaymentType = (value) => {
+  const obj = paymentType.find(x => x.value == value);
+  if (obj) return obj.label;
+  return '';
+}
+const getPaymentStatus = (value) => {
+  const obj = paymentStatus.find(x => x.value == value);
+  if (obj) return obj.label;
+  return '';
+}
+
+
+onMounted(async () => {
+  ShowLoading.value = true;
   if (store.role == 1) {
     store.onSetCurrentPage({ index: 3, child: 0 });
   } else {
     store.onSetCurrentPage({ index: 1, child: 0 });
   }
-  applyFilter();
+  await loadData();
+  loadFilter();
+  ShowLoading.value = false;
 })
+
+const loadData = async () => {
+  await instance.get(API.GETOrders)
+    .then(res => {
+      orders.value = res.data.data;
+      orders.value.forEach(x => {
+        x.status1 = x.status;
+      })
+    })
+    .catch(err => {
+      showToast("Lỗi", true);
+    })
+}
 
 //search
 
-const selectedFilter = ref("id"); // Giá trị mặc định của bộ lọc
-
-const searchTerm = ref("");
-
-const applyFilter = () => {
+const loadFilter = () => {
   const term = searchTerm.value.toString().toLowerCase().trim();
-
   switch (selectedFilter.value) {
     case "id":
       filteredOrders.value = orders.value.filter((order) =>
@@ -524,10 +576,10 @@ const applyFilter = () => {
 
 //search
 
-const showDetails = (order) => {
-  isOpenDetailOrder.value = true;
-  console.log(selectedOrder.value, selectedOrder.value.status === 3, selectedOrder.value.status === "3")
-  //selectedOrder.value = { ...order };
+const showDetails = async (id) => {
+  //isOpenDetailOrder.value = true;
+  //await instance.get()
+
 };
 
 const closeDetails = () => {

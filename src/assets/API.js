@@ -1,5 +1,6 @@
 const port = '3333';
-export const http = `http://localhost:${port}`;
+//export const http = `http://localhost:${port}`;
+export const http = `http://13.239.10.85:3333`;
 
 //customer
 export const GETCustomer = `${http}/customer`
@@ -60,4 +61,10 @@ export const SignIn = `${http}/admin/signin`;
 
 // statistics{
 export const statistics = `${http}/statistics`;
- // } statistics
+// } statistics
+
+
+// Order {
+export const GETOrders = `${http}/order`;
+
+// } order

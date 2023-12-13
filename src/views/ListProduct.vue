@@ -25,7 +25,7 @@
                 <img v-if='filterVal.sortPrice == 0' class="h-5 w-5 flex-none text-gray-400 group-hover:text-gray-500"
                   src="https://img.icons8.com/external-creatype-glyph-colourcreatype/64/external-descending-miscellaneous-user-interface-v1-creatype-glyph-colourcreatype-2.png"
                   alt="external-descending-miscellaneous-user-interface-v1-creatype-glyph-colourcreatype-2" />
-                <sapn v-if="filterVal.sortPrice >= 2">Sort</sapn>
+                <sapn v-if="filterVal.sortPrice >= 2">Filter</sapn>
               </button>
 
             </div>
@@ -33,7 +33,7 @@
               class="flex items-center justify-between border border-gray-400 border-r-0 rounded-md shadow-sm md:w-8/12 sm:w-6/12">
               <input type="text" v-model="filterVal.keyword" placeholder="Tìm kiếm ..."
                 class="rounded-md w-full rounded-r-none border-0 px-3 py-2 text-sm focus:border-gray-50 focus:border-0" />
-              <button type="button" @click="loadFilter"
+              <button type="button" @click="searchOrApplyFilterModal"
                 class="inline-flex items-center rounded-md rounded-l-none bg-indigo-600 px-1 py-1 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
                 <MagnifyingGlassIcon class="h-7 w-7" aria-hidden="true" />
               </button>
@@ -86,6 +86,9 @@
                     class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:pl-0">
                     Giá bán
                   </th>
+                  <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:pl-0">
+                    Trạng thái
+                  </th>
                   <th v-if="store.role == 1" scope="col"
                     class="p-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
                     Hoạt động
@@ -93,7 +96,7 @@
                 </tr>
               </thead>
               <tbody class="divide-y divide-gray-200 bg-white">
-                <tr v-for="product in listIemShow" :key="product.id">
+                <tr v-for="product in products" :key="product.id">
                   <td v-if="optionModal.id" class="whitespace-nowrap px-3 py-5 text-sm text-gray-900 sm:pl-2">
                     {{ product.id }}
                   </td>
@@ -129,19 +132,22 @@
                       {{ FormatCurrencyVND(getPrice(product).value) }}</div>
                   </td>
                   <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-900 sm:pl-0">
+                    <select v-model="product.status1" @change="showChangeStatusModal(product.id, product.status1)"
+                      class="rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring focus:border-indigo-500">
+                      <option v-for="option in statusActive" :key="option.value" :value="option.value">
+                        {{ option.label }}
+                      </option>
+                    </select>
+                  </td>
+                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-900 sm:pl-0">
                     <div class="flex justify-start gap-x-3" v-if="store.role == 1">
-                      <button @click="openUpdateProduct(true, product)" class="text-indigo-600 hover:text-indigo-900">
+                      <button @click="openUpdateProduct(true, product.id)" class="text-indigo-600 hover:text-indigo-900">
                         <PencilSquareIcon class="h-5 w-5" aria-hidden="true" />
                         <span class="sr-only">Edit, {{ product.id }}</span>
                       </button>
 
-                      <button @click="openDeleteModal(product.id)" class="text-red-700 hover:text-indigo-900">
+                      <!-- <button @click="openDeleteModal(product.id)" class="text-red-700 hover:text-indigo-900">
                         <TrashIcon class="h- w-5" aria-hidden="true" />
-                        <span class="sr-only">Play, {{ product.id }}</span>
-                      </button>
-
-                      <!-- <button @click="openDeleteModal(product.id)" class="text-green-700 hover:text-indigo-900">
-                        <PlayCircleIcon class="h- w-5" aria-hidden="true" />
                         <span class="sr-only">Play, {{ product.id }}</span>
                       </button> -->
 
@@ -157,9 +163,9 @@
           </div>
         </div>
       </div>
-      <nav v-if="products.length > itemOnPage" class="flex justify-end mt-5">
-        <v-pagination v-model="currentPage" :pages="totalPages" :range-size="1" active-color="#DCEDFF"
-          @update:modelValue="onPageChange" />
+      <nav v-if="filterVal.totalPages > 0" class="flex justify-end mt-5">
+        <v-pagination v-model="filterVal.page" :pages="filterVal.totalPages" :range-size="1" active-color="#DCEDFF"
+          @update:modelValue="loadFilter1" />
       </nav>
     </div>
 
@@ -217,7 +223,7 @@
                   <span>Lựa chọn ảnh đại diện cho sản phẩm</span>
                   <span type="submit"
                     class="rounded-md bg-indigo-600 mt-2 py-2 text-sm font-semibold
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           text-white shadow-sm hover:bg-indigo-500 text-center w-20">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       text-white shadow-sm hover:bg-indigo-500 text-center w-20">
                     Chọn ảnh
                   </span>
                 </label>
@@ -365,25 +371,29 @@
                   </div>
                   <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
                     <h3 class="text-base font-semibold leading-6 text-gray-900" id="modal-title">
-                      Xoá sản phẩm
+                      Thay đổi trạng thái
                     </h3>
                     <div class="mt-2">
-                      <p class="text-sm text-gray-500">
-                        Bạn có chắc chắn muốn xoá sản phẩm này không? Tất cả dữ
-                        liệu sẽ bị xóa vĩnh viễn. Hành động này không thể được
-                        hoàn tác.
-                      </p>
+                      <div class="mt-2">
+                        <p class="text-sm text-gray-500" v-if="statusSelected == 0">
+                          Bạn có chắc chắn muốn chuyển sang trang thái ngừng hoạt động danh mục này không?
+                          Tất cả dữ tất cả dữ liệu sẽ bị ảnh hưởng
+                        </p>
+                        <p class="text-sm text-gray-500" v-else>
+                          Bạn có chắc chắn muốn chuyển sang trang thái hoạt động danh mục này không?
+                          Tất cả dữ tất cả dữ liệu sẽ bị ảnh hưởng
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
               <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                <button type="button" @click="deleteProduct"
+                <button type="button" @click="onChangeStatus"
                   class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto">
-                  <TrashIcon class="h-5 w-5" aria-hidden="true" />
-                  Xoá
+                  Xác nhận
                 </button>
-                <button type="button" @click="closeDeleteProductModal"
+                <button type="button" @click="closeChangeStatusModal"
                   class="inline-flex w-full justify-center rounded-md px-3 py-2 text-sm font-semibold text-gray-500 shadow-sm hover:bg-gray-100 sm:ml-3 sm:w-auto">
                   Huỷ
                 </button>
@@ -466,7 +476,7 @@
           </h3>
 
           <!-- Form for adding a new product -->
-          <form @submit.prevent="loadFilter">
+          <form @submit.prevent="searchOrApplyFilterModal">
             <div class="mb-4">
               <label for="priceRange" class="block text-sm font-medium text-gray-700">
                 Khoảng giá
@@ -478,6 +488,7 @@
                   </label>
                   <input v-model="filterVal.minPrice" type="number" min="0" id="minPrice" name="minPrice"
                     class="mt-1 p-2 w-full border rounded-md" />
+                  <p class="text-sm font-normal">Giá tiền: {{ FormatCurrencyVND(filterVal.minPrice) }}</p>
                 </div>
                 <div>
                   <label for="maxPrice" class="block text-xs font-medium text-gray-700">
@@ -485,6 +496,7 @@
                   </label>
                   <input v-model="filterVal.maxPrice" type="number" min="0" id="maxPrice" name="maxPrice"
                     class="mt-1 p-2 w-full border rounded-md" />
+                  <p class="text-sm font-normal">Giá tiền: {{ FormatCurrencyVND(filterVal.maxPrice) }}</p>
                 </div>
               </div>
             </div>
@@ -603,7 +615,7 @@
 
   </div>
   <div v-if="ShowLoading" class="w-full h-full flex justify-center items-center"
-    style="position: fixed; top: 0; left: 0;">
+    style="position: fixed; top: 0; left: 0;z-index: 100;">
     <div class="flex justify-center items-center">
       <!-- Phần background với độ mờ -->
       <div class="bg-gray-500" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.3;">
@@ -672,6 +684,7 @@ const products = ref([
 ]);
 
 
+
 // Update Product {
 const itemProductDataDefault = {
   "amount": 0,
@@ -716,7 +729,12 @@ const categories = ref([
 // delete modal {
 const isDeleteModalOpen = ref(false);
 const isShowDeleteModal = ref(false);
-let idDelete = -1;
+const selectedId = ref(0);
+const statusActive = [
+  { value: 1, label: "Đang hoạt động" },
+  { value: 0, label: "Ngừng hoạt động" },
+]
+const statusSelected = ref(0);
 // } delete modal
 
 // sale {
@@ -729,7 +747,6 @@ let idSale = -1;
 
 // filter option {
 const categoriesFilter = ref([
-  { id: -1, name: "Không có" },
   { id: 1, name: "Áo polo" },
   { id: 2, name: "Áo thun" },
   { id: 3, name: "Áo sơ mi" },
@@ -741,8 +758,9 @@ const categoriesFilter = ref([
 const filterVal = ref({
   categoryId: -1,
   sortPrice: 2,
-  page: 0,
-  pageSize: 10000,
+  page: 1,
+  pageSize: 10,
+  totalPages: 1,
   keyword: '',
   minPrice: 0,
   maxPrice: 0,
@@ -754,16 +772,6 @@ const isOpenOptionModal = ref(false);
 // } filter option
 const store = useToken();
 
-
-// phân trang và search
-const listIemShow = ref([]);
-const itemOnPage = ref(10);
-const currentPage = ref(1);
-const totalPages = ref(7);
-//phân trang
-
-
-
 // load Data {
 onMounted(() => {
   if (store.role == 1) {
@@ -772,10 +780,10 @@ onMounted(() => {
     store.onSetCurrentPage({ index: 0, child: 1 });
   }
 
-  loadFilter(true);
   updateCategories();
   updateSizes();
   updateColors();
+  loadFilter1();
 });
 
 const updateCategories = async () => {
@@ -799,34 +807,6 @@ const updateColors = async () => {
     })
     .catch(err => console.log(err));
 }
-
-// search  và update phân trang
-const updateList = (isSearch, isDelete) => {
-  totalPages.value = Math.ceil(products.value.length / itemOnPage.value);
-  if (isSearch) {
-    onPageChange(1);
-  } else {
-    let page = currentPage.value;
-    if (isDelete) {
-      if (page > totalPages.value) page = totalPages.value;
-    }
-    onPageChange(page);
-  }
-};
-
-const onPageChange = (page) => {
-  const start = (page - 1) * itemOnPage.value; // Giả sử mỗi trang có x phần tử
-  let end = start + itemOnPage.value;
-  if (start < products.value.length) {
-    currentPage.value = page;
-    if (end > products.value.length) end = products.value.length;
-    listIemShow.value = products.value.slice(start, end);
-  } else {
-    listIemShow.value = [];
-  }
-};
-
-
 // search  và update phân trang
 
 
@@ -836,12 +816,12 @@ const onPageChange = (page) => {
 
 // Update Product {
 
-const openUpdateProduct = async (isEditProduct_, person) => {
+const openUpdateProduct = async (isEditProduct_, id) => {
   // Clone the person object to avoid modifying the original data
   isEditProduct = isEditProduct_;
   if (isEditProduct_) {
     updateLoading(true);
-    await instance.get(`${API.GETProduct}/${person.id}`)
+    await instance.get(`${API.GETProduct}/${id}`)
       .then(res => {
         updateProductGetAPI = res.data.data;
         productDataGetAPI = updateProductGetAPI.productData;
@@ -919,7 +899,7 @@ const submitEditForm = async () => {
       await instance.put(`${API.PUTProduct}/${updateProduct.value.id}`, formProduct)
         .then(res => {
           showToast("Cập nhật thành công", false);
-          loadFilter(true);
+          loadFilter1();
           updateColorSize(updateProduct.value.id);
           onCloseUpdateProduct();
         })
@@ -940,7 +920,7 @@ const submitEditForm = async () => {
     await instance.post(API.POSTProduct, formProduct)
       .then(res => {
         updateColorSize(res.data.data.id);
-        loadFilter(true);
+        loadFilter1();
         showToast("Cập nhật thành công", false);
         onCloseUpdateProduct();
       })
@@ -1083,29 +1063,32 @@ const ChooseCombobox = (isColor, index, value) => {
 
 //delete modal {
 
-const openDeleteModal = async (id) => {
-  idDelete = id;
+const showChangeStatusModal = async (id, status) => {
+  statusSelected.value = status;
+  selectedId.value = id;
   isDeleteModalOpen.value = true;
   await delay(100);
   isShowDeleteModal.value = true;
 };
 
-const deleteProduct = async () => {
+const onChangeStatus = async () => {
   updateLoading(true);
   try {
-    const index = products.value.findIndex((person) => person.id === idDelete);
+    const index = products.value.findIndex((person) => person.id === selectedId.value);
 
     if (index !== -1) {
-      await instance.delete(`${API.DELProduct}/${idDelete}`)
+      await instance.delete(`${API.DELProduct}/${selectedId.value}`)
         .then(res => {
-          loadFilter(true, true);
+          if (products.value.length == 1 && filterVal.value.page == filterVal.value.totalPages) {
+            filterVal.value.page--;
+          }
+          loadFilter1();
           showToast("Xoá thành công");
         })
         .catch(err => {
           showToast("Lỗi", true);
           updateLoading(false);
           console.error(err);
-
           return;
         });
     }
@@ -1116,10 +1099,14 @@ const deleteProduct = async () => {
     return;
   }
   updateLoading(false);
-  closeDeleteProductModal();
+  closeChangeStatusModal();
 }
 
-const closeDeleteProductModal = async () => {
+const closeChangeStatusModal = async () => {
+  if (selectedId.value >= 0) {
+    const index = products.value.findIndex(x => x.id == selectedId.value);
+    products.value[index].status1 = products.value[index].status;
+  }
   isShowDeleteModal.value = false;
   await delay(500);
   isDeleteModalOpen.value = false;
@@ -1175,7 +1162,7 @@ const submitSaleModal = async () => {
   await instance.put(`${API.PUTSale}/${idSale}`, formSale)
     .then(res => {
       showToast("Tạo giảm giá thành công", false);
-      loadFilter(true);
+      loadFilter1();
       closeSaleModal();
       return;
     })
@@ -1189,15 +1176,22 @@ const submitSaleModal = async () => {
 
 
 // filter {
+
+const searchOrApplyFilterModal = () => {
+  filterVal.value.page = 0;
+  loadFilter1();
+}
+
 const changeSort = () => {
   filterVal.value.sortPrice++;
   if (filterVal.value.sortPrice > 2) {
     filterVal.value.sortPrice = 0;
   }
-  loadFilter();
+  loadFilter1();
 }
 
-const loadFilter = async (isLoadCurrentPage, isDeleteItem) => {
+
+const loadFilter1 = async () => {
   updateLoading(true);
   const params = {};
   if (filterVal.value.sortPrice < 2) {
@@ -1206,11 +1200,11 @@ const loadFilter = async (isLoadCurrentPage, isDeleteItem) => {
 
   numberFilter.value = 0;
 
-  params.page = filterVal.value.page;
-  params.pageSize = filterVal.value.pageSize;
+  params.page = filterVal.value.page < 0 ? 1 : filterVal.value.page;
+  params.pageSize = filterVal.value.pageSize < 0 ? 1 : filterVal.value.pageSize;
 
   if (filterVal.value.keyword.toString().trim().length > 0) {
-    params.keyword = filterVal.value.keyword;
+    params.keyword = filterVal.value.keyword.toString().trim();
   }
   if (filterVal.value.maxPrice > filterVal.value.minPrice) {
     params.maxPrice = filterVal.value.maxPrice;
@@ -1236,19 +1230,31 @@ const loadFilter = async (isLoadCurrentPage, isDeleteItem) => {
   })
     .then(res => {
       products.value = res.data.data.products;
+      products.value.forEach(x => {
+        if (x.deletedAt) {
+          x.status = 0;
+          x.status1 = 0;
+        } else {
+          x.status = 1;
+          x.status1 = 1;
+        }
+      })
+      filterVal.value.totalPages = res.data.data.pagination.totalPages;
+      filterVal.value.page = res.data.data.pagination.currentPage;
     })
     .catch(err => {
       products.value = [];
+      filterVal.value.totalPages = 0;
+      filterVal.value.page = 1;
       console.error(err);
     });
 
   console.log(params);
 
-  updateList(isLoadCurrentPage ? false : true, isDeleteItem ? true : false);
-
   updateLoading(false);
 
 }
+
 const openFilterModal = () => {
   isOpenFilterModal.value = true;
 }

@@ -26,17 +26,17 @@
       <div>
         <button @click="On_Click_FilterModel('day')" type="button"
           class="rounded-md mr-2 px-3 py-2 border-2 text-sm font-semibold shadow-sm hover:bg-indigo-500 hover:border-indigo-500 hover:text-white focus-visible:outline 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
           :class="{ 'bg-indigo-600 text-white border-indigo-600': filterMode == 'day', 'border-gray-400': filterMode != 'day' }">Ngày</button>
 
         <button @click="On_Click_FilterModel('month')" type="button"
           class="rounded-md mr-2 px-3 py-2 border-2 text-sm font-semibold shadow-sm hover:bg-indigo-500 hover:border-indigo-500 hover:text-white focus-visible:outline 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
           :class="{ 'bg-indigo-600 text-white border-indigo-600': filterMode == 'month', 'border-gray-400': filterMode != 'month' }">Tháng</button>
 
         <button type="button" @click="On_Click_FilterModel('year')"
           class="rounded-md px-3 py-2 border-2 text-sm font-semibold shadow-sm hover:bg-indigo-500 hover:border-indigo-500 hover:text-white focus-visible:outline 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
           :class="{ 'bg-indigo-600 text-white border-indigo-600': filterMode == 'year', 'border-gray-400': filterMode != 'year' }">Năm
         </button>
       </div>
@@ -107,16 +107,16 @@
         </div>
       </div>
     </div>
-    <div v-if="ShowLoading" class="w-full h-full flex justify-center items-center"
-      style="position: fixed; top: 0; left: 0;">
-      <div class="flex justify-center items-center">
-        <!-- Phần background với độ mờ -->
-        <div class="bg-gray-500" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.3;">
-        </div>
-        <!-- Nội dung loading spinner -->
-        <div class="spinner-border text-white" role="status">
-          <fwb-spinner color="blue" size="12" class="lg:ml-64 mt-10" />
-        </div>
+  </div>
+  <div v-if="ShowLoading" class="w-full h-full flex justify-center items-center"
+    style="position: fixed; top: 0; left: 0;z-index: 100;">
+    <div class="flex justify-center items-center">
+      <!-- Phần background với độ mờ -->
+      <div class="bg-gray-500" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.3;">
+      </div>
+      <!-- Nội dung loading spinner -->
+      <div class="spinner-border text-white" role="status">
+        <fwb-spinner color="blue" size="12" class="lg:ml-64 mt-10" />
       </div>
     </div>
   </div>
@@ -193,7 +193,6 @@ const series_top5 = ref({
   },
   ]
 });
-
 
 const chartOptions_day = {
   chart: {
@@ -470,6 +469,7 @@ const chartOptions_year = {
 const date = ref();
 // Set default date range to yesterday to today on component mount
 onMounted(() => {
+
   store.onSetCurrentPage({ index: 0, child: -1 })
 
   const lastMonth = new Date();
