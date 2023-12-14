@@ -208,7 +208,7 @@
             <div class="mt-8 flex">
               <button type="button" @click="closeUpdateModal"
                 class="rounded-md  px-3 py-2 mr-2 text-sm font-semibold text-white shadow-sm
-                                                                                                                                                                                 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 "
+                                                                                                                                                                                       focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 "
                 :class="{
                   'bg-indigo-500 focus-visible:outline-indigo-500 hover:bg-indigo-400': roleSelected != 0,
                   'bg-red-500 focus-visible:outline-red-500 hover:bg-red-400': roleSelected == 0
@@ -291,7 +291,7 @@
   </div>
 
   <!-- filter modal -->
-  <div v-if="isOpenFilterModal" class="fixed inset-0 overflow-y-auto">
+  <!-- <div v-if="isOpenFilterModal" class="fixed inset-0 overflow-y-auto">
     <div class="flex items-center justify-center min-h-screen">
       <div class="fixed inset-0 bg-gray-500 bg-opacity-75"></div>
 
@@ -300,7 +300,6 @@
           Bộ lọc tìm kiếm
         </h3>
 
-        <!-- Form for adding a new product -->
         <form @submit.prevent="applyFilterModal">
           <div class="mb-4">
             <label for="status" class="block text-base font-medium text-gray-700">
@@ -338,7 +337,7 @@
         </form>
       </div>
     </div>
-  </div>
+  </div> -->
   <!-- filter modal -->
 
   <!-- loadding -->
