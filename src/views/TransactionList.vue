@@ -609,9 +609,7 @@ const onChangeStatus = async () => {
   try {
     const order_ = orders.value[indexChangeStatus.value];
     const form = new FormData();
-    await instance.put(`${API.PUTStatusOrder}/${order_.id}`)
-
-
+    //await instance.put(`${API.PUTStatusOrder}/${order_.id}`)
     orders.value[indexChangeStatus.value].status = orders.value[indexChangeStatus.value].status1;
     closeWarningModal();
   } catch (error) { }
