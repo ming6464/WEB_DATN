@@ -20,17 +20,6 @@
         </div>
       </div>
     </div>
-    <!-- <MenuItems
-                class="absolute left-0 z-10 mt-2 w-40 origin-top-left rounded-md bg-white shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none">
-                <div class="py-1">
-                  <MenuButton v-for="option in sortOptions" :key="option.name" v-slot="{ active }"
-                    @click="changeSort(option.id)">
-                    <span
-                      :class="[option.current ? 'font-medium text-gray-900' : 'text-gray-500', active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm']">{{
-                        option.name }}</span>
-                  </MenuButton>
-                </div>
-              </MenuItems> -->
     <div class="flow-root mt-14">
       <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
         <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
@@ -38,7 +27,7 @@
             <thead>
               <tr>
                 <th scope="col" class="py-4 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
-                  UserID
+                  ID
                 </th>
                 <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-4">
                   Ảnh
@@ -50,9 +39,6 @@
                   Email
                 </th>
                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                  Ngày sinh
-                </th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
                   Hoạt động
                 </th>
               </tr>
@@ -60,23 +46,20 @@
             <tbody class="divide-y divide-gray-200 bg-white">
               <tr v-for="(person, index) in listItemShow" :key="index">
                 <td class="whitespace-nowrap px-3 py-3 text-sm text-gray-500">
-                  <div class="text-gray-900">{{ person.userId }}</div>
+                  <div class="text-gray-900">{{ person.customerData.id }}</div>
                 </td>
                 <td class="whitespace-nowrap py-3 pl-4 pr-3 text-sm sm:pl-0">
                   <div class="flex items-center">
                     <div class="h-20 w-20 flex-shrink-0">
-                      <img class="h-18 w-20 rounded-full" :src="person.picture" alt="" />
+                      <img class="h-18 w-20 rounded-full" :src="person.customerData.picture" alt="" />
                     </div>
                   </div>
                 </td>
                 <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
-                  <div class="text-gray-900">{{ person.name }}</div>
+                  <div class="text-gray-900">{{ person.customerData.name }}</div>
                 </td>
                 <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
-                  <div class="text-gray-900">{{ person.email }}</div>
-                </td>
-                <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
-                  <div class="text-gray-900">{{ person.dob }}</div>
+                  <div class="text-gray-900">{{ person.customerData.email }}</div>
                 </td>
                 <td class="py-4">
                   <button class=" hover:text-indigo-900 ml-10" @click="openDetailUser(person.userId)">
@@ -96,7 +79,7 @@
   </div>
   <!-- loadding -->
   <div v-if="ShowLoading" class="w-full h-full flex justify-center items-center"
-    style="position: fixed; top: 0; left: 0;z-index: 100;">
+    style="position: fixed; top: 0; left: 0;z-index: 110;">
     <div class="flex justify-center items-center">
       <!-- Phần background với độ mờ -->
       <div class="bg-gray-500" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.3;">
@@ -110,6 +93,7 @@
   <!-- loadding -->
 </template>
 <script setup>
+import { FwbSpinner } from 'flowbite-vue'
 import { showToast } from "../assets/Toastify";
 import VPagination from "@hennge/vue3-pagination";
 import "@hennge/vue3-pagination/dist/vue3-pagination.css";
@@ -119,18 +103,6 @@ import { instance } from '../assets/axios-instance';
 import { useToken } from "../store/tokenStore";
 import * as API from '../assets/API'
 
-// const sortOptions = [
-//   { name: 'Most Popular', id: '1', current: true },
-//   { name: 'Best Rating', id: '2', current: false },
-//   { name: 'Newest', id: '3', current: false },
-//   { name: 'Price: Low to High', id: '4', current: false },
-//   { name: 'Price: High to Low', id: '5', current: false },
-// ]
-// const changeSort = (value) => {
-//   sortOptions.forEach(x => {
-//     x.current = value == x.id ? true : false;
-//   })
-// }
 
 const selectedFilter = ref('id');
 const searchTerm = ref('');
@@ -143,7 +115,7 @@ const itemOnPage = ref(10);
 const currentPage = ref(1);
 const totalPages = ref(7);
 
-onMounted(() => {
+onMounted(async () => {
   if (store.role == 1) {
     store.onSetCurrentPage({ index: 1, child: 0 });
   } else {
@@ -151,9 +123,9 @@ onMounted(() => {
   }
 
   //fake data
-  fakeData(100);
+  //fakeData(100);
 
-  //LoadCustomerList();
+  await LoadCustomerList();
   applyFilter();
 
 })
@@ -163,13 +135,14 @@ const fakeData = (size) => {
   for (let i = 0; i < size; i++) {
     users.value.push(
       {
-        id: i,
-        userId: 100 + i,
-        name: "Linh " + i,
-        email: "linnn@gmail.com",
-        picture:
-          "https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-        dob: '12/12/2012',
+        "id": 1,
+        "customerData": {
+          "id": 1,
+          "userId": "109513530698162110613",
+          "name": "Công Hậu Nguyễn",
+          "email": "conghaunguyen909@gmail.com",
+          "picture": "https://lh3.googleusercontent.com/a/ACg8ocJ0nTdGS63DZwe4CjBeFwCIvs83KvY8ihCz91szt0v4WaY=s96-c"
+        }
       }
     )
   }
@@ -202,30 +175,30 @@ const LoadCustomerList = async () => {
       console.error(mess, err);
     });
   ShowLoading.value = false;
-
 }
 
 const applyFilter = () => {
   const term = searchTerm.value.toString().toLowerCase().trim();
-  switch (selectedFilter.value.toLowerCase()) {
-    case "id":
-      filteredList.value = users.value.filter((person) =>
-        person.userId.toString().toLowerCase().includes(term)
-      );
-      break;
-    case "name":
-      filteredList.value = users.value.filter(
-        (person) =>
-          person.fullname.toString().toLowerCase().includes(term)
-      );
-      break;
-    case "email":
-      filteredList.value = users.value.filter(
-        (person) =>
-          person.email.toString().toLowerCase().includes(term)
-      );
-      break;
-  }
+  // switch (selectedFilter.value.toLowerCase()) {
+  //   case "id":
+  //     filteredList.value = users.value.filter((person) =>
+  //       person.userId.toString().toLowerCase().includes(term)
+  //     );
+  //     break;
+  //   case "name":
+  //     filteredList.value = users.value.filter(
+  //       (person) =>
+  //         person.fullname.toString().toLowerCase().includes(term)
+  //     );
+  //     break;
+  //   case "email":
+  //     filteredList.value = users.value.filter(
+  //       (person) =>
+  //         person.email.toString().toLowerCase().includes(term)
+  //     );
+  //     break;
+  // }
+  filteredList.value = users.value;
   totalPages.value = Math.ceil(filteredList.value.length / itemOnPage.value);
   onPageChange(1);
 }

@@ -66,5 +66,6 @@ export const statistics = `${http}/statistics`;
 
 // Order {
 export const GETOrders = `${http}/order`;
+export const PUTStatusOrder = `${http}/order/status-order`;
 
 // } order

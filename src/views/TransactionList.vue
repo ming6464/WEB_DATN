@@ -499,13 +499,15 @@ const statusOrder = [
   { value: 0, label: 'Hủy' },
 ];
 const paymentType = [
-  { value: 0, label: 'Khi nhận hàng' },
-  { value: 1, label: 'VNPay' },
+  { value: 1, label: 'Khi nhận hàng' },
+  { value: 2, label: 'VNPay' },
 ]
 
 const paymentStatus = [
-  { value: 0, label: 'Chưa thanh toán' },
-  { value: 1, label: 'Đã thanh toán' },
+  { value: 1, label: 'Chưa thanh toán' },
+  { value: 2, label: 'Đã thanh toán' },
+  { value: 0, label: 'Đã huỷ' },
+  { value: -1, label: 'Hoàn tiền' },
 ]
 
 const filteredOrders = ref([]);
@@ -579,7 +581,7 @@ const loadFilter = () => {
 //search
 
 const showDetails = async (id) => {
-  //isOpenDetailOrder.value = true;
+  isOpenDetailOrder.value = true;
   //await instance.get()
 
 };
@@ -603,8 +605,13 @@ const showWarningModal = async () => {
   isShowWarningModal.value = true;
 };
 
-const onChangeStatus = () => {
+const onChangeStatus = async () => {
   try {
+    const order_ = orders.value[indexChangeStatus.value];
+    const form = new FormData();
+    await instance.put(`${API.PUTStatusOrder}/${order_.id}`)
+
+
     orders.value[indexChangeStatus.value].status = orders.value[indexChangeStatus.value].status1;
     closeWarningModal();
   } catch (error) { }
