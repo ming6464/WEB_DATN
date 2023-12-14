@@ -552,7 +552,9 @@ const loadData = async () => {
       })
     })
     .catch(err => {
-      showToast("Lỗi", true);
+      const mess = err.response.data.message ? err.response.data.message : 'Lỗi';
+      showToast(mess, true);
+      console.error(mess, err);
     })
 }
 

@@ -110,6 +110,7 @@
   <!-- loadding -->
 </template>
 <script setup>
+import { showToast } from "../assets/Toastify";
 import VPagination from "@hennge/vue3-pagination";
 import "@hennge/vue3-pagination/dist/vue3-pagination.css";
 import { ref, onMounted } from "vue";
@@ -195,7 +196,11 @@ const LoadCustomerList = async () => {
     .then(res => {
       users.value = res.data.data;
     })
-    .catch(err => console.error(err));
+    .catch(err => {
+      const mess = err.response.data.message ? err.response.data.message : 'Lỗi';
+      showToast(mess, true);
+      console.error(mess, err);
+    });
   ShowLoading.value = false;
 
 }

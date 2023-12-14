@@ -208,7 +208,7 @@
             <div class="mt-8 flex">
               <button type="button" @click="closeUpdateModal"
                 class="rounded-md  px-3 py-2 mr-2 text-sm font-semibold text-white shadow-sm
-                                                                                                                                                                                       focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 "
+                                                                                                                                                                                         focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 "
                 :class="{
                   'bg-indigo-500 focus-visible:outline-indigo-500 hover:bg-indigo-400': roleSelected != 0,
                   'bg-red-500 focus-visible:outline-red-500 hover:bg-red-400': roleSelected == 0
@@ -443,9 +443,9 @@ const loadData = async (isDelete) => {
       })
     })
     .catch(err => {
-      showToast("Lỗi", true);
-      console.error(err);
-
+      const mess = err.response.data.message ? err.response.data.message : 'Lỗi';
+      showToast(mess, true);
+      console.error(mess, err);
       return;
     })
   updateList(false, isDelete ? true : false);
@@ -552,8 +552,9 @@ const submitUdpateForm = async () => {
           showToast("Cập nhật thành công");
         })
         .catch(err => {
-          showToast("Lỗi", true);
-          console.error(err);
+          const mess = err.response.data.message ? err.response.data.message : 'Lỗi';
+          showToast(mess, true);
+          console.error(mess, err);
         })
     }
 
@@ -573,9 +574,9 @@ const submitUdpateForm = async () => {
         loadData();
       })
       .catch(err => {
-        showToast("Lỗi", true);
-        console.error(err);
-
+        const mess = err.response.data.message ? err.response.data.message : 'Lỗi';
+        showToast(mess, true);
+        console.error(mess, err);
       })
   }
   closeUpdateModal();
@@ -650,7 +651,9 @@ const onChangeStatus = async () => {
       await instance.post(API.SignIn, formLogin)
         .catch(err => {
           check = true;
-          console.error(err);
+          const mess = err.response.data.message ? err.response.data.message : 'Lỗi';
+          showToast(mess, true);
+          console.error(mess, err);
         })
       if (check) {
         password2.value = '';
@@ -666,8 +669,9 @@ const onChangeStatus = async () => {
         loadData(true);
       })
       .catch(err => {
-        showToast("Lỗi", true);
-        console.error(err);
+        const mess = err.response.data.message ? err.response.data.message : 'Lỗi';
+        showToast(mess, true);
+        console.error(mess, err);
       })
 
   } catch (error) { }

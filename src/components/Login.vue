@@ -129,8 +129,9 @@ const login = async (toMain, form) => {
       }
     })
     .catch(err => {
-      showToast("Tài khoản hoặc mật khẩu không hơp lệ", true);
-      console.error(err);
+      const mess = err.response.data.message ? err.response.data.message : 'Lỗi';
+      showToast(mess, true);
+      console.error(mess, err);
       return;
     })
 }

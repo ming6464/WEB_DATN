@@ -26,17 +26,17 @@
       <div>
         <button @click="On_Click_FilterModel('day')" type="button"
           class="rounded-md mr-2 px-3 py-2 border-2 text-sm font-semibold shadow-sm hover:bg-indigo-500 hover:border-indigo-500 hover:text-white focus-visible:outline 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
           :class="{ 'bg-indigo-600 text-white border-indigo-600': filterMode == 'day', 'border-gray-400': filterMode != 'day' }">Ngày</button>
 
         <button @click="On_Click_FilterModel('month')" type="button"
           class="rounded-md mr-2 px-3 py-2 border-2 text-sm font-semibold shadow-sm hover:bg-indigo-500 hover:border-indigo-500 hover:text-white focus-visible:outline 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
           :class="{ 'bg-indigo-600 text-white border-indigo-600': filterMode == 'month', 'border-gray-400': filterMode != 'month' }">Tháng</button>
 
         <button type="button" @click="On_Click_FilterModel('year')"
           class="rounded-md px-3 py-2 border-2 text-sm font-semibold shadow-sm hover:bg-indigo-500 hover:border-indigo-500 hover:text-white focus-visible:outline 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
           :class="{ 'bg-indigo-600 text-white border-indigo-600': filterMode == 'year', 'border-gray-400': filterMode != 'year' }">Năm
         </button>
       </div>
@@ -123,6 +123,7 @@
 </template>
 
 <script setup>
+import { showToast } from '../assets/Toastify';
 import moment from 'moment';
 import { FwbSpinner } from 'flowbite-vue'
 import { instance } from '../assets/axios-instance';
@@ -542,7 +543,9 @@ const updateData = async () => {
     })
 
     .catch(err => {
-      console.error(err);
+      const mess = err.response.data.message ? err.response.data.message : 'Lỗi';
+      showToast(mess, true);
+      console.error(mess, err);
     })
 
   updateLoading(false);
