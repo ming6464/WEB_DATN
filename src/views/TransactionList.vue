@@ -606,13 +606,23 @@ const showWarningModal = async () => {
 };
 
 const onChangeStatus = async () => {
+  ShowLoading.value = true;
   try {
     const order_ = orders.value[indexChangeStatus.value];
     const form = new FormData();
-    //await instance.put(`${API.PUTStatusOrder}/${order_.id}`)
-    orders.value[indexChangeStatus.value].status = orders.value[indexChangeStatus.value].status1;
-    closeWarningModal();
+    form.append("status", order_.status1);
+    await instance.put(`${API.PUTStatusOrder}/${order_.id}`, form)
+      .then(res => {
+        orders.value[indexChangeStatus.value].status = orders.value[indexChangeStatus.value].status1;
+        showToast("Cập nhật thành công");
+      })
+      .catch(err => {
+        showToast("Lỗi", true);
+        console.log(err);
+      })
   } catch (error) { }
+  ShowLoading.value = false;
+  closeWarningModal();
 };
 
 const onCancelChangeStatus = () => {
