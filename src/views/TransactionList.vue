@@ -2,7 +2,12 @@
   <div v-if="!isOpenDetailOrder">
     <div class="-mt-2 bg-white border-b border-gray-200 " style="position: fixed;top : 70px;right: 0px;left: 0px;">
       <div class="lg:ml-72 px-4">
-        <div class="flex justify-around items-center border-gray-300 py-4">
+        <div class="flex justify-center items-center border-gray-300 py-4">
+          <div class="mr-2">
+            <button class="group flex items-center font-medium mr-2" @click="openFilterModal">
+              <FunnelIcon class="mr-2 h-5 w-5 flex-none text-gray-700 group-hover:text-gray-500" />
+            </button>
+          </div>
           <div
             class="flex items-center justify-between border border-gray-400 border-r-0 rounded-md shadow-sm md:w-8/12 sm:w-6/12">
             <input type="text" placeholder="Tìm kiếm ..." v-model="searchTerm"
@@ -15,6 +20,11 @@
               <MagnifyingGlassIcon class="h-7 w-7" aria-hidden="true" />
             </button>
           </div>
+          <button type="button" disabled
+            class="inline-flex opacity-0 self-end items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+            <PlusIcon class="h-5 w-5" aria-hidden="true" />
+            Thêm tài khoản
+          </button>
         </div>
       </div>
     </div>
@@ -77,17 +87,15 @@
                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-900 sm:pl-0">
                   {{ getPaymentStatus(order.paymentData.status) }}
                 </td>
-                <td v-if="order.status != 0">
+                <td>
                   <select v-model="order.status1" @change="onChangeStatusOrder(index, false)"
+                    :disabled="order.status == 0"
                     class="rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring focus:border-indigo-500">
                     <option v-for="option in statusOrder" :key="option.value" :value="option.value"
                       :disabled="option.value != 0 && (option.value <= order.status || option.value > order.status + 1)">
                       {{ option.label }}
                     </option>
                   </select>
-                </td>
-                <td v-else class="whitespace-nowrap px-3 py-4 text-sm text-gray-900 sm:pl-0">
-                  Huỷ
                 </td>
                 <td class="py-4">
                   <button class=" hover:text-indigo-900 ml-10" @click="showDetails(order.id)">
@@ -311,6 +319,133 @@
     </div>
   </div>
 
+  <!-- filter modal -->
+  <div v-if="isOpenFilterModal" class="fixed inset-0 overflow-y-auto">
+    <div class="flex items-center justify-center min-h-screen">
+      <div class="fixed inset-0 bg-gray-500 bg-opacity-75"></div>
+
+      <div class="relative bg-white p-8 rounded-lg lg:ml-64 mt-10">
+        <h3 class="text-lg font-semibold mb-4 text-center">
+          Bộ lọc tìm kiếm
+        </h3>
+
+        <form @submit.prevent="applyFilterModal">
+          <div class="mb-4">
+            <label for="priceRange" class="block text-base font-medium text-gray-700">
+              Khoảng giá trị đơn hàng :
+            </label>
+            <div id="priceRange" name='priceRange' class="flex items-center justify-between mt-1 gap-x-3">
+              <div>
+                <label for="minPrice" class="block text-sm font-medium text-gray-700">
+                  Tối thiểu :
+                </label>
+                <input v-model="filterVal.minPrice" type="number" min="0" id="minPrice" name="minPrice"
+                  class="mt-1 p-2 w-full border rounded-md" />
+                <p class="text-sm font-normal">Giá tiền: {{ FormatCurrencyVND(filterVal.minPrice) }}</p>
+              </div>
+              <div>
+                <label for="maxPrice" class="block text-sm font-medium text-gray-700">
+                  Tối đa :
+                </label>
+                <input v-model="filterVal.maxPrice" type="number" min="0" id="maxPrice" name="maxPrice"
+                  class="mt-1 p-2 w-full border rounded-md" />
+                <p class="text-sm font-normal">Giá tiền: {{ FormatCurrencyVND(filterVal.maxPrice) }}</p>
+              </div>
+            </div>
+          </div>
+          <div class="mb-4">
+            <label for="timeRange" class="block text-base font-medium text-gray-700">
+              Khoảng thời gian đặt hàng :
+            </label>
+            <div id="timeRange" name="timeRange" class="mt-1">
+              <VueDatePicker v-model="filterVal.date" :max-date="new Date()" range multi-calendars :format="'dd/MM/yyyy'"
+                :clearable="true" />
+            </div>
+          </div>
+          <div class="mb-4">
+            <label for="category" class="block text-base font-medium text-gray-700">
+              Phương thức thanh toán :
+            </label>
+            <div class="mt-1 rounded-md grid grid-cols-7 gap-2" id="category" name="category">
+              <select v-model="filterVal.paymentType"
+                class="rounded-md border col-span-6 border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring focus:border-indigo-500">
+                <option v-for="option in paymentType" :key="option.value" :value="option.value">
+                  {{ option.label }}
+                </option>
+              </select>
+              <button v-if="filterVal.paymentType >= 0" @click="updatePropertyFilterVal('paymentType', -1)"
+                class="col-span-1 bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-500 text-center">
+                <TrashIcon class="h-5 w-5" />
+              </button>
+              <span v-else class="col-span-1 bg-gray-600 text-white px-4 py-2 rounded-md ">
+                <TrashIcon class="h-5 w-5" />
+              </span>
+            </div>
+          </div>
+          <div class="mb-4">
+            <label for="category" class="block text-base font-medium text-gray-700">
+              Trạng thái thanh toán :
+            </label>
+            <div class="mt-1 rounded-md grid grid-cols-7 gap-2" id="category" name="category">
+              <select v-model="filterVal.paymentStatus"
+                class="rounded-md border col-span-6 border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring focus:border-indigo-500">
+                <option v-for="option in paymentStatus" :key="option.value" :value="option.value">
+                  {{ option.label }}
+                </option>
+              </select>
+              <button v-if="filterVal.paymentStatus >= 0" @click="updatePropertyFilterVal('paymentStatus', -10)"
+                class="col-span-1 bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-500 text-center">
+                <TrashIcon class="h-5 w-5" />
+              </button>
+              <span v-else class="col-span-1 bg-gray-600 text-white px-4 py-2 rounded-md ">
+                <TrashIcon class="h-5 w-5" />
+              </span>
+            </div>
+          </div>
+          <div class="mb-4">
+            <label for="category" class="block text-base font-medium text-gray-700">
+              Trạng thái đơn hàng :
+            </label>
+            <div class="mt-1 rounded-md grid grid-cols-7 gap-2" id="category" name="category">
+              <select v-model="filterVal.status"
+                class="rounded-md border col-span-6 border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring focus:border-indigo-500">
+                <option v-for="option in statusOrder" :key="option.value" :value="option.value">
+                  {{ option.label }}
+                </option>
+              </select>
+              <button v-if="filterVal.status >= 0" @click="updatePropertyFilterVal('status', -1)"
+                class="col-span-1 bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-500 text-center">
+                <TrashIcon class="h-5 w-5" />
+              </button>
+              <span v-else class="col-span-1 bg-gray-600 text-white px-4 py-2 rounded-md ">
+                <TrashIcon class="h-5 w-5" />
+              </span>
+            </div>
+          </div>
+
+
+          <div class="flex justify-between items-center">
+            <div>
+              <button type="button" @click="ResetFilter" class="mr-2 text-gray-500 hover:text-gray-700 mx-6">
+                Thiết lập lại
+              </button>
+            </div>
+            <div>
+              <button type="button" @click="closeFilterModal" class="mr-2 text-gray-500 hover:text-gray-700 mx-6">
+                Hủy
+              </button>
+              <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-500">
+                Áp dụng
+              </button>
+            </div>
+
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <!-- filter modal -->
+
 
   <!-- loadding -->
   <div v-if="ShowLoading" class="w-full h-full flex justify-center items-center"
@@ -329,6 +464,7 @@
 </template>
 
 <script setup>
+import VueApexCharts from "vue3-apexcharts";
 import * as API from '../assets/API'
 import { FwbSpinner } from 'flowbite-vue'
 import moment from "moment";
@@ -338,6 +474,7 @@ import { TrashIcon, PhotoIcon, AdjustmentsVerticalIcon, ExclamationTriangleIcon,
 import { FormatCurrencyVND } from "../assets/formatCurrency";
 import { instance } from "../assets/axios-instance";
 import { showToast } from '../assets/Toastify';
+const isOpenFilterModal = ref(false);
 const ShowLoading = ref(false);
 const store = useToken();
 const orders = ref([
@@ -511,7 +648,14 @@ const paymentStatus = [
 ]
 
 const filteredOrders = ref([]);
-
+const filterVal = ref({
+  status: -1,
+  paymentType: -1,
+  paymentStatus: -10,
+  minPrice: 0,
+  maxPrice: 0,
+  date: [],
+})
 const formattedDateTime = (time) => {
   // Sử dụng moment để định dạng thời gian
   return moment(time).format("HH:mm - DD/MM/yyyy");
@@ -579,6 +723,28 @@ const loadFilter = () => {
 };
 
 //search
+
+// filter modal
+
+const ResetFilter = () => { }
+
+const updatePropertyFilterVal = (nameProp, value) => {
+  filterVal.value[nameProp] = value;
+}
+
+const openFilterModal = () => {
+  isOpenFilterModal.value = true;
+}
+
+const applyFilterModal = () => {
+  closeFilterModal();
+}
+
+const closeFilterModal = () => {
+  isOpenFilterModal.value = false;
+}
+
+// filter modal
 
 const showDetails = async (id) => {
   isOpenDetailOrder.value = true;

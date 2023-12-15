@@ -145,12 +145,6 @@
                         <PencilSquareIcon class="h-5 w-5" aria-hidden="true" />
                         <span class="sr-only">Edit, {{ product.id }}</span>
                       </button>
-
-                      <!-- <button @click="openDeleteModal(product.id)" class="text-red-700 hover:text-indigo-900">
-                        <TrashIcon class="h- w-5" aria-hidden="true" />
-                        <span class="sr-only">Play, {{ product.id }}</span>
-                      </button> -->
-
                       <button @click="openSaleModal(product.id)" class="text-orange-400 hover:text-indigo-900">
                         <BoltIcon class="h- w-5" aria-hidden="true" />
                       </button>
@@ -223,7 +217,7 @@
                   <span>Lựa chọn ảnh đại diện cho sản phẩm</span>
                   <span type="submit"
                     class="rounded-md bg-indigo-600 mt-2 py-2 text-sm font-semibold
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         text-white shadow-sm hover:bg-indigo-500 text-center w-20">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       text-white shadow-sm hover:bg-indigo-500 text-center w-20">
                     Chọn ảnh
                   </span>
                 </label>
@@ -505,13 +499,20 @@
               <label for="category" class="block text-base font-medium text-gray-700">
                 Danh mục :
               </label>
-              <div class="relative mt-1 rounded-md" id="category" name="category">
+              <div class="mt-1 rounded-md grid grid-cols-7 gap-2" id="category" name="category">
                 <select v-model="filterVal.categoryId"
-                  class="block appearance-none w-full bg-white border border-gray-300 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:ring-2 focus:ring-inset focus:ring-indigo-600">
+                  class="block appearance-none w-full col-span-6 bg-white border border-gray-300 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:ring-2 focus:ring-inset focus:ring-indigo-600">
                   <option v-for="(category, index) in categoriesFilter" :key="index" :value="category.id">
                     {{ category.name }}
                   </option>
                 </select>
+                <button v-if="filterVal.categoryId >= 0" @click="updatePropertyFilterVal('categoryId', -1)"
+                  class="col-span-1 bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-500 text-center">
+                  <TrashIcon class="h-5 w-5" />
+                </button>
+                <span v-else class="col-span-1 bg-gray-600 text-white px-4 py-2 rounded-md ">
+                  <TrashIcon class="h-5 w-5" />
+                </span>
               </div>
             </div>
 
@@ -523,30 +524,22 @@
             </div>
 
             <div class="mb-4">
-              <label for="status" class="block text-base font-medium text-gray-700">
+              <label for="statusFilter" class="block text-base font-medium text-gray-700">
                 Trạng thái sản phẩm :
               </label>
-              <RadioGroup v-model="filterVal.statusProduct" class="mt-2">
-                <div class="grid grid-cols-3 gap-3">
-                  <RadioGroupOption as="template" v-for="option in statusProducts" :key="option.name" :value="option"
-                    :disabled="!option.inStock" v-slot="{ active, checked }">
-                    <div
-                      class="cursor-pointer focus:outline-none flex items-center 
-                                                                                    justify-center rounded-md py-3 px-1 text-xs sm:flex-1 font-normal"
-                      :class="[
-                        active ? 'ring-2 ring-indigo-600 ring-offset-2' : '',
-                        checked ? 'bg-indigo-600 text-white hover:bg-indigo-500' :
-                          'ring-1 ring-inset ring-gray-300 bg-white text-gray-900 hover:bg-gray-50']">
-                      <RadioGroupLabel as="span">{{ option.name }}</RadioGroupLabel>
-                    </div>
-                  </RadioGroupOption>
-                </div>
-              </RadioGroup>
+              <div class="relative mt-1 rounded-md" id="statusFilter" name="statusFilter">
+                <select v-model="filterVal.statusProduct"
+                  class="block appearance-none w-full bg-white border border-gray-300 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:ring-2 focus:ring-inset focus:ring-indigo-600">
+                  <option v-for="option in statusActive" :key="option.value" :value="option.value">
+                    {{ option.label }}
+                  </option>
+                </select>
+              </div>
             </div>
 
             <div class="flex justify-between items-center">
               <div>
-                <button type="button" @click="ResetFilter" class="mr-2 text-gray-500 hover:text-gray-700 mx-6">
+                <button type="button" @click="ResetFilter" class="text-gray-500 hover:text-gray-700 mx-6">
                   Thiết lập lại
                 </button>
               </div>
@@ -651,7 +644,6 @@
 </template>
 
 <script setup>
-import { RadioGroup, RadioGroupLabel, RadioGroupOption } from '@headlessui/vue'
 import VPagination from "@hennge/vue3-pagination";
 import "@hennge/vue3-pagination/dist/vue3-pagination.css";
 import VueApexCharts from "vue3-apexcharts";
@@ -705,8 +697,6 @@ const products = ref([
     ]
   },
 ]);
-
-
 
 // Update Product {
 const itemProductDataDefault = {
@@ -769,10 +759,6 @@ let idSale = -1;
 // } sale
 
 // filter option {
-const statusProducts = [
-  { name: 'Mở bán', inStock: true },
-  { name: 'Ngừng bán', inStock: true },
-]
 const categoriesFilter = ref([
   { id: 1, name: "Áo polo" },
   { id: 2, name: "Áo thun" },
@@ -792,7 +778,7 @@ const filterVal = ref({
   minPrice: 0,
   maxPrice: 0,
   isNew: false,
-  statusProduct: statusProducts[0],
+  statusProduct: statusActive[0].value,
 });
 
 let filterVal_ = {
@@ -801,7 +787,7 @@ let filterVal_ = {
   maxPrice: 0,
   isNew: false,
   keyword: '',
-  statusProduct: statusProducts[0],
+  statusProduct: statusActive[0].value,
 };
 const numberFilter = ref(0);
 const isOpenFilterModal = ref(false);
@@ -1232,6 +1218,10 @@ const submitSaleModal = async () => {
 
 // filter {
 
+const updatePropertyFilterVal = (nameProp, value) => {
+  filterVal.value[nameProp] = value;
+}
+
 const searchOrApplyFilterModal = () => {
   filterVal.value.page = 0;
   loadFilter();
@@ -1326,7 +1316,7 @@ const ResetFilter = () => {
   filterVal.value.maxPrice = 0;
   filterVal.value.isNew = false;
   filterVal.value.categoryId = -1;
-  filterVal.value.statusProduct = statusProducts[0];
+  filterVal.value.statusProduct = statusActive[0].value;
 }
 
 const BackValueFilter = () => {

@@ -208,7 +208,7 @@
             <div class="mt-8 flex">
               <button type="button" @click="closeUpdateModal"
                 class="rounded-md  px-3 py-2 mr-2 text-sm font-semibold text-white shadow-sm
-                                                                                                                                                                                         focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 "
+                                                                                                                                                                                                                                                         focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 "
                 :class="{
                   'bg-indigo-500 focus-visible:outline-indigo-500 hover:bg-indigo-400': roleSelected != 0,
                   'bg-red-500 focus-visible:outline-red-500 hover:bg-red-400': roleSelected == 0
@@ -291,7 +291,7 @@
   </div>
 
   <!-- filter modal -->
-  <!-- <div v-if="isOpenFilterModal" class="fixed inset-0 overflow-y-auto">
+  <div v-if="isOpenFilterModal" class="fixed inset-0 overflow-y-auto">
     <div class="flex items-center justify-center min-h-screen">
       <div class="fixed inset-0 bg-gray-500 bg-opacity-75"></div>
 
@@ -301,29 +301,20 @@
         </h3>
 
         <form @submit.prevent="applyFilterModal">
-          <div class="mb-4">
+          <div class="mb-4 grid grid-cols-2 items-center mt-7">
             <label for="status" class="block text-base font-medium text-gray-700">
-              Trạng thái sản phẩm :
+              Trạng thái tài khoản :
             </label>
-            <RadioGroup v-model="filterVal.statusProduct" class="mt-2">
-              <div class="grid grid-cols-3 gap-3">
-                <RadioGroupOption as="template" v-for="option in statusProducts" :key="option.name" :value="option"
-                  :disabled="!option.inStock" v-slot="{ active, checked }">
-                  <div
-                    class="cursor-pointer focus:outline-none flex items-center 
-                                                                                      justify-center rounded-md py-3 px-1 text-xs sm:flex-1 font-normal"
-                    :class="[
-                      active ? 'ring-2 ring-indigo-600 ring-offset-2' : '',
-                      checked ? 'bg-indigo-600 text-white hover:bg-indigo-500' :
-                        'ring-1 ring-inset ring-gray-300 bg-white text-gray-900 hover:bg-gray-50']">
-                    <RadioGroupLabel as="span">{{ option.name }}</RadioGroupLabel>
-                  </div>
-                </RadioGroupOption>
-              </div>
-            </RadioGroup>
+            <select v-model="infoStatus"
+              class="rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring focus:border-indigo-500">
+              <option v-for="option in statusActive" :key="option.value" :value="option.value">
+                {{ option.label }}
+              </option>
+            </select>
+
           </div>
 
-          <div class="flex justify-between items-center">
+          <div class="flex justify-end items-center mt-7">
             <div>
               <button type="button" @click="closeFilterModal" class="mr-2 text-gray-500 hover:text-gray-700 mx-6">
                 Hủy
@@ -337,7 +328,7 @@
         </form>
       </div>
     </div>
-  </div> -->
+  </div>
   <!-- filter modal -->
 
   <!-- loadding -->
@@ -357,6 +348,7 @@
 </template>
 
 <script setup>
+import { RadioGroup, RadioGroupLabel, RadioGroupOption } from '@headlessui/vue'
 import VPagination from "@hennge/vue3-pagination";
 import "@hennge/vue3-pagination/dist/vue3-pagination.css";
 import { useToken } from "../store/tokenStore";
@@ -377,6 +369,10 @@ import { showToast } from "../assets/Toastify";
 import * as API from '../assets/API';
 import { instance } from '../assets/axios-instance';
 import { FwbSpinner } from 'flowbite-vue'
+
+//
+//
+
 const store = useToken();
 const ShowLoading = ref(false);
 
@@ -418,6 +414,8 @@ const statusActive = [
   { value: 1, label: "Đang hoạt động" },
   { value: 0, label: "Ngừng hoạt động" },
 ]
+const infoStatus = ref(statusActive[0].value);
+let infoStatus_ = infoStatus.value;
 // trạng thái
 
 onMounted(() => {
@@ -715,10 +713,12 @@ const updateLoad = (check) => {
 // filter modal {
 
 const applyFilterModal = () => {
-
+  infoStatus_ = infoStatus.value;
+  closeFilterModal();
 }
 
 const openFilterModal = () => {
+  infoStatus.value = infoStatus_;
   isOpenFilterModal.value = true;
 }
 
