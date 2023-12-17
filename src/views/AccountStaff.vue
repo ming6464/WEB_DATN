@@ -94,7 +94,7 @@
                 <td class="py-4 text-sm font-medium  gap-x-3">
                   <button type="button" @click="openUpdateModal(person.id)"
                     class="text-indigo-600 hover:text-indigo-900 mr-1">
-                    <PencilSquareIcon class="h-5 w-5" aria-hidden="true" />
+                    <component :is="person.role == 1 ? EyeIcon : PencilSquareIcon" class="h-5 w-5" aria-hidden="true" />
                     <span class="sr-only">Edit, {{ person.id }}</span>
                   </button>
                 </td>
@@ -145,20 +145,37 @@
 
               </div>
 
-              <div class="sm:col-span-2">
+              <div class="sm:col-span-2" v-if="IdSelected >= 0">
                 <label for="fullName" class="block text-sm font-semibold leading-6 text-gray-900">Tên đầy đủ</label>
                 <div class="mt-2.5">
-                  <input type="text" name="fullName" :disabled="IdSelected >= 0" v-model="staffEdit.fullname"
-                    id="fullName" autocomplete="fullName"
+                  <input type="text" name="fullName" disabled v-model="staffEdit.fullname" id="fullName"
+                    autocomplete="fullName"
                     class="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
                 </div>
               </div>
-
+              <div class="sm:col-span-2 grid grid-cols-2 gap-x-2" v-else>
+                <div>
+                  <label for="lastname" class="block text-sm font-semibold leading-6 text-gray-900">Họ</label>
+                  <div class="mt-2.5">
+                    <input type="text" @input="onChangeName" name="lastname" v-model="staffEdit.lastname" id="lastname"
+                      autocomplete="lastname"
+                      class="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                  </div>
+                </div>
+                <div>
+                  <label for="lastname" class="block text-sm font-semibold leading-6 text-gray-900">Tên</label>
+                  <div class="mt-2.5">
+                    <input type="text" @input="onChangeName" name="lastname" v-model="staffEdit.firstname" id="lastname"
+                      autocomplete="lastname"
+                      class="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                  </div>
+                </div>
+              </div>
               <div class="sm:col-span-2">
                 <label for="userName" class="block text-sm font-semibold leading-6 text-gray-900">Tên đăng nhập</label>
                 <div class="mt-2.5">
-                  <input type="text" name="userName" :disabled="IdSelected >= 0" v-model="staffEdit.username"
-                    id="userName" autocomplete="userName"
+                  <input type="text" name="userName" disabled v-model="staffEdit.username" id="userName"
+                    autocomplete="userName"
                     class="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
                 </div>
               </div>
@@ -208,7 +225,7 @@
             <div class="mt-8 flex">
               <button type="button" @click="closeUpdateModal"
                 class="rounded-md  px-3 py-2 mr-2 text-sm font-semibold text-white shadow-sm
-                                                                                                                                                                                                                                                         focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 "
+                                                                                                                                                                                                                                                                                                                     focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 "
                 :class="{
                   'bg-indigo-500 focus-visible:outline-indigo-500 hover:bg-indigo-400': roleSelected != 0,
                   'bg-red-500 focus-visible:outline-red-500 hover:bg-red-400': roleSelected == 0
@@ -354,7 +371,7 @@ import "@hennge/vue3-pagination/dist/vue3-pagination.css";
 import { useToken } from "../store/tokenStore";
 import {
   TrashIcon, PhotoIcon, PencilSquareIcon, PlusIcon, UserCircleIcon, BookmarkIcon, XCircleIcon,
-  CheckIcon, MagnifyingGlassIcon, AdjustmentsHorizontalIcon, FunnelIcon
+  CheckIcon, MagnifyingGlassIcon, AdjustmentsHorizontalIcon, FunnelIcon, EyeIcon
 } from "@heroicons/vue/20/solid";
 
 import { ref, watch, computed, onMounted } from "vue";
@@ -375,7 +392,7 @@ import { FwbSpinner } from 'flowbite-vue'
 
 const store = useToken();
 const ShowLoading = ref(false);
-
+let amountAcccounts = 0;
 const staffs = ref([
   {
     "id": 1,
@@ -430,6 +447,7 @@ const loadData = async (isDelete) => {
   await instance.get(API.GETAccounts)
     .then(res => {
       staffs.value = res.data.data;
+      amountAcccounts = staffs.value.length;
       staffs.value.forEach(x => {
         if (x.deletedAt) {
           x.status = 0;
@@ -500,6 +518,27 @@ const updateList = (isSearch, isDelete) => {
 };
 // search  và update phân trang
 
+const onChangeName = () => {
+  staffEdit.value.username = '';
+  staffEdit.value.fullname = '';
+  if (IdSelected.value >= 0) return;
+  if (staffEdit.value.firstname.toString().trim().length == 0 || staffEdit.value.lastname.toString().trim().length == 0) return;
+  let lastNames = staffEdit.value.lastname.split(/\s+/).filter(Boolean);
+  let firstNames = staffEdit.value.firstname.split(/\s+/).filter(Boolean);
+  lastNames.forEach(x => {
+    staffEdit.value.username += x[0].toLowerCase();
+  })
+  firstNames.forEach(x => {
+    if (firstNames.indexOf(x) == firstNames.length - 1) {
+      staffEdit.value.username = x.toLowerCase() + staffEdit.value.username;
+    } else {
+      staffEdit.value.username += x[0].toLowerCase();
+    }
+  });
+  staffEdit.value.username += amountAcccounts;
+  staffEdit.value.fullname = staffEdit.value.lastname + ' ' + staffEdit.value.firstname;
+}
+
 const openUpdateModal = async (id) => {
   isAnySwitchOn.value = true;
   isOpenModal.value = true;
@@ -521,6 +560,8 @@ const openUpdateModal = async (id) => {
       "fullname": "",
       "avatar": "",
       'isAdmin': false,
+      'firstname': "",
+      'lastname': "",
     };
   }
   roleSelected.value = staffEdit.value.role;
@@ -583,7 +624,7 @@ const submitUdpateForm = async () => {
 
 const checkvalidate = (isEdit) => {
   if (!CheckRegex.CheckNameRegex(staffEdit.value.fullname)) {
-    showToast("Tên đầy đủ không hợp lệ. Vui lòng kiểm tra lại", true);
+    showToast("Họ hoặc tên không hợp lệ. Vui lòng kiểm tra lại", true);
     return false;
   }
   if (!isEdit) {

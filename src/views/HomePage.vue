@@ -6,17 +6,17 @@
         <div class="grid grid-cols-3 divide-x rounded-md border border-black">
           <button @click="On_Click_FilterModel('day')" type="button"
             class="rounded-l-md  px-3 py-2  text-sm font-semibold shadow-sm hover:bg-indigo-500  hover:text-white focus-visible:outline 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
             :class="{ 'bg-indigo-600 text-white border-indigo-600': filterMode == 'day', 'border-gray-400': filterMode != 'day' }">Ngày</button>
 
           <button @click="On_Click_FilterModel('month')" type="button"
             class="px-3 py-2 text-sm font-semibold shadow-sm hover:bg-indigo-500  hover:text-white focus-visible:outline 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
             :class="{ 'bg-indigo-600 text-white border-indigo-600': filterMode == 'month', 'border-gray-400': filterMode != 'month' }">Tháng</button>
 
           <button type="button" @click="On_Click_FilterModel('year')"
             class="rounded-r-md px-3 py-2 text-sm font-semibold shadow-sm hover:bg-indigo-500  hover:text-white focus-visible:outline 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
             :class="{ 'bg-indigo-600 text-white border-indigo-600': filterMode == 'year', 'border-gray-400': filterMode != 'year' }">Năm
           </button>
         </div>
@@ -81,9 +81,10 @@
     </div>
 
     <div class="mt-3">
-      <div class="mt-10 flex flex-col lg:flex-row gap-x-3">
-        <div class="sm:w-full lg:w-2/3 rounded-md border border-gray-300 shadow-lg ">
-          <div class="bg-gray-200 p-2 text-center">Tổng doanh thu</div>
+      <div class="mt-10 grid grid-cols-1 lg:grid-cols-3 gap-x-3">
+        <div class="lg:col-span-2 rounded-md border border-gray-300 shadow-lg h-[500px]">
+          <div class="bg-indigo-600 text-white rounded-t-md opacity-90 p-2 text-center text-lg font-semibold">Tổng doanh
+            thu</div>
           <div id="chart-timeline">
             <apexchart type="area" height="350" ref="chart_totalRevenue"
               :options="filterMode == 'day' ? chartOptions_day : filterMode == 'month' ? chartOptions_month : chartOptions_year"
@@ -91,72 +92,72 @@
             </apexchart>
           </div>
         </div>
-        <div class="sm:w-full mt-10 lg:mt-0 lg:w-1/3 rounded-md border border-gray-300 shadow-lg ">
-          <div class="bg-gray-200 p-2 text-center">Top 5 sản phẩm bán chạy</div>
-          <div class="max-w-full p-3">
-            <div class="h-[350px]">
-              <div class="mt-5 flex flex-col items-start w-full h-full justify-around">
-                <div class="px-4 border-t border-gray-100 pt-3 w-full" v-for="(item, index) in data_series_all[2].data"
-                  :key="index">
-                  <div class="grid grid-cols-4 gap-4">
-                    <dt class="text-sm font-medium leading-6 text-gray-900">{{ index }}</dt>
-                    <dd class="text-sm leading-6 text-gray-700 sm:col-span-3 sm:mt-0">
-                      <!-- <div>{{ item.name }}</div>
-                      <div>Số lượng bán ra: {{
-                        item.totalAmount }}</div> -->
-                    </dd>
-                  </div>
+        <div class="h-[500px] rounded-md border border-gray-300 overflow-hidden pb-12 shadow-lg mt-10 lg:mt-0">
+          <div class="bg-indigo-600 text-white rounded-t-md opacity-90 p-2 text-center text-lg font-semibold">{{
+            data_series_all[2].name }}</div>
+          <ul class="overflow-y-auto h-full">
+            <li v-for="product in  data_series_all[2].data" :key="product.productId" class="border-t border-gray-300">
+              <div class="p-4 flex items-center space-x-4">
+                <div class="flex-shrink-0 w-10 h-10 bg-gray-300 rounded-full">
+                  <!-- Thêm hình ảnh sản phẩm nếu có -->
+                  <img :src="product.image" alt="Product Image" class="w-full h-full object-cover" />
+                </div>
+                <div class="flex-1">
+                  <div class="font-bold text-md">{{ truncate(product.name, 50) }}</div>
+                  <div class="text-gray-600">Giá bán : {{ product.price }}</div>
+                  <div class="text-gray-600">Số lượng bán ra : {{ product.totalAmount }}</div>
                 </div>
               </div>
-            </div>
-          </div>
+            </li>
+          </ul>
         </div>
       </div>
-      <div class="mt-10 flex flex-col lg:flex-row gap-x-3 ">
-        <div class="sm:w-full lg:w-2/3 rounded-md border border-gray-300 shadow-lg ">
-          <div class="bg-gray-200 p-2 text-center">Số lượng bán</div>
-          <div class="max-w-full p-3">
-            <div id="chart-timeline">
-              <apexchart type="area" height="350" ref="chart_count"
-                :options="filterMode == 'day' ? chartOptions_day : filterMode == 'month' ? chartOptions_month : chartOptions_year"
-                :series="data_series_all[1]"></apexchart>
-            </div>
+      <div class="mt-10 grid grid-cols-1 lg:grid-cols-3 gap-x-3">
+        <div class="lg:col-span-2 rounded-md border border-gray-300 shadow-lg h-[500px]">
+          <div class="bg-indigo-600 text-white rounded-t-md opacity-90 p-2 text-center text-lg font-semibold">Số lượng bán
+          </div>
+          <div id="chart-timeline">
+            <apexchart type="area" height="350" ref="chart_totalRevenue"
+              :options="filterMode == 'day' ? chartOptions_day : filterMode == 'month' ? chartOptions_month : chartOptions_year"
+              :series="data_series_all[1]">
+            </apexchart>
           </div>
         </div>
-        <div class="sm:w-full mt-10 lg:mt-0  lg:w-1/3 rounded-md border border-gray-300 shadow-lg ">
-          <div class="bg-gray-200 p-2 text-center">Top 5 khách hàng thân thiết</div>
-          <div class="max-w-full p-3">
-            <div class="h-[350px]">
-              <div class="mt-5 flex flex-col items-start w-full h-full justify-around">
-                <div class="px-4 border-t border-gray-100 pt-3 w-full" v-for="(item, index) in data_series_all[6].data"
-                  :key="index">
-                  <div class="grid grid-cols-4 gap-4">
-                    <dt class="text-sm font-medium leading-6 text-gray-900">{{ index }}</dt>
-                    <dd class="text-sm leading-6 text-gray-700 sm:col-span-3 sm:mt-0">
-                      <!-- <div>{{ item.name }}</div>
-                      <div>Số lượng bán ra: {{
-                        item.totalAmount }}</div> -->
-                    </dd>
-                  </div>
+        <div class="h-[500px] rounded-md border border-gray-300 overflow-hidden pb-12 shadow-lg mt-10 lg:mt-0">
+          <div class="bg-indigo-600 text-white rounded-t-md opacity-90 p-2 text-center text-lg font-semibold">{{
+            data_series_all[6].name }}</div>
+          <ul class="overflow-y-auto h-full">
+            <!-- <li v-for="product in  data_series_all[6].data" :key="product.productId" class="border-t border-gray-300">
+              <div class="p-4 flex items-center space-x-4">
+                <div class="flex-shrink-0 w-10 h-10 bg-gray-300 rounded-full">
+                  <img :src="product.image" alt="Product Image" class="w-full h-full object-cover" />
+                </div>
+                <div class="flex-1">
+                  <div class="font-bold text-md">{{ truncate(product.name, 50) }}</div>
+                  <div class="text-gray-600">Giá bán : {{ product.price }}</div>
+                  <div class="text-gray-600">Số lượng bán ra : {{ product.totalAmount }}</div>
                 </div>
               </div>
-            </div>
-          </div>
+            </li> -->
+          </ul>
         </div>
       </div>
+
       <div class="mt-10">
         <div class="h-[500px] rounded-md border border-gray-300 overflow-hidden pb-10 shadow-lg ">
-          <div class="bg-gray-200 p-2 text-center">Danh sách sản phẩm tồn kho</div>
+          <div class="bg-indigo-600 opacity-90 text-white rounded-t-md p-2 text-center text-lg font-semibold">Danh sách
+            sản phẩm tồn
+            kho</div>
           <ul class="overflow-y-auto h-full">
             <li v-for="product in  sortProductsByAmount(data_series_all[5].data)" :key="product.productId"
               class="border-t border-gray-300">
               <div class="p-4 flex items-center space-x-4">
                 <div class="flex-shrink-0 w-10 h-10 bg-gray-300 rounded-full">
                   <!-- Thêm hình ảnh sản phẩm nếu có -->
-                  <!-- <img :src="product.productImage" alt="Product Image" class="w-full h-full object-cover" /> -->
+                  <img :src="product.mainImage" alt="Product Image" class="w-full h-full object-cover" />
                 </div>
                 <div class="flex-1">
-                  <div class="font-bold text-lg">{{ truncate(product.productName, 80) }}</div>
+                  <div class="font-bold text-md">{{ truncate(product.name, 80) }}</div>
                   <div class="text-gray-600">{{ product.productAmount }} sản phẩm tồn kho</div>
                 </div>
               </div>
@@ -496,7 +497,10 @@ onMounted(() => {
 
 });
 
-const truncate = (text, maxLength) => text.length > maxLength ? text.slice(0, maxLength) + '...' : text;
+const truncate = (text, maxLength) => {
+  if (!text) return '';
+  return text.toString().length > maxLength ? text.slice(0, maxLength) + '...' : text
+};
 
 // Define the updateData function
 const updateData = async () => {
