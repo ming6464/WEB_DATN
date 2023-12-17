@@ -1,71 +1,109 @@
 <template>
-  <div>
-    <div class="mb-14">
+  <div v-if="data_series_all.length > 0">
+    <div class="-mt-2 bg-white border-b border-gray-200 "
+      style="position: fixed;top: 72px;right: 0px;left: 0px;z-index: 1;">
+      <div class="flex flex-row gap-x-4 justify-end py-2">
+        <div class="grid grid-cols-3 divide-x rounded-md border border-black">
+          <button @click="On_Click_FilterModel('day')" type="button"
+            class="rounded-l-md  px-3 py-2  text-sm font-semibold shadow-sm hover:bg-indigo-500  hover:text-white focus-visible:outline 
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+            :class="{ 'bg-indigo-600 text-white border-indigo-600': filterMode == 'day', 'border-gray-400': filterMode != 'day' }">Ngày</button>
+
+          <button @click="On_Click_FilterModel('month')" type="button"
+            class="px-3 py-2 text-sm font-semibold shadow-sm hover:bg-indigo-500  hover:text-white focus-visible:outline 
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+            :class="{ 'bg-indigo-600 text-white border-indigo-600': filterMode == 'month', 'border-gray-400': filterMode != 'month' }">Tháng</button>
+
+          <button type="button" @click="On_Click_FilterModel('year')"
+            class="rounded-r-md px-3 py-2 text-sm font-semibold shadow-sm hover:bg-indigo-500  hover:text-white focus-visible:outline 
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+            :class="{ 'bg-indigo-600 text-white border-indigo-600': filterMode == 'year', 'border-gray-400': filterMode != 'year' }">Năm
+          </button>
+        </div>
+        <div class="max-w-sm">
+          <VueDatePicker v-model="date" :max-date="new Date()" range multi-calendars
+            :format="filterMode == 'day' ? 'dd/MM/yyyy' : filterMode == 'month' ? 'MM/yyyy' : 'yyyy'" :clearable="false"
+            @update:model-value="handleDate" class="rounded-md border border-black" />
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-10 mt-10">
       <dl class="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-        <div v-for="item in stats" :key="item.id"
-          class="relative overflow-hidden rounded-lg bg-white px-4 pt-5 shadow-lg sm:px-6 sm:pt-6">
+        <!-- tổng doanh thu -->
+        <div class="relative overflow-hidden rounded-lg bg-white px-4 pt-5 shadow-lg sm:px-6 sm:pt-6">
           <dt>
             <div class="absolute rounded-md bg-indigo-500 p-3">
-              <component :is="item.icon" class="h-6 w-6 text-white" aria-hidden="true" />
+              <EnvelopeOpenIcon class="h-6 w-6 text-white" aria-hidden="true" />
             </div>
-            <p class="ml-16 truncate text-sm font-medium text-gray-500">{{ item.name }}</p>
+            <p class="ml-16 truncate text-sm font-medium text-gray-500">{{ data_series_all[3].name }}</p>
           </dt>
           <dd class="ml-16 flex items-baseline pb-6 sm:pb-7">
-            <p class="text-2xl font-semibold text-gray-900">{{ item.stat }}</p>
+            <p class="text-2xl font-semibold text-gray-900">{{ data_series_all[3].data[0].totalPrice }}</p>
+          </dd>
+        </div>
+        <!-- Tổng số lượng khách hàng -->
+        <div class="relative overflow-hidden rounded-lg bg-white px-4 pt-5 shadow-lg sm:px-6 sm:pt-6">
+          <dt>
+            <div class="absolute rounded-md bg-indigo-500 p-3">
+              <UsersIcon class="h-6 w-6 text-white" aria-hidden="true" />
+            </div>
+            <p class="ml-16 truncate text-sm font-medium text-gray-500">{{ data_series_all[4].name }}</p>
+          </dt>
+          <dd class="ml-16 flex items-baseline pb-6 sm:pb-7">
+            <p class="text-2xl font-semibold text-gray-900">{{ data_series_all[4].data[0].totalCustomer }}</p>
+          </dd>
+        </div>
+
+        <div class="relative overflow-hidden rounded-lg bg-white px-4 pt-5 shadow-lg sm:px-6 sm:pt-6">
+          <dt>
+            <div class="absolute rounded-md bg-indigo-500 p-3">
+              <UsersIcon class="h-6 w-6 text-white" aria-hidden="true" />
+            </div>
+            <p class="ml-16 truncate text-sm font-medium text-gray-500">{{ data_series_all[3].name }}</p>
+          </dt>
+          <dd class="ml-16 flex items-baseline pb-6 sm:pb-7">
+            <p class="text-2xl font-semibold text-gray-900">{{ data_series_all[3].data[0].totalPrice }}</p>
+          </dd>
+        </div>
+        <div class="relative overflow-hidden rounded-lg bg-white px-4 pt-5 shadow-lg sm:px-6 sm:pt-6">
+          <dt>
+            <div class="absolute rounded-md bg-indigo-500 p-3">
+              <UsersIcon class="h-6 w-6 text-white" aria-hidden="true" />
+            </div>
+            <p class="ml-16 truncate text-sm font-medium text-gray-500">{{ data_series_all[3].name }}</p>
+          </dt>
+          <dd class="ml-16 flex items-baseline pb-6 sm:pb-7">
+            <p class="text-2xl font-semibold text-gray-900">{{ data_series_all[3].data[0].totalPrice }}</p>
           </dd>
         </div>
       </dl>
     </div>
-    <div class="max-w-sm">
-      <VueDatePicker v-model="date" :max-date="new Date()" range multi-calendars
-        :format="filterMode == 'day' ? 'dd/MM/yyyy' : filterMode == 'month' ? 'MM/yyyy' : 'yyyy'" :clearable="false"
-        @update:model-value="handleDate" />
-    </div>
-    <div class="m-3 ml-0 flex flex-row">
-      <h2 class="text-sm font-medium text-center pr-3 py-2">Chế độ lọc : </h2>
-      <div>
-        <button @click="On_Click_FilterModel('day')" type="button"
-          class="rounded-md mr-2 px-3 py-2 border-2 text-sm font-semibold shadow-sm hover:bg-indigo-500 hover:border-indigo-500 hover:text-white focus-visible:outline 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-          :class="{ 'bg-indigo-600 text-white border-indigo-600': filterMode == 'day', 'border-gray-400': filterMode != 'day' }">Ngày</button>
-
-        <button @click="On_Click_FilterModel('month')" type="button"
-          class="rounded-md mr-2 px-3 py-2 border-2 text-sm font-semibold shadow-sm hover:bg-indigo-500 hover:border-indigo-500 hover:text-white focus-visible:outline 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-          :class="{ 'bg-indigo-600 text-white border-indigo-600': filterMode == 'month', 'border-gray-400': filterMode != 'month' }">Tháng</button>
-
-        <button type="button" @click="On_Click_FilterModel('year')"
-          class="rounded-md px-3 py-2 border-2 text-sm font-semibold shadow-sm hover:bg-indigo-500 hover:border-indigo-500 hover:text-white focus-visible:outline 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-          :class="{ 'bg-indigo-600 text-white border-indigo-600': filterMode == 'year', 'border-gray-400': filterMode != 'year' }">Năm
-        </button>
-      </div>
-    </div>
 
     <div class="mt-3">
       <div class="mt-10 flex flex-col lg:flex-row gap-x-3">
-        <div class="sm:w-full lg:w-2/3 border-2 border-gray-300 rounded-md">
-          <h3 class="text-sm font-medium text-center">Tổng doanh thu</h3>
+        <div class="sm:w-full lg:w-2/3 rounded-md border border-gray-300 shadow-lg ">
+          <div class="bg-gray-200 p-2 text-center">Tổng doanh thu</div>
           <div id="chart-timeline">
             <apexchart type="area" height="350" ref="chart_totalRevenue"
               :options="filterMode == 'day' ? chartOptions_day : filterMode == 'month' ? chartOptions_month : chartOptions_year"
-              :series="series_total">
+              :series="data_series_all[0]">
             </apexchart>
           </div>
         </div>
-        <div class="sm:w-full mt-10 lg:mt-0 lg:w-1/3 border-2 border-gray-300 rounded-md">
-          <div class="max-w-full rounded-md p-3">
-            <h3 class="text-sm font-medium text-center">Top 5 sản phẩm bán chạy nhất</h3>
+        <div class="sm:w-full mt-10 lg:mt-0 lg:w-1/3 rounded-md border border-gray-300 shadow-lg ">
+          <div class="bg-gray-200 p-2 text-center">Top 5 sản phẩm bán chạy</div>
+          <div class="max-w-full p-3">
             <div class="h-[350px]">
               <div class="mt-5 flex flex-col items-start w-full h-full justify-around">
-                <div class="px-4 border-t border-gray-100 pt-3 w-full" v-for="(item, index) in series_top5.data"
+                <div class="px-4 border-t border-gray-100 pt-3 w-full" v-for="(item, index) in data_series_all[2].data"
                   :key="index">
                   <div class="grid grid-cols-4 gap-4">
                     <dt class="text-sm font-medium leading-6 text-gray-900">{{ index }}</dt>
                     <dd class="text-sm leading-6 text-gray-700 sm:col-span-3 sm:mt-0">
-                      <div>{{ item.name }}</div>
+                      <!-- <div>{{ item.name }}</div>
                       <div>Số lượng bán ra: {{
-                        item.totalAmount }}</div>
+                        item.totalAmount }}</div> -->
                     </dd>
                   </div>
                 </div>
@@ -75,35 +113,55 @@
         </div>
       </div>
       <div class="mt-10 flex flex-col lg:flex-row gap-x-3 ">
-        <div class="sm:w-full lg:w-2/3 border-2 border-gray-300 rounded-md">
-          <div class="max-w-fullrounded-md p-3">
-            <h3 class="text-sm font-medium text-center">Số lượng bán</h3>
+        <div class="sm:w-full lg:w-2/3 rounded-md border border-gray-300 shadow-lg ">
+          <div class="bg-gray-200 p-2 text-center">Số lượng bán</div>
+          <div class="max-w-full p-3">
             <div id="chart-timeline">
               <apexchart type="area" height="350" ref="chart_count"
                 :options="filterMode == 'day' ? chartOptions_day : filterMode == 'month' ? chartOptions_month : chartOptions_year"
-                :series="series_count"></apexchart>
+                :series="data_series_all[1]"></apexchart>
             </div>
           </div>
         </div>
-        <div class="sm:w-full mt-10 lg:mt-0  lg:w-1/3 border-2 border-gray-300 rounded-md">
-          <div class="max-w-full rounded-md p-3">
-            <h3 class="text-sm font-medium text-center">Top 5 khách hàng mua nhiều nhất</h3>
+        <div class="sm:w-full mt-10 lg:mt-0  lg:w-1/3 rounded-md border border-gray-300 shadow-lg ">
+          <div class="bg-gray-200 p-2 text-center">Top 5 khách hàng thân thiết</div>
+          <div class="max-w-full p-3">
             <div class="h-[350px]">
               <div class="mt-5 flex flex-col items-start w-full h-full justify-around">
-                <div class="px-4 border-t border-gray-100 pt-3 w-full" v-for="(item, index) in series_top5.data"
+                <div class="px-4 border-t border-gray-100 pt-3 w-full" v-for="(item, index) in data_series_all[6].data"
                   :key="index">
                   <div class="grid grid-cols-4 gap-4">
                     <dt class="text-sm font-medium leading-6 text-gray-900">{{ index }}</dt>
                     <dd class="text-sm leading-6 text-gray-700 sm:col-span-3 sm:mt-0">
-                      <div>{{ item.name }}</div>
+                      <!-- <div>{{ item.name }}</div>
                       <div>Số lượng bán ra: {{
-                        item.totalAmount }}</div>
+                        item.totalAmount }}</div> -->
                     </dd>
                   </div>
                 </div>
               </div>
             </div>
           </div>
+        </div>
+      </div>
+      <div class="mt-10">
+        <div class="h-[500px] rounded-md border border-gray-300 overflow-hidden pb-10 shadow-lg ">
+          <div class="bg-gray-200 p-2 text-center">Danh sách sản phẩm tồn kho</div>
+          <ul class="overflow-y-auto h-full">
+            <li v-for="product in  sortProductsByAmount(data_series_all[5].data)" :key="product.productId"
+              class="border-t border-gray-300">
+              <div class="p-4 flex items-center space-x-4">
+                <div class="flex-shrink-0 w-10 h-10 bg-gray-300 rounded-full">
+                  <!-- Thêm hình ảnh sản phẩm nếu có -->
+                  <!-- <img :src="product.productImage" alt="Product Image" class="w-full h-full object-cover" /> -->
+                </div>
+                <div class="flex-1">
+                  <div class="font-bold text-lg">{{ truncate(product.productName, 80) }}</div>
+                  <div class="text-gray-600">{{ product.productAmount }} sản phẩm tồn kho</div>
+                </div>
+              </div>
+            </li>
+          </ul>
         </div>
       </div>
     </div>
@@ -134,66 +192,13 @@ import { useToken } from '../store/tokenStore';
 import { ArrowDownIcon, ArrowUpIcon } from '@heroicons/vue/20/solid'
 import { CursorArrowRaysIcon, EnvelopeOpenIcon, UsersIcon } from '@heroicons/vue/24/outline'
 import { FormatCurrencyVND } from '../assets/formatCurrency'
-const stats = [
-  { id: 1, name: 'Tổng số sản phẩm', stat: FormatCurrencyVND(199208, true), icon: UsersIcon },
-  { id: 2, name: 'Tổng doanh thu', stat: FormatCurrencyVND(188293), icon: EnvelopeOpenIcon },
-  { id: 3, name: 'Tổng số lượng khách hàng', stat: FormatCurrencyVND(190029, true), icon: CursorArrowRaysIcon },
-  { id: 4, name: 'Tổng số hóa đơn', stat: FormatCurrencyVND(1928, true), icon: CursorArrowRaysIcon },
-]
 const chart_totalRevenue = ref(null);
 const chart_count = ref(null);
 const chart_top5 = ref(null);
 const filterMode = ref('');
 const store = useToken();
 const ShowLoading = ref(false);
-const series_total = ref([
-  {
-    name: "",
-    data: []
-  }
-]);
-
-const series_count = ref([
-  {
-    name: "",
-    data: []
-  }
-]);
-
-const series_top5 = ref({
-  name: "",
-  data: [{
-    "name": "Product 1",
-    "image": "https://via.placeholder.com/500",
-    "price": 100000,
-    "totalAmount": "60"
-  },
-  {
-    "name": "Product 2",
-    "image": "https://placekitten.com/500/500",
-    "price": 120000,
-    "totalAmount": "32"
-  },
-  {
-    "name": "Product 3",
-    "image": "https://placekitten.com/500/500",
-    "price": 120000,
-    "totalAmount": "32"
-  },
-  {
-    "name": "Product 4",
-    "image": "https://placekitten.com/500/500",
-    "price": 120000,
-    "totalAmount": "32"
-  },
-  {
-    "name": "Product 5",
-    "image": "https://placekitten.com/500/500",
-    "price": 120000,
-    "totalAmount": "32"
-  },
-  ]
-});
+const data_series_all = ref([]);
 
 const chartOptions_day = {
   chart: {
@@ -491,9 +496,10 @@ onMounted(() => {
 
 });
 
+const truncate = (text, maxLength) => text.length > maxLength ? text.slice(0, maxLength) + '...' : text;
+
 // Define the updateData function
 const updateData = async () => {
-  return;
   updateLoading(true);
   let time1 = new Date(date.value[0]);
   let time2 = new Date(date.value[1]);
@@ -528,19 +534,12 @@ const updateData = async () => {
   params.startDate = formatTime(time1, format);
   params.endDate = formatTime(time2, format);
   params.filter = filterCode;
-
   console.log(params);
-
   await instance.get(API.statistics, { params: params })
     .then(res => {
-      console.log(res.data);
-      series_total.value = [];
-      series_count.value = [];
-      series_total.value.push(finishData(res.data.data[0]));
-      series_count.value.push(finishData(res.data.data[1]));
-      series_top5.value = res.data.data[2];
-      console.log(series_total.value, series_count.value, series_top5.value);
-      ZoomXAll(time1, time2)
+
+      data_series_all.value = res.data.data;
+      console.log('------------', data_series_all.value.length, data_series_all.value);
     })
 
     .catch(err => {
@@ -551,6 +550,10 @@ const updateData = async () => {
 
   updateLoading(false);
 
+};
+
+const sortProductsByAmount = (data) => {
+  return data.sort((a, b) => (b.productAmount - a.productAmount) * 1);
 };
 
 const finishData = (data) => {
@@ -571,28 +574,6 @@ const finishData = (data) => {
 
 const formatTime = (time, format) => {
   return moment(time).format(format);
-}
-
-const ZoomXAll = (time1, time2) => {
-  if (series_total.value[0].data.length > 0) {
-    chart_totalRevenue.value.zoomX(
-      time1.getTime(),
-      time2.getTime()
-    );
-  }
-
-  if (series_count.value[0].data.length > 0) {
-    chart_count.value.zoomX(
-      time1.getTime(),
-      time2.getTime()
-    );
-  }
-
-
-  // chart_top5.value.zoomX(
-  //   time1.getTime(),
-  //   time2.getTime()
-  // );
 }
 
 const handleDate = (modelData) => {
