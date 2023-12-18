@@ -139,7 +139,7 @@
                       </option>
                     </select>
                   </td>
-                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-900 sm:pl-0">
+                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-900 sm:pl-0" v-if="product.status == 1">
                     <div class="flex justify-start gap-x-3" v-if="store.role == 1">
                       <button @click="openUpdateProduct(true, product.id)" class="text-indigo-600 hover:text-indigo-900">
                         <PencilSquareIcon class="h-5 w-5" aria-hidden="true" />
@@ -157,7 +157,7 @@
           </div>
         </div>
       </div>
-      <nav v-if="filterVal.totalPages > 0" class="flex justify-end mt-5">
+      <nav v-if="filterVal.totalPages > 1" class="flex justify-end mt-5">
         <v-pagination v-model="filterVal.page" :pages="filterVal.totalPages" :range-size="1" active-color="#DCEDFF"
           @update:modelValue="loadFilter" />
       </nav>
@@ -217,7 +217,7 @@
                   <span>Lựa chọn ảnh đại diện cho sản phẩm</span>
                   <span type="submit"
                     class="rounded-md bg-indigo-600 mt-2 py-2 text-sm font-semibold
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       text-white shadow-sm hover:bg-indigo-500 text-center w-20">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   text-white shadow-sm hover:bg-indigo-500 text-center w-20">
                     Chọn ảnh
                   </span>
                 </label>
@@ -501,7 +501,7 @@
               </label>
               <div class="mt-1 rounded-md grid grid-cols-7 gap-2" id="category" name="category">
                 <select v-model="filterVal.categoryId"
-                  class="block appearance-none w-full col-span-6 bg-white border border-gray-300 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:ring-2 focus:ring-inset focus:ring-indigo-600">
+                  class="block appearance-none  col-span-6 bg-white border border-gray-300 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:ring-2 focus:ring-inset focus:ring-indigo-600">
                   <option v-for="(category, index) in categoriesFilter" :key="index" :value="category.id">
                     {{ category.name }}
                   </option>
@@ -527,13 +527,20 @@
               <label for="statusFilter" class="block text-base font-medium text-gray-700">
                 Trạng thái sản phẩm :
               </label>
-              <div class="relative mt-1 rounded-md" id="statusFilter" name="statusFilter">
+              <div class="mt-1 rounded-md grid grid-cols-7 gap-2" id="statusFilter" name="statusFilter">
                 <select v-model="filterVal.statusProduct"
-                  class="block appearance-none w-full bg-white border border-gray-300 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:ring-2 focus:ring-inset focus:ring-indigo-600">
+                  class="block appearance-none col-span-6 bg-white border border-gray-300 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:ring-2 focus:ring-inset focus:ring-indigo-600">
                   <option v-for="option in statusActive" :key="option.value" :value="option.value">
                     {{ option.label }}
                   </option>
                 </select>
+                <button v-if="filterVal.statusProduct >= 0" @click="updatePropertyFilterVal('statusProduct', -1)"
+                  class="col-span-1 bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-500 text-center">
+                  <TrashIcon class="h-5 w-5" />
+                </button>
+                <span v-else class="col-span-1 bg-gray-600 text-white px-4 py-2 rounded-md ">
+                  <TrashIcon class="h-5 w-5" />
+                </span>
               </div>
             </div>
 
@@ -778,7 +785,7 @@ const filterVal = ref({
   minPrice: 0,
   maxPrice: 0,
   isNew: false,
-  statusProduct: statusActive[0].value,
+  statusProduct: -1,
 });
 
 let filterVal_ = {
@@ -787,7 +794,7 @@ let filterVal_ = {
   maxPrice: 0,
   isNew: false,
   keyword: '',
-  statusProduct: statusActive[0].value,
+  statusProduct: -1,
 };
 const numberFilter = ref(0);
 const isOpenFilterModal = ref(false);
@@ -814,9 +821,13 @@ const updateCategories = async () => {
     categories.value = res.data.data;
     categoriesFilter.value = res.data.data;
   }).catch(err => {
-    const mess = err.response.data.message ? err.response.data.message : 'Lỗi';
-    showToast(mess, true);
-    console.error(mess, err);
+
+    try {
+      showToast(err.response.data.message, true);
+    } catch (error) {
+      showToast('Lỗi', true);
+    }
+    console.error(err);
   });
 }
 
@@ -826,9 +837,13 @@ const updateSizes = async () => {
       sizeOptions.value = res.data.data;
     })
     .catch(err => {
-      const mess = err.response.data.message ? err.response.data.message : 'Lỗi';
-      showToast(mess, true);
-      console.error(mess, err);
+
+      try {
+        showToast(err.response.data.message, true);
+      } catch (error) {
+        showToast('Lỗi', true);
+      }
+      console.error(err);
     });
 }
 const updateColors = async () => {
@@ -837,9 +852,14 @@ const updateColors = async () => {
       colorOptions.value = res.data.data;
     })
     .catch(err => {
-      const mess = err.response.data.message ? err.response.data.message : 'Lỗi';
-      showToast(mess, true);
-      console.error(mess, err);
+
+      try {
+        showToast(err.response.data.message, true);
+      } catch (error) {
+        showToast('Lỗi', true);
+      }
+      console.error(err);
+
     });
 }
 // search  và update phân trang
@@ -865,9 +885,13 @@ const openUpdateProduct = async (isEditProduct_, id) => {
       })
       .catch(err => {
         updateLoading(false);
-        const mess = err.response.data.message ? err.response.data.message : 'Lỗi';
-        showToast(mess, true);
-        console.error(mess, err);
+
+        try {
+          showToast(err.response.data.message, true);
+        } catch (error) {
+          showToast('Lỗi', true);
+        }
+        console.error(err);
         return;
       });
   } else {
@@ -942,9 +966,13 @@ const submitEditForm = async () => {
         })
         .catch(err => {
           updateLoading(false);
-          const mess = err.response.data.message ? err.response.data.message : 'Lỗi';
-          showToast(mess, true);
-          console.error(mess, err);
+
+          try {
+            showToast(err.response.data.message, true);
+          } catch (error) {
+            showToast('Lỗi', true);
+          }
+          console.error(err);
           return;
         });
     }
@@ -964,9 +992,13 @@ const submitEditForm = async () => {
       })
       .catch(err => {
         updateLoading(false);
-        const mess = err.response.data.message ? err.response.data.message : 'Lỗi';
-        showToast(mess, true);
-        console.error(mess, err);
+
+        try {
+          showToast(err.response.data.message, true);
+        } catch (error) {
+          showToast('Lỗi', true);
+        }
+        console.error(err);
         return;
       });
   }
@@ -1039,18 +1071,26 @@ const UpAPIColorSize = async (isPost, api, data) => {
     await instance.post(api, data)
       .catch(err => {
         updateLoading(false);
-        const mess = err.response.data.message ? err.response.data.message : 'Lỗi';
-        showToast(mess, true);
-        console.error(mess, err);
+
+        try {
+          showToast(err.response.data.message, true);
+        } catch (error) {
+          showToast('Lỗi', true);
+        }
+        console.error(err);
         return;
       });
   } else {
     await instance.put(api, data)
       .catch(err => {
         updateLoading(false);
-        const mess = err.response.data.message ? err.response.data.message : 'Lỗi';
-        showToast(mess, true);
-        console.error(mess, err);
+
+        try {
+          showToast(err.response.data.message, true);
+        } catch (error) {
+          showToast('Lỗi', true);
+        }
+        console.error(err);
         return;
       });
   }
@@ -1115,27 +1155,37 @@ const onChangeStatus = async () => {
     const index = products.value.findIndex((person) => person.id === selectedId.value);
 
     if (index !== -1) {
-      await instance.delete(`${API.DELProduct}/${selectedId.value}`)
-        .then(res => {
-          if (products.value.length == 1 && filterVal.value.page == filterVal.value.totalPages) {
-            filterVal.value.page--;
-          }
-          loadFilter();
-          showToast("Xoá thành công");
-        })
-        .catch(err => {
-          updateLoading(false);
-          const mess = err.response.data.message ? err.response.data.message : 'Lỗi';
-          showToast(mess, true);
-          console.error(mess, err);
-          return;
-        });
+      if (statusSelected.value == 1) {
+        await instance.put(`${API.PUTRestoreProduct}/${selectedId.value}`)
+          .then(res => {
+            if (products.value.length == 1 && filterVal.value.page == filterVal.value.totalPages) {
+              filterVal.value.page--;
+            }
+            loadFilter();
+            showToast("Cập nhật trạng thái thành công");
+          })
+          .catch(err => {
+            showToast("Cập nhật trạng thái thất bại", true);
+            console.error(err);
+          })
+      } else {
+        await instance.delete(`${API.DELProduct}/${selectedId.value}`)
+          .then(res => {
+            if (products.value.length == 1 && filterVal.value.page == filterVal.value.totalPages) {
+              filterVal.value.page--;
+            }
+            loadFilter();
+            showToast("Cập nhật trạng thái thành công");
+          })
+          .catch(err => {
+            showToast("Cập nhật trạng thái thất bại", true);
+            console.error(err);
+          });
+      }
     }
   } catch (error) {
-    showToast("Lỗi", true);
-    updateLoading(false);
+    showToast("Cập nhật trạng thái thất bại", true);
     console.error(err);
-    return;
   }
   updateLoading(false);
   closeChangeStatusModal();
@@ -1206,9 +1256,13 @@ const submitSaleModal = async () => {
       return;
     })
     .catch(err => {
-      const mess = err.response.data.message ? err.response.data.message : 'Lỗi';
-      showToast(mess, true);
-      console.error(mess, err);
+
+      try {
+        showToast(err.response.data.message, true);
+      } catch (error) {
+        showToast('Lỗi', true);
+      }
+      console.error(err);
       updateLoading(false);
       return;
     });
@@ -1244,7 +1298,7 @@ const loadFilter = async () => {
 
   numberFilter.value = 0;
 
-  params.page = filterVal.value.page < 0 ? 1 : filterVal.value.page;
+  params.page = filterVal.value.page <= 0 ? 1 : filterVal.value.page;
   params.pageSize = filterVal.value.pageSize < 0 ? 1 : filterVal.value.pageSize;
 
   if (filterVal.value.keyword.toString().trim().length > 0) {
@@ -1265,42 +1319,133 @@ const loadFilter = async () => {
   }
 
   if (filterVal.value.isNew) {
-    params.isNew = filterVal.value.isNew;
+    params.isNew = true;
     numberFilter.value++;
   }
+
+  if (filterVal.value.statusProduct >= 0) {
+    numberFilter.value++;
+  }
+
   UpdateValueFilter();
   closeFilterModal();
-  await instance.get(API.GETFilter, {
-    params: params,
-  })
-    .then(res => {
-      products.value = res.data.data.products;
-      products.value.forEach(x => {
-        if (x.deletedAt) {
-          x.status = 0;
-          x.status1 = 0;
-        } else {
-          x.status = 1;
-          x.status1 = 1;
-        }
-      })
-      filterVal.value.totalPages = res.data.data.pagination.totalPages;
-      filterVal.value.page = res.data.data.pagination.currentPage;
+
+  if (filterVal.value.statusProduct == 1) {
+    await instance.get(API.GETFilter, {
+      params: params,
     })
-    .catch(err => {
-      products.value = [];
-      filterVal.value.totalPages = 0;
-      filterVal.value.page = 1;
-      const mess = err.response.data.message ? err.response.data.message : 'Lỗi';
-      showToast(mess, true);
-      console.error(mess, err);
-    });
+      .then(res => {
+        products.value = res.data.data.products;
+        filterVal.value.totalPages = res.data.data.pagination.totalPages;
+        filterVal.value.page = res.data.data.pagination.currentPage;
+      })
+      .catch(err => {
+        products.value = [];
+        filterVal.value.totalPages = 0;
+        filterVal.value.page = 1;
 
-  console.log(params);
+        try {
+          showToast(err.response.data.message, true);
+        } catch (error) {
+          showToast('Lỗi', true);
+        }
+        console.error(err);
+      });
+  }
+  else {
+    await instance.get(API.GETProductsAdmin)
+      .then(res => {
+        products.value = [];
+        if (filterVal.value.statusProduct == 0) {
+          res.data.data.forEach(x => {
+            if (x.deletedAt) {
+              products.value.push(x);
+            }
+          })
+        } else {
+          products.value = res.data.data;
+        }
+        products.value = filteredProducts(params);
+        filterVal.value.totalPages = Math.ceil(products.value.length / params.pageSize);
+        onPageChange(params.page, params.pageSize);
+      })
+      .catch(err => {
+        products.value = [];
+        filterVal.value.totalPages = 0;
+        filterVal.value.page = 1;
+        try {
+          showToast(err.response.data.message, true);
+        } catch (error) {
+          showToast('Lỗi', true);
+        }
+        console.error(err);
+      })
+  }
 
+  products.value.forEach(x => {
+    if (x.deletedAt) {
+      x.status = 0;
+      x.status1 = 0;
+    } else {
+      x.status = 1;
+      x.status1 = 1;
+    }
+  })
   updateLoading(false);
-
 }
+
+const onPageChange = (page, size) => {
+  const start = page == 0 ? 0 : (page - 1) * size; // Giả sử mỗi trang có x phần tử
+  let end = start + size;
+  if (start < products.value.length) {
+    if (end > products.value.length) end = products.value.length;
+    products.value = products.value.slice(start, end);
+  } else {
+    products.value = [];
+  }
+};
+
+const filteredProducts = (params) => {
+  let list = products.value.filter((product) => {
+    let priceCondition = true;
+    let keywordCondition = true;
+    let categoryCondition = true;
+    let isNewCondition = true;
+
+    // Lọc theo giá và thời gian sale
+    if (params.maxPrice) {
+      const priceToCheck = (product.saleStart && (new Date(product.saleStart) <= new Date() && new Date() <= new Date(product.saleEnd)))
+        ? product.salePrice
+        : product.price;
+      console.log('priceToCheck', priceToCheck);
+      priceCondition = priceToCheck >= params.minPrice && priceToCheck <= params.maxPrice;
+    }
+
+    // Lọc theo từ khóa
+    if (params.keyword) {
+      keywordCondition = product.name.includes(params.keyword) || product.description.includes(params.keyword);
+    }
+
+    // Lọc theo categoryId
+    if (params.categoryId) {
+      categoryCondition = product.categoryData.id == params.categoryId;
+    }
+
+    // lọc theo sản phẩm mới
+    if (params.isNew) {
+      isNewCondition = new Date(product.createdAt) > new Date(new Date() - 7 * 24 * 60 * 60 * 1000);
+    }
+
+    // Tổng hợp tất cả các điều kiện
+    return priceCondition && keywordCondition && categoryCondition && isNewCondition;
+  });
+  if (params.hasOwnProperty('sortPrice')) {
+    return list.sort((a, b) => {
+      return (getPrice(a).value - getPrice(b).value) * (params.sortPrice == 1 ? 1 : -1);
+    });
+  }
+  return list;
+};
 
 const openFilterModal = () => {
   isOpenFilterModal.value = true;
@@ -1316,7 +1461,7 @@ const ResetFilter = () => {
   filterVal.value.maxPrice = 0;
   filterVal.value.isNew = false;
   filterVal.value.categoryId = -1;
-  filterVal.value.statusProduct = statusActive[0].value;
+  filterVal.value.statusProduct = -1;
 }
 
 const BackValueFilter = () => {
@@ -1402,7 +1547,7 @@ const validateQuantityPrice = () => {
 
 
 const getPrice = (product) => {
-  if (product.saleStart) {
+  if (product.saleStart && (new Date(product.saleStart) <= new Date() && new Date() <= new Date(product.saleEnd))) {
     return { isSale: true, value: product.salePrice }
   } else {
     return { isSale: false, value: product.price };

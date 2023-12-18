@@ -17,10 +17,12 @@ export const POSTAddCategories = `${http}/category/admin/category`
 
 //product {
 export const GETProducts = `${http}/product`;
+export const GETProductsAdmin = `${http}/product/admin`;
 export const POSTProduct = `${http}/product`;
 export const GETProduct = `${http}/product`;
 export const PUTProduct = `${http}/product`;
 export const DELProduct = `${http}/product`;
+export const PUTRestoreProduct = `${http}/product/admin/restore`;
 
 // sale {
 

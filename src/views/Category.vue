@@ -334,9 +334,13 @@ const updateCategories = async (isDelete) => {
       updateList(false, isDelete ? true : false);
     })
     .catch(err => {
-      const mess = err.response.data.message ? err.response.data.message : 'Lỗi';
-      showToast(mess, true);
-      console.error(mess, err);
+
+      try {
+        showToast(err.response.data.message, true);
+      } catch (error) {
+        showToast('Lỗi', true);
+      }
+      console.error(err);
     });
   updateLoading(false);
 }
@@ -412,9 +416,13 @@ const onChangeStatusOrder = async () => {
         }
       })
       .catch(err => {
-        const mess = err.response.data.message ? err.response.data.message : 'Lỗi';
-        showToast(mess, true);
-        console.error(mess, err);
+
+        try {
+          showToast(err.response.data.message, true);
+        } catch (error) {
+          showToast('Lỗi', true);
+        }
+        console.error(err);
       });
     closeChangeStatusOrderModal();
   } catch (error) { }
@@ -464,9 +472,13 @@ const submitEditForm = async () => {
       showToast("Cập nhật thành công", false);
     })
     .catch(err => {
-      const mess = err.response.data.message ? err.response.data.message : 'Lỗi';
-      showToast(mess, true);
-      console.error(mess, err);
+
+      try {
+        showToast(err.response.data.message, true);
+      } catch (error) {
+        showToast('Lỗi', true);
+      }
+      console.error(err);
     });
 
   updateLoading(false);
@@ -528,9 +540,13 @@ const addNewProduct = async () => {
       closeAddModal();
     })
     .catch(err => {
-      const mess = err.response.data.message ? err.response.data.message : 'Lỗi';
-      showToast(mess, true);
-      console.error(mess, err);
+
+      try {
+        showToast(err.response.data.message, true);
+      } catch (error) {
+        showToast('Lỗi', true);
+      }
+      console.error(err);
     });
   updateLoading(false);
 

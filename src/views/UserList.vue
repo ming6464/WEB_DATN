@@ -170,9 +170,13 @@ const LoadCustomerList = async () => {
       users.value = res.data.data;
     })
     .catch(err => {
-      const mess = err.response.data.message ? err.response.data.message : 'Lỗi';
-      showToast(mess, true);
-      console.error(mess, err);
+
+      try {
+        showToast(err.response.data.message, true);
+      } catch (error) {
+        showToast('Lỗi', true);
+      }
+      console.error(err);
     });
   ShowLoading.value = false;
 }
