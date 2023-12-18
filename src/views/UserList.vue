@@ -19,13 +19,13 @@
               v-model="selectedFilter"
               class="border-0 px-3 py-2 text-sm focus:outline-0"
             >
-              <option value="id">ID</option>
+              <option value="userId">UserID</option>
               <option value="name">Tên</option>
               <option value="email">Email</option>
             </select>
             <button
               type="button"
-              @click="applyFilter"
+              @click="applyFilter()"
               class="inline-flex items-center rounded-md rounded-l-none bg-indigo-600 px-1 py-1 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
             >
               <MagnifyingGlassIcon class="h-7 w-7" aria-hidden="true" />
@@ -307,7 +307,7 @@ import { instance } from "../assets/axios-instance";
 import { useToken } from "../store/tokenStore";
 import * as API from "../assets/API";
 import moment from "moment";
-const selectedFilter = ref("id");
+const selectedFilter = ref("userId");
 const searchTerm = ref("");
 const store = useToken();
 const ShowLoading = ref(false);
@@ -505,9 +505,36 @@ const LoadCustomerList = async () => {
 };
 
 const applyFilter = () => {
-  const term = searchTerm.value.toString().toLowerCase().trim();
-  filteredList.value = users.value;
+  updateList(true);
+};
+const updateList = (isSearch, isDelete) => {
+  const term = searchTerm.value.toLowerCase().trim();
+  const lowerCaseSelectedFilter = selectedFilter.value.toLowerCase();
+  filteredList.value = users.value.filter((person) => {
+    switch (lowerCaseSelectedFilter) {
+      case "userid":
+        return person.customerData.userId
+          .toString()
+          .toLowerCase()
+          .includes(term);
+      case "name":
+        return person.customerData.name.toLowerCase().includes(term);
+      case "email":
+        return person.customerData.email.toLowerCase().includes(term);
+      default:
+        return true; // Hiển thị tất cả nếu không có bộ lọc được chọn
+    }
+  });
+
   totalPages.value = Math.ceil(filteredList.value.length / itemOnPage.value);
-  onPageChange(1);
+  if (isSearch) {
+    onPageChange(1);
+  } else {
+    let page = currentPage.value;
+    if (isDelete) {
+      if (page > totalPages.value) page = totalPages.value;
+    }
+    onPageChange(page);
+  }
 };
 </script>
