@@ -6,17 +6,17 @@
         <div class="grid grid-cols-3 divide-x rounded-md border border-black">
           <button @click="On_Click_FilterModel('day')" type="button"
             class="rounded-l-md  px-3 py-2  text-sm font-semibold shadow-sm hover:bg-indigo-500  hover:text-white focus-visible:outline 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
             :class="{ 'bg-indigo-600 text-white border-indigo-600': filterMode == 'day', 'border-gray-400': filterMode != 'day' }">Ngày</button>
 
           <button @click="On_Click_FilterModel('month')" type="button"
             class="px-3 py-2 text-sm font-semibold shadow-sm hover:bg-indigo-500  hover:text-white focus-visible:outline 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
             :class="{ 'bg-indigo-600 text-white border-indigo-600': filterMode == 'month', 'border-gray-400': filterMode != 'month' }">Tháng</button>
 
           <button type="button" @click="On_Click_FilterModel('year')"
             class="rounded-r-md px-3 py-2 text-sm font-semibold shadow-sm hover:bg-indigo-500  hover:text-white focus-visible:outline 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
             :class="{ 'bg-indigo-600 text-white border-indigo-600': filterMode == 'year', 'border-gray-400': filterMode != 'year' }">Năm
           </button>
         </div>
@@ -39,7 +39,8 @@
             <p class="ml-16 truncate text-sm font-medium text-gray-500">{{ data_series_all[3].name }}</p>
           </dt>
           <dd class="ml-16 flex items-baseline pb-6 sm:pb-7">
-            <p class="text-2xl font-semibold text-gray-900">{{ data_series_all[3].data[0].totalPrice }}</p>
+            <p class="text-2xl font-semibold text-gray-900">{{
+              FormatCurrencyVND(data_series_all[3].data[0].totalPrice) }}</p>
           </dd>
         </div>
         <!-- Tổng số lượng khách hàng -->
@@ -60,10 +61,10 @@
             <div class="absolute rounded-md bg-indigo-500 p-3">
               <UsersIcon class="h-6 w-6 text-white" aria-hidden="true" />
             </div>
-            <p class="ml-16 truncate text-sm font-medium text-gray-500">{{ data_series_all[3].name }}</p>
+            <p class="ml-16 truncate text-sm font-medium text-gray-500">{{ data_series_all[7].name }}</p>
           </dt>
           <dd class="ml-16 flex items-baseline pb-6 sm:pb-7">
-            <p class="text-2xl font-semibold text-gray-900">{{ data_series_all[3].data[0].totalPrice }}</p>
+            <p class="text-2xl font-semibold text-gray-900">{{ FormatCurrencyVND(data_series_all[7].data,) }}</p>
           </dd>
         </div>
         <div class="relative overflow-hidden rounded-lg bg-white px-4 pt-5 shadow-lg sm:px-6 sm:pt-6">
@@ -71,10 +72,10 @@
             <div class="absolute rounded-md bg-indigo-500 p-3">
               <UsersIcon class="h-6 w-6 text-white" aria-hidden="true" />
             </div>
-            <p class="ml-16 truncate text-sm font-medium text-gray-500">{{ data_series_all[3].name }}</p>
+            <p class="ml-16 truncate text-sm font-medium text-gray-500">{{ data_series_all[8].name }}</p>
           </dt>
           <dd class="ml-16 flex items-baseline pb-6 sm:pb-7">
-            <p class="text-2xl font-semibold text-gray-900">{{ data_series_all[3].data[0].totalPrice }}</p>
+            <p class="text-2xl font-semibold text-gray-900">{{ FormatCurrencyVND(data_series_all[8].data) }}</p>
           </dd>
         </div>
       </dl>
@@ -127,18 +128,18 @@
           <div class="bg-indigo-600 text-white rounded-t-md opacity-90 p-2 text-center text-lg font-semibold">{{
             data_series_all[6].name }}</div>
           <ul class="overflow-y-auto h-full">
-            <!-- <li v-for="product in  data_series_all[6].data" :key="product.productId" class="border-t border-gray-300">
+            <li v-for="product in  data_series_all[6].data" :key="product.productId" class="border-t border-gray-300">
               <div class="p-4 flex items-center space-x-4">
-                <div class="flex-shrink-0 w-10 h-10 bg-gray-300 rounded-full">
+                <!-- <div class="flex-shrink-0 w-10 h-10 bg-gray-300 rounded-full">
                   <img :src="product.image" alt="Product Image" class="w-full h-full object-cover" />
-                </div>
+                </div> -->
                 <div class="flex-1">
                   <div class="font-bold text-md">{{ truncate(product.name, 50) }}</div>
-                  <div class="text-gray-600">Giá bán : {{ product.price }}</div>
-                  <div class="text-gray-600">Số lượng bán ra : {{ product.totalAmount }}</div>
+                  <div class="text-gray-600">Tổng số đơn : {{ product.totalOrders }}</div>
+                  <div class="text-gray-600">Tổng tiền thanh toán : {{ product.totalRevenue }}</div>
                 </div>
               </div>
-            </li> -->
+            </li>
           </ul>
         </div>
       </div>
@@ -541,9 +542,7 @@ const updateData = async () => {
   console.log(params);
   await instance.get(API.statistics, { params: params })
     .then(res => {
-
       data_series_all.value = res.data.data;
-      console.log('------------', data_series_all.value.length, data_series_all.value);
     })
 
     .catch(err => {

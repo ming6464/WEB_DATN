@@ -56,7 +56,7 @@
                 <tr>
                   <th v-if="optionModal.id" scope="col"
                     class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
-                    ID
+                    Mã sản phẩm
                   </th>
                   <th v-if="optionModal.picture" scope="col"
                     class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:pl-0">
@@ -69,6 +69,10 @@
                   <th v-if="optionModal.category" scope="col"
                     class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:pl-0">
                     Danh mục
+                  </th>
+                  <th v-if="optionModal.importPrice" scope="col"
+                    class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:pl-0">
+                    Giá nhập
                   </th>
                   <th v-if="optionModal.priceDefault" scope="col"
                     class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:pl-0">
@@ -98,7 +102,7 @@
               <tbody class="divide-y divide-gray-200 bg-white">
                 <tr v-for="product in products" :key="product.id">
                   <td v-if="optionModal.id" class="whitespace-nowrap px-3 py-5 text-sm text-gray-900 sm:pl-2">
-                    {{ product.id }}
+                    {{ product.productCode }}
                   </td>
                   <td v-if="optionModal.picture" class="whitespace-nowrap py-5 pl-4 pr-3 text-sm sm:pl-0">
                     <div class="flex items-center">
@@ -113,6 +117,9 @@
                   <td v-if="optionModal.category" class="whitespace-nowrap px-3 py-4 text-sm text-gray-900 sm:pl-0">
                     {{ makeShortText(product.categoryData.name, 40) }}
                   </td>
+                  <td v-if="optionModal.importPrice" class="whitespace-nowrap px-3 py-4 text-sm text-gray-900 sm:pl-0">
+                    {{ FormatCurrencyVND(product.importPrice) }}
+                  </td>
                   <td v-if="optionModal.priceDefault" class="whitespace-nowrap px-3 py-4 text-sm text-gray-900 sm:pl-0">
                     {{ FormatCurrencyVND(product.price) }}
                   </td>
@@ -121,11 +128,9 @@
                       <div>{{ formatTime(product.saleStart) }}</div>
                       <div>{{ formatTime(product.saleEnd) }}</div>
                     </div>
-                    <divv-else>Null</divv-else>
                   </td>
                   <td v-if="optionModal.priceSale" class="whitespace-nowrap px-3 py-4 text-sm text-gray-900 sm:pl-0">
                     <div v-if="product.salePrice">{{ FormatCurrencyVND(product.salePrice) }}</div>
-                    <div v-else>Null</div>
                   </td>
                   <td v-if="optionModal.price" class="whitespace-nowrap px-3 py-4 text-sm text-gray-900 sm:pl-0">
                     <div :class="{ 'text-red-600 font-semibold text-base': getPrice(product).isSale }">
@@ -172,22 +177,24 @@
         <div>
           <h1 class="font-medium text-xl">Thông tin cơ bản</h1>
           <div class="mt-5 mx-2">
-            <div class="grid grid-cols-1 gap-x-6 sm:grid-cols-6">
-              <div class="sm:col-span-3">
+            <div class="grid grid-cols-1 gap-y-4 gap-x-6 sm:grid-cols-6">
+              <div class="col-span-3">
                 <label for="productName" class="block text-sm font-medium leading-6 text-gray-900">Tên sản phẩm</label>
-                <div class="mt-1 flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 sm:max-w-md">
+                <div class="mt-1 flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300">
                   <input type="text" v-model="updateProduct.name" name="productName" id="productName"
                     autocomplete="productName"
-                    class="block flex-1 border-0 bg-transparent py-1.5 pl-2 text-gray-900 rounded-md focus:ring-2 focus:ring-inset focus:ring-indigo-600 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+                    class="block flex-1 border-0 bg-transparent py-1.5 text-gray-900 rounded-md focus:ring-2
+                                                                                                                                                                  focus:ring-inset focus:ring-indigo-600 placeholder:text-gray-400 sm:text-sm sm:leading-6"
                     placeholder="Áo ...." />
                 </div>
               </div>
               <!-- thể loại -->
-              <div class="sm:col-span-3">
+              <div class="col-span-3 ">
                 <label for="productName" class="block text-sm font-medium leading-6 text-gray-900">Danh mục</label>
                 <div class="relative mt-1 rounded-md">
-                  <select v-model="updateProduct.categoryData.id"
-                    class="block appearance-none w-full bg-white border border-gray-300 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:ring-2 focus:ring-inset focus:ring-indigo-600">
+                  <select v-model="updateProduct.categoryData.id" @change="updateProductCode(false)"
+                    class="block appearance-none w-full bg-white border border-gray-300 text-gray-900 text-sm hover:border-gray-500 px-4 
+                                                                                                                                                                  py-2 rounded shadow leading-tight focus:ring-2 focus:ring-inset focus:ring-indigo-600">
                     <option v-for="(category) in categories" :key="category.id" :value="category.id">
                       {{ category.name }}
                     </option>
@@ -195,6 +202,15 @@
                 </div>
               </div>
               <!-- thể loại -->
+            </div>
+            <div class="mt-4 sm:col-span-full">
+              <label for="productName" class="block text-sm font-medium leading-6 text-gray-900">Mã sản phẩm</label>
+              <div class="mt-1 flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300">
+                <input type="text" v-model="updateProduct.productCode" disabled name="productName" id="productName"
+                  autocomplete="productName"
+                  class="block flex-1 border-0 bg-transparent py-1.5 pl-2 text-gray-900 rounded-md focus:ring-2 focus:ring-inset focus:ring-indigo-600 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+                  placeholder="Áo ...." />
+              </div>
             </div>
           </div>
         </div>
@@ -217,7 +233,7 @@
                   <span>Lựa chọn ảnh đại diện cho sản phẩm</span>
                   <span type="submit"
                     class="rounded-md bg-indigo-600 mt-2 py-2 text-sm font-semibold
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   text-white shadow-sm hover:bg-indigo-500 text-center w-20">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 text-white shadow-sm hover:bg-indigo-500 text-center w-20">
                     Chọn ảnh
                   </span>
                 </label>
@@ -244,8 +260,19 @@
           <h1 class="font-medium text-xl">Thông tin Bán hàng</h1>
           <div class="mt-5 mx-2">
             <div class="grid grid-cols-1 gap-x-6 sm:grid-cols-6">
-              <!-- Giá bán lẻ -->
+              <!-- Giá bán nhập -->
               <div class="sm:col-span-full">
+                <label for="first-name" class="block text-sm font-medium leading-6 text-gray-900">Giá nhập</label>
+                <div class="mt-1">
+                  <input v-model="updateProduct.importPrice" :disabled="isEditProduct" @input="validateQuantityPrice()"
+                    type="number" min="0" name="first-name" id="first-name" autocomplete="given-name"
+                    class="block w-full pl-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                </div>
+                <p class="text-sm font-normal">Giá tiền: {{ FormatCurrencyVND(updateProduct.importPrice) }}</p>
+              </div>
+              <!-- Giá bán nhập -->
+              <!-- Giá bán lẻ -->
+              <div class="sm:col-span-full mt-4">
                 <label for="first-name" class="block text-sm font-medium leading-6 text-gray-900">Giá bán lẻ</label>
                 <div class="mt-1">
                   <input v-model="updateProduct.price" @input="validateQuantityPrice()" type="number" min="0"
@@ -408,36 +435,50 @@
             Cập nhật sale
           </h3>
           <form>
-            <!-- <div class="mb-4">
-              <label for="saleStart" class="block text-sm font-medium text-gray-700">
-                Ngày bắt đầu
-              </label>
-              <VueDatePicker class="mt-1 py-1.5 w-full" v-model="saleStart" id="saleStart" name="saleStart"
-                placeholder="Ngày bắt đầu" text-input />
-            </div>
-
-            <div class="mb-4">
-              <label for="saleEnd" class="block text-sm font-medium text-gray-700">
-                Ngày kết thúc
-              </label>
-              <VueDatePicker class="mt-1 py-1.5 w-full" v-model="saleEnd" id="saleEnd" name="saleEnd"
-                placeholder="Ngày kết thúc" text-input />
-            </div> -->
 
             <div class="mb-4">
               <label for="salePrice" class="block text-sm font-medium text-gray-700">
-                Giá bán
+                Giá sale
               </label>
               <input type="number" v-model="salePrice" @input="validateQuantityPriceSale()" id="salePrice"
                 name="salePrice" placeholder="Giá bán"
                 class="mt-1 p-1.5 px-2.5 w-full border border-gray-200 rounded-md" />
               <p class="text-sm font-normal">Giá tiền : {{ FormatCurrencyVND(salePrice) }}</p>
             </div>
+            <div class="mb-6">
+              <label for="saleTime" class="block text-sm font-medium text-gray-700">
+                Thời gian sale
+              </label>
+              <div class="border-gray-300 w-full mt-1" id='saleTime' name='saleTime'>
+                <div v-for="(item, index) in saleTimesData" :key="index" class="grid grid-cols-7 gap-x-2 mb-4">
+                  <div class="col-span-6 grid grid-cols-9 border border-gray-400 rounded-md w-full">
+                    <input type="text" placeholder="Tìm kiếm ..." v-model="item.value"
+                      class="rounded-md w-full rounded-r-none border-0 px-3 py-2 text-sm focus:border-gray-50 focus:border-0 col-span-6" />
+                    <select v-model="item.time" class="border-0 px-3 py-2 text-sm focus:outline-0 col-span-3">
+                      <option value="minute">Phút</option>
+                      <option value="hour">Giờ</option>
+                      <option value="day">Ngày</option>
+                    </select>
+                  </div>
+                  <button type="button" class="col-span-1 bg-red-600 text-white rounded-md hover:bg-red-500"
+                    v-if='saleTimesData.length > 1' @click="deleteTimeData(index)">
+                    <TrashIcon class="h-5 w-5 m-auto" />
+                  </button>
+                  <button disabled v-else class="col-span-1 bg-gray-600 text-white rounded-md">
+                    <TrashIcon class="h-5 w-5 m-auto" />
+                  </button>
+                </div>
+              </div>
+              <button type="button" @click="addTimeData" v-if="saleTimesData.length < 3"
+                class="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 sm:w-auto">
+                <PlusIcon class="w-5 h-5 mr-2" aria-hidden="true" />
+                Thêm mục
+              </button>
+            </div>
 
             <div class="flex justify-between">
-              <button type="button" @click="resetSaleModal()"
-                class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:w-auto">
-                <TrashIcon class="h-5 w-5" aria-hidden="true" />
+              <button type="button" @click="resetSaleModal()" class="text-gray-500 hover:text-gray-700">
+                Thiết lập lại
               </button>
               <div>
                 <button type="button"
@@ -546,7 +587,7 @@
 
             <div class="flex justify-between items-center">
               <div>
-                <button type="button" @click="ResetFilter" class="text-gray-500 hover:text-gray-700 mx-6">
+                <button type="button" @click="ResetFilter" class="text-gray-500 hover:text-gray-700">
                   Thiết lập lại
                 </button>
               </div>
@@ -582,7 +623,7 @@
               <tr>
                 <td class="px-5 py-4">
                   <input type="checkbox" class="mr-2" v-model="optionModalUI.id" />
-                  <span>ID</span>
+                  <span>Mã sản phẩm</span>
                 </td>
                 <td class="px-5 py-4">
                   <input type="checkbox" class="mr-2" v-model="optionModalUI.picture" />
@@ -617,6 +658,12 @@
                 <td class="px-5 py-4">
                   <input type="checkbox" class="mr-2" v-model="optionModalUI.price" />
                   <span>Giá bán</span>
+                </td>
+              </tr>
+              <tr>
+                <td class="px-5 py-4">
+                  <input type="checkbox" class="mr-2" v-model="optionModalUI.importPrice" />
+                  <span>Giá Nhập</span>
                 </td>
               </tr>
             </table>
@@ -758,9 +805,8 @@ const statusSelected = ref(0);
 // } delete modal
 
 // sale {
+const saleTimesData = ref([]);
 const isSaleModalOpen = ref(false);
-const saleStart = ref(null);
-const saleEnd = ref(null);
 const salePrice = ref(0);
 let idSale = -1;
 // } sale
@@ -870,6 +916,19 @@ const updateColors = async () => {
 
 
 // Update Product {
+const updateProductCode = (isFirstTime) => {
+  if (isEditProduct) return;
+  if (isFirstTime) {
+    updateProduct.value.productCode = new Date().getTime().toString();
+  }
+  updateProduct.value.productCode = updateProduct.value.productCode.replace(/\D/g, '');
+  const categoryNames = categories.value.find(x => x.id == updateProduct.value.categoryData.id).name.split(/\s+/).filter(Boolean);
+  let text = '';
+  categoryNames.forEach(x => {
+    text += x.normalize("NFD").replace(/[\u0300-\u036f]/g, "")[0].toUpperCase();
+  })
+  updateProduct.value.productCode = text + '-' + updateProduct.value.productCode;
+}
 
 const openUpdateProduct = async (isEditProduct_, id) => {
   // Clone the person object to avoid modifying the original data
@@ -899,6 +958,8 @@ const openUpdateProduct = async (isEditProduct_, id) => {
       "name": "",
       "mainImage": "",
       "price": 0,
+      "importPrice": 0,
+      "productCode": '',
       "description": "Mô tả sản phẩm",
       "categoryData": {
         'id': categories.value[0].id,
@@ -906,6 +967,7 @@ const openUpdateProduct = async (isEditProduct_, id) => {
     };
     productDataGetAPI = [JSON.parse(JSON.stringify(itemProductDataDefault))];
     LoadUpdateData();
+    updateProductCode(true);
   }
   isUpdateModalOpen.value = true;
 }
@@ -918,8 +980,6 @@ const LoadUpdateData = () => {
   updateProductGetAPI.imageFile = null;
   updateProduct.value = JSON.parse(JSON.stringify(updateProductGetAPI));
   productData.value = JSON.parse(JSON.stringify(productDataGetAPI));
-  console.log(updateProduct.value);
-  console.log(productData.value);
 }
 const submitEditForm = async () => {
 
@@ -929,6 +989,9 @@ const submitEditForm = async () => {
   updateLoading(true);
   if (!updateProduct.value.price) {
     updateProduct.value.price = 0;
+  }
+  if (!updateProduct.value.importPrice) {
+    updateProduct.value.importPrice = 0;
   }
   const formProduct = new FormData();
   if (isEditProduct) {
@@ -959,7 +1022,7 @@ const submitEditForm = async () => {
     if (check) {
       await instance.put(`${API.PUTProduct}/${updateProduct.value.id}`, formProduct)
         .then(res => {
-          showToast("Cập nhật thành công", false);
+          showToast("Cập nhật sản phẩm thành công", false);
           loadFilter();
           updateColorSize(updateProduct.value.id);
           onCloseUpdateProduct();
@@ -970,7 +1033,7 @@ const submitEditForm = async () => {
           try {
             showToast(err.response.data.message, true);
           } catch (error) {
-            showToast('Lỗi', true);
+            showToast('Cập nhật sản phẩm thất bại', true);
           }
           console.error(err);
           return;
@@ -981,13 +1044,15 @@ const submitEditForm = async () => {
     formProduct.append('mainImage', updateProduct.value.imageFile);
     formProduct.append('categoryId', updateProduct.value.categoryData.id);
     formProduct.append('price', updateProduct.value.price);
+    formProduct.append('importPrice', updateProduct.value.importPrice);
+    formProduct.append('productCode', updateProduct.value.productCode);
     formProduct.append('description', updateProduct.value.description.length == 0 ? ' ' : updateProduct.value.description);
 
     await instance.post(API.POSTProduct, formProduct)
       .then(res => {
         updateColorSize(res.data.data.id);
         loadFilter();
-        showToast("Cập nhật thành công", false);
+        showToast("Tạo sản phẩm thành công", false);
         onCloseUpdateProduct();
       })
       .catch(err => {
@@ -996,7 +1061,8 @@ const submitEditForm = async () => {
         try {
           showToast(err.response.data.message, true);
         } catch (error) {
-          showToast('Lỗi', true);
+          showToast("Tạo sản phẩm thất bại", false);
+
         }
         console.error(err);
         return;
@@ -1205,6 +1271,16 @@ const closeChangeStatusModal = async () => {
 
 
 //Sale {
+
+const addTimeData = () => {
+  if (saleTimesData.value.length >= 3) return;
+  saleTimesData.value.push({ value: 0, time: 'minute' });
+}
+
+const deleteTimeData = (index) => {
+  saleTimesData.value.splice(index, 1);
+}
+
 const validateQuantityPriceSale = () => {
   if (salePrice.value < 0) salePrice.value = 0;
 }
@@ -1216,10 +1292,9 @@ const openSaleModal = (id) => {
     return;
   }
   idSale = id;
-  saleStart.value = pr.saleStart;
-  saleEnd.value = pr.saleEnd;
-  salePrice.value = pr.salePrice ? pr.salePrice : 0;
+  salePrice.value = 0;
   isSaleModalOpen.value = true;
+  saleTimesData.value = [{ value: 0, time: 'minute' }];
 };
 
 const closeSaleModal = () => {
@@ -1228,44 +1303,48 @@ const closeSaleModal = () => {
 };
 
 const resetSaleModal = () => {
-  saleStart.value = null;
-  saleEnd.value = null;
-  priceSale.value = 0;
+  saleTimesData.value = [{ value: 0, time: 'minute' }];
+  salePrice.value = 0;
 };
 
 const submitSaleModal = async () => {
   if (idSale == -1) {
-    showToast("Lỗi", true);
+    showToast('Tạo sale không thành công', true);
     return;
   }
+  let time = 0;
+  saleTimesData.value.forEach(x => {
+    switch (x.time) {
+      case 'minute':
+        time += +x.value;
+        break;
+      case 'hour':
+        time += +x.value * 60;
+        break;
+      case 'day':
+        time += +x.value * 24 * 60;
+        break;
+    }
+  })
   updateLoading(true);
-  // if (!saleStart.value || !saleEnd.value) {
-  //   showToast("Thông tin thiếu", true);
-  //   return;
-  // }
-
   const formSale = new FormData();
-  // formSale.append('saleStart', saleStart.value);
-  // formSale.append('saleEnd', saleEnd.value);
   formSale.append('salePrice', salePrice.value);
+  formSale.append('saleTime', `${time} phút`);
   await instance.put(`${API.PUTSale}/${idSale}`, formSale)
     .then(res => {
-      showToast("Tạo giảm giá thành công", false);
+      showToast("Tạo sale thành công");
       loadFilter();
-      closeSaleModal();
-      return;
     })
     .catch(err => {
-
       try {
         showToast(err.response.data.message, true);
       } catch (error) {
-        showToast('Lỗi', true);
+        showToast('Tạo sale không thành công', true);
       }
       console.error(err);
-      updateLoading(false);
-      return;
     });
+  updateLoading(false);
+  closeSaleModal();
 };
 // } Sale 
 
@@ -1381,7 +1460,6 @@ const loadFilter = async () => {
         console.error(err);
       })
   }
-
   products.value.forEach(x => {
     if (x.deletedAt) {
       x.status = 0;
@@ -1493,6 +1571,7 @@ const optionModal = ref({
   priceSale: false,
   price: true,
   action: true,
+  importPrice: true,
 });
 const optionModalUI = ref({
   id: true,
@@ -1504,6 +1583,7 @@ const optionModalUI = ref({
   priceSale: false,
   price: true,
   action: true,
+  importPrice: true,
 });
 
 const applyOption = () => {
