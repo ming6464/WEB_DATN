@@ -4,6 +4,8 @@ export const http = `http://localhost:${port}`;
 
 //customer
 export const GETCustomer = `${http}/customer`
+export const GETCustomerByid =  (id) => `${http}/customer/:id`
+
 export const GETOrdersByIDCustomer =`${http}/order/admin`
 //customer
 
@@ -69,5 +71,6 @@ export const statistics = `${http}/statistics`;
 // Order {
 export const GETOrders = `${http}/order`;
 export const PUTStatusOrder = `${http}/order/status-order`;
+export const GETDetailOrder = `${http}/order/admin/`;
 
 // } order
