@@ -4,7 +4,7 @@ export const http = `http://localhost:${port}`;
 
 //customer
 export const GETCustomer = `${http}/customer`
-
+export const GETOrdersByIDCustomer =`${http}/order/admin`
 //customer
 
 //category {
