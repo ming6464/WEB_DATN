@@ -4,7 +4,7 @@ export const http = `http://13.239.10.85:3333`;
 
 //customer
 export const GETCustomer = `${http}/customer`
-
+export const GETOrdersByIDCustomer =`${http}/order/admin`
 //customer
 
 //category {
