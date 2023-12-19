@@ -5,6 +5,7 @@ export const http = `http://13.239.10.85:3333`;
 //customer
 export const GETCustomer = `${http}/customer`
 export const GETOrdersByIDCustomer = `${http}/order/admin`
+export const GETCustomerByid = (id) => `${http}/customer/:id`
 //customer
 
 //category {
@@ -69,5 +70,6 @@ export const statistics = `${http}/statistics`;
 // Order {
 export const GETOrders = `${http}/order`;
 export const PUTStatusOrder = `${http}/order/status-order`;
+export const GETDetailOrder = `${http}/order/admin/`;
 
 // } order

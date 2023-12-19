@@ -1,6 +1,6 @@
 <template>
   <div v-if="!isOpenDetailOrder">
-    <div class="-mt-2 bg-white border-b border-gray-200 " style="position: fixed;top : 70px;right: 0px;left: 0px;">
+    <div class="-mt-2 bg-white border-b border-gray-200" style="position: fixed; top: 70px; right: 0px; left: 0px">
       <div class="lg:ml-72 px-4">
         <div class="flex justify-center items-center border-gray-300 py-4">
           <div class="mr-2">
@@ -92,14 +92,17 @@
                   <select v-model="order.status1" @change="onChangeStatusOrder(index, false)"
                     :disabled="order.status == 0"
                     class="rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring focus:border-indigo-500">
-                    <option v-for="option in statusOrder" :key="option.value" :value="option.value"
-                      :disabled="option.value != 0 && (option.value <= order.status || option.value > order.status + 1)">
+                    <option v-for="option in statusOrder" :key="option.value" :value="option.value" :disabled="
+                      option.value != 0 &&
+                      (option.value <= order.status ||
+                        option.value > order.status + 1)
+                    ">
                       {{ option.label }}
                     </option>
                   </select>
                 </td>
                 <td class="py-4">
-                  <button class=" hover:text-indigo-900 ml-10" @click="showDetails(order.id)">
+                  <button class="hover:text-indigo-900 ml-10" @click="showDetails(order.id)">
                     <AdjustmentsVerticalIcon class="h-5 w-5" aria-hidden="true" />
                     <span class="sr-only">, {{ order.id }}</span>
                   </button>
@@ -186,20 +189,22 @@
             <dd v-if="selectedOrder.status != 0">
               <select v-model="selectedOrder.status1" @change="onChangeStatusOrder(false, true)"
                 class="rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring focus:border-indigo-500">
-                <option v-for="option in statusOrder" :key="option.value" :value="option.value"
-                  :disabled="option.value != 0 && (option.value < selectedOrder.status || option.value > selectedOrder.status + 2)">
+                <option v-for="option in statusOrder" :key="option.value" :value="option.value" :disabled="
+                  option.value != 0 &&
+                  (option.value < selectedOrder.status ||
+                    option.value > selectedOrder.status + 2)
+                ">
                   {{ option.label }}
                 </option>
               </select>
               <button type="button" v-if="selectedOrder.status1 != selectedOrder.status"
-                class="rounded-md ml-3 bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline  focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                class="rounded-md ml-3 bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
                 Xác nhận
               </button>
             </dd>
             <dd v-else-if="selectedOrder.status == 0" class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
               Hủy
             </dd>
-
           </div>
           <!-- Thêm table mới -->
           <div class="mt-6 overflow-x-auto">
@@ -257,7 +262,9 @@
                     }}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap">
-                    {{ FormatCurrencyVND(item.orderProductSizeColorData.price) }}
+                    {{
+                      FormatCurrencyVND(item.orderProductSizeColorData.price)
+                    }}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap">
                     {{ item.orderProductSizeColorData.colorData.name }}
@@ -266,7 +273,9 @@
                     {{ item.orderProductSizeColorData.sizeData.name }}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap">{{ item.amount }}</td>
-                  <td class="px-6 py-4 whitespace-nowrap">{{ FormatCurrencyVND(item.price) }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    {{ FormatCurrencyVND(item.price) }}
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -308,7 +317,6 @@
               </div>
             </div>
             <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-
               <button type="button" @click="onChangeStatus"
                 class="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 sm:ml-3 sm:w-auto">
                 Đồng ý
@@ -330,23 +338,23 @@
       <div class="fixed inset-0 bg-gray-500 bg-opacity-75"></div>
 
       <div class="relative bg-white p-8 rounded-lg lg:ml-64 mt-10">
-        <h3 class="text-lg font-semibold mb-4 text-center">
-          Bộ lọc tìm kiếm
-        </h3>
+        <h3 class="text-lg font-semibold mb-4 text-center">Bộ lọc tìm kiếm</h3>
 
         <form @submit.prevent="loadFilter(true)">
           <div class="mb-4">
             <label for="priceRange" class="block text-base font-medium text-gray-700">
               Khoảng giá trị đơn hàng :
             </label>
-            <div id="priceRange" name='priceRange' class="flex items-center justify-between mt-1 gap-x-3">
+            <div id="priceRange" name="priceRange" class="flex items-center justify-between mt-1 gap-x-3">
               <div>
                 <label for="minPrice" class="block text-sm font-medium text-gray-700">
                   Tối thiểu :
                 </label>
                 <input v-model="filterVal.minPrice" type="number" min="0" id="minPrice" name="minPrice"
                   class="mt-1 p-2 w-full border rounded-md" />
-                <p class="text-sm font-normal">Giá tiền: {{ FormatCurrencyVND(filterVal.minPrice) }}</p>
+                <p class="text-sm font-normal">
+                  Giá tiền: {{ FormatCurrencyVND(filterVal.minPrice) }}
+                </p>
               </div>
               <div>
                 <label for="maxPrice" class="block text-sm font-medium text-gray-700">
@@ -354,7 +362,9 @@
                 </label>
                 <input v-model="filterVal.maxPrice" type="number" min="0" id="maxPrice" name="maxPrice"
                   class="mt-1 p-2 w-full border rounded-md" />
-                <p class="text-sm font-normal">Giá tiền: {{ FormatCurrencyVND(filterVal.maxPrice) }}</p>
+                <p class="text-sm font-normal">
+                  Giá tiền: {{ FormatCurrencyVND(filterVal.maxPrice) }}
+                </p>
               </div>
             </div>
           </div>
@@ -382,7 +392,7 @@
                 class="col-span-1 bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-500 text-center">
                 <TrashIcon class="h-5 w-5" />
               </button>
-              <span v-else class="col-span-1 bg-gray-600 text-white px-4 py-2 rounded-md ">
+              <span v-else class="col-span-1 bg-gray-600 text-white px-4 py-2 rounded-md">
                 <TrashIcon class="h-5 w-5" />
               </span>
             </div>
@@ -402,7 +412,7 @@
                 class="col-span-1 bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-500 text-center">
                 <TrashIcon class="h-5 w-5" />
               </button>
-              <span v-else class="col-span-1 bg-gray-600 text-white px-4 py-2 rounded-md ">
+              <span v-else class="col-span-1 bg-gray-600 text-white px-4 py-2 rounded-md">
                 <TrashIcon class="h-5 w-5" />
               </span>
             </div>
@@ -422,12 +432,11 @@
                 class="col-span-1 bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-500 text-center">
                 <TrashIcon class="h-5 w-5" />
               </button>
-              <span v-else class="col-span-1 bg-gray-600 text-white px-4 py-2 rounded-md ">
+              <span v-else class="col-span-1 bg-gray-600 text-white px-4 py-2 rounded-md">
                 <TrashIcon class="h-5 w-5" />
               </span>
             </div>
           </div>
-
 
           <div class="flex justify-between items-center">
             <div>
@@ -443,7 +452,6 @@
                 Áp dụng
               </button>
             </div>
-
           </div>
         </form>
       </div>
@@ -451,14 +459,19 @@
   </div>
   <!-- filter modal -->
 
-
   <!-- loadding -->
   <div v-if="ShowLoading" class="w-full h-full flex justify-center items-center"
-    style="position: fixed; top: 0; left: 0;z-index: 100;">
+    style="position: fixed; top: 0; left: 0; z-index: 100">
     <div class="flex justify-center items-center">
       <!-- Phần background với độ mờ -->
-      <div class="bg-gray-500" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.3;">
-      </div>
+      <div class="bg-gray-500" style="
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.3;
+          "></div>
       <!-- Nội dung loading spinner -->
       <div class="spinner-border text-white" role="status">
         <fwb-spinner color="blue" size="12" class="lg:ml-64 mt-10" />
@@ -470,12 +483,26 @@
 
 <script setup>
 import VueApexCharts from "vue3-apexcharts";
-import * as API from '../assets/API'
-import { FwbSpinner } from 'flowbite-vue'
+import * as API from "../assets/API";
+import { FwbSpinner } from "flowbite-vue";
 import moment from "moment";
 import { useToken } from "../store/tokenStore";
 import { ref, watch, computed, onMounted } from "vue";
-import { TrashIcon, PhotoIcon, AdjustmentsVerticalIcon, ExclamationTriangleIcon, PencilSquareIcon, PlusIcon, UserCircleIcon, BookmarkIcon, XCircleIcon, CheckIcon, MagnifyingGlassIcon, AdjustmentsHorizontalIcon, FunnelIcon } from "@heroicons/vue/20/solid";
+import {
+  TrashIcon,
+  PhotoIcon,
+  AdjustmentsVerticalIcon,
+  ExclamationTriangleIcon,
+  PencilSquareIcon,
+  PlusIcon,
+  UserCircleIcon,
+  BookmarkIcon,
+  XCircleIcon,
+  CheckIcon,
+  MagnifyingGlassIcon,
+  AdjustmentsHorizontalIcon,
+  FunnelIcon,
+} from "@heroicons/vue/20/solid";
 import { FormatCurrencyVND } from "../assets/formatCurrency";
 import { instance } from "../assets/axios-instance";
 import { showToast } from '../assets/Toastify';
@@ -642,16 +669,16 @@ const statusOrder = [
 ];
 const numberFilter = ref([0]);
 const paymentType = [
-  { value: 1, label: 'Khi nhận hàng' },
-  { value: 2, label: 'VNPay' },
-]
+  { value: 1, label: "Khi nhận hàng" },
+  { value: 2, label: "VNPay" },
+];
 
 const paymentStatus = [
-  { value: 1, label: 'Chưa thanh toán' },
-  { value: 2, label: 'Đã thanh toán' },
-  { value: 0, label: 'Đã huỷ' },
-  { value: -1, label: 'Hoàn tiền' },
-]
+  { value: 1, label: "Chưa thanh toán" },
+  { value: 2, label: "Đã thanh toán" },
+  { value: 0, label: "Đã huỷ" },
+  { value: -1, label: "Hoàn tiền" },
+];
 
 const filteredOrders = ref([]);
 const filterVal = ref({
@@ -677,16 +704,15 @@ const getAddressFull = (addressData) => {
 };
 
 const getPaymentType = (value) => {
-  const obj = paymentType.find(x => x.value == value);
+  const obj = paymentType.find((x) => x.value == value);
   if (obj) return obj.label;
-  return '';
-}
+  return "";
+};
 const getPaymentStatus = (value) => {
-  const obj = paymentStatus.find(x => x.value == value);
+  const obj = paymentStatus.find((x) => x.value == value);
   if (obj) return obj.label;
-  return '';
-}
-
+  return "";
+};
 
 onMounted(async () => {
   ShowLoading.value = true;
@@ -698,26 +724,26 @@ onMounted(async () => {
   await loadData();
   loadFilter(true);
   ShowLoading.value = false;
-})
+});
 
 const loadData = async () => {
-  await instance.get(API.GETOrders)
-    .then(res => {
+  await instance
+    .get(API.GETOrders)
+    .then((res) => {
       orders.value = res.data.data;
-      orders.value.forEach(x => {
+      orders.value.forEach((x) => {
         x.status1 = x.status;
-      })
+      });
     })
-    .catch(err => {
-
+    .catch((err) => {
       try {
         showToast(err.response.data.message, true);
       } catch (error) {
-        showToast('Lỗi', true);
+        showToast("Lỗi", true);
       }
       console.error(err);
-    })
-}
+    });
+};
 
 //search
 
@@ -756,11 +782,11 @@ const ResetFilter = () => {
 
 const updatePropertyFilterVal = (nameProp, value) => {
   filterVal.value[nameProp] = value;
-}
+};
 
 const openFilterModal = () => {
   isOpenFilterModal.value = true;
-}
+};
 
 const loadFilter = (resetPage) => {
   if (resetPage) {
@@ -826,14 +852,13 @@ const loadFilter = (resetPage) => {
 
 const closeFilterModal = () => {
   isOpenFilterModal.value = false;
-}
+};
 
 // filter modal
 
 const showDetails = async (id) => {
   isOpenDetailOrder.value = true;
   //await instance.get()
-
 };
 
 const closeDetails = () => {
@@ -845,9 +870,8 @@ const onChangeStatusOrder = (index, isSelectOrder) => {
     indexChangeStatus.value = index;
     showWarningModal();
   }
-}
+};
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
 
 const showWarningModal = async () => {
   isWarningModalOpen.value = true;
@@ -861,15 +885,17 @@ const onChangeStatus = async () => {
     const order_ = orders.value[indexChangeStatus.value];
     const form = new FormData();
     form.append("status", order_.status1);
-    await instance.put(`${API.PUTStatusOrder}/${order_.id}`, form)
-      .then(res => {
-        orders.value[indexChangeStatus.value].status = orders.value[indexChangeStatus.value].status1;
+    await instance
+      .put(`${API.PUTStatusOrder}/${order_.id}`, form)
+      .then((res) => {
+        orders.value[indexChangeStatus.value].status =
+          orders.value[indexChangeStatus.value].status1;
         showToast("Cập nhật thành công");
       })
-      .catch(err => {
+      .catch((err) => {
         showToast("Lỗi", true);
         console.log(err);
-      })
+      });
   } catch (error) { }
   ShowLoading.value = false;
   closeWarningModal();
@@ -877,12 +903,11 @@ const onChangeStatus = async () => {
 
 const onCancelChangeStatus = () => {
   try {
-    orders.value[indexChangeStatus.value].status1 = orders.value[indexChangeStatus.value].status;
+    orders.value[indexChangeStatus.value].status1 =
+      orders.value[indexChangeStatus.value].status;
     closeWarningModal();
-  } catch (error) {
-
-  }
-}
+  } catch (error) { }
+};
 
 const closeWarningModal = async () => {
   indexChangeStatus.value = null;
@@ -890,5 +915,4 @@ const closeWarningModal = async () => {
   await delay(500);
   isWarningModalOpen.value = false;
 };
-
 </script>

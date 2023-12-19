@@ -19,13 +19,13 @@
               v-model="selectedFilter"
               class="border-0 px-3 py-2 text-sm focus:outline-0"
             >
-              <option value="id">ID</option>
+              <option value="userId">UserID</option>
               <option value="name">Tên</option>
               <option value="email">Email</option>
             </select>
             <button
               type="button"
-              @click="applyFilter"
+              @click="applyFilter()"
               class="inline-flex items-center rounded-md rounded-l-none bg-indigo-600 px-1 py-1 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
             >
               <MagnifyingGlassIcon class="h-7 w-7" aria-hidden="true" />
@@ -103,7 +103,7 @@
                 <td class="py-4">
                   <button
                     class="hover:text-indigo-900 ml-10"
-                    @click="showDetails(person.userId)"
+                    @click="showDetails(person.customerData.id)"
                   >
                     <AdjustmentsVerticalIcon
                       class="h-5 w-5"
@@ -138,11 +138,11 @@
       <div class="my-6 border-t border-gray-100">
         <dl class="divide-y divide-gray-100">
           <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-4">
-            <dt class="text-sm font-medium leading-6 text-gray-900">ID</dt>
+            <dt class="text-sm font-medium leading-6 text-gray-900">UserID</dt>
             <dd
               class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0"
             >
-              {{ selectedUser.customer.id }}
+              {{ selectedUser.customer.customerData.userId }}
             </dd>
           </div>
           <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-4">
@@ -152,15 +152,7 @@
             <dd
               class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0"
             >
-              {{ selectedUser.customer.name }}
-            </dd>
-          </div>
-          <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-4">
-            <dt class="text-sm font-medium leading-6 text-gray-900">Email</dt>
-            <dd
-              class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0"
-            >
-              {{ selectedUser.customer.email }}
+              {{ selectedUser.customer.customerData.name }}
             </dd>
           </div>
           <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-4">
@@ -168,7 +160,19 @@
             <dd
               class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0"
             >
-              {{ getAddressFull(selectedUser.customer.addressData) }}
+              <img
+                class="h-18 w-20 rounded-full"
+                :src="selectedUser.customer.customerData.picture"
+                alt=""
+              />
+            </dd>
+          </div>
+          <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-4">
+            <dt class="text-sm font-medium leading-6 text-gray-900">Email</dt>
+            <dd
+              class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0"
+            >
+              {{ selectedUser.customer.customerData.email }}
             </dd>
           </div>
         </dl>
@@ -197,7 +201,7 @@
                 scope="col"
                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
               >
-                Trạng thái
+                Phương thức thanh toán
               </th>
               <th
                 scope="col"
@@ -211,27 +215,33 @@
               >
                 Trạng thái thanh toán
               </th>
+              <th
+                scope="col"
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
+                Trạng thái đơn hàng
+              </th>
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-gray-200">
-            <tr v-for="item in selectedUser.listOrder" :key="item.userId">
+            <tr v-for="item in selectedUser.listOrder" :key="item.id">
               <td class="px-6 py-4 whitespace-nowrap">
-                {{ item.paymentData.id }}
+                {{ item.id }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 {{ formattedDateTime(item.paymentData.createdAt) }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                {{ item.paymentData.status }}
+                {{ getPaymentType(item.paymentData.paymentType) }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 {{ item.paymentData.total }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                {{ item.paymentData.paymentType }}
+                {{ getPaymentStatus(item.paymentData.status) }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                {{ item.paymentData.transaction }}
+                {{ getStatusOrder(item.statusOrder) }}
               </td>
             </tr>
           </tbody>
@@ -307,7 +317,8 @@ import { instance } from "../assets/axios-instance";
 import { useToken } from "../store/tokenStore";
 import * as API from "../assets/API";
 import moment from "moment";
-const selectedFilter = ref("id");
+import axios from "axios";
+const selectedFilter = ref("userId");
 const searchTerm = ref("");
 const store = useToken();
 const ShowLoading = ref(false);
@@ -317,6 +328,47 @@ const listItemShow = ref([]);
 const itemOnPage = ref(10);
 const currentPage = ref(1);
 const totalPages = ref(7);
+const selectedUser = ref([]);
+
+const statusOrder = [
+  { value: 1, label: "Chờ xác nhận" },
+  { value: 2, label: "Đã Xác nhận" },
+  { value: 3, label: "Đang giao" },
+  { value: 4, label: "Đã giao" },
+  { value: 0, label: "Hủy" },
+];
+const paymentType = [
+  { value: 1, label: "Khi nhận hàng" },
+  { value: 2, label: "VNPay" },
+];
+
+const paymentStatus = [
+  { value: 1, label: "Chưa thanh toán" },
+  { value: 2, label: "Đã thanh toán" },
+  { value: 0, label: "Đã huỷ" },
+  { value: -1, label: "Hoàn tiền" },
+];
+const getPaymentType = (value) => {
+  const obj = paymentType.find((x) => x.value == value);
+  if (obj) return obj.label;
+  return "";
+};
+const getPaymentStatus = (value) => {
+  const obj = paymentStatus.find((x) => x.value == value);
+  if (obj) return obj.label;
+  return "";
+};
+const getStatusOrder = (statusOrderValue) => {
+  const statusOrderObj = statusOrder.find(
+    (item) => item.value === statusOrderValue
+  );
+  return statusOrderObj ? statusOrderObj.label : "Chờ xác nhận";
+};
+const filterVal = ref({
+  status: -1,
+  paymentType: -1,
+  paymentStatus: -10,
+});
 onMounted(async () => {
   if (store.role == 1) {
     store.onSetCurrentPage({ index: 1, child: 0 });
@@ -333,122 +385,14 @@ onMounted(async () => {
 });
 // Add the following code for the order details modal
 const isOpenDetailOrder = ref(false);
-const selectedUser = ref({
-  customer: {
-    id: 30001,
-    createdAt: "2023-12-17T04:44:06.000Z",
-    updatedAt: "2023-12-17T04:44:06.000Z",
-    deletedAt: null,
-    customerData: {
-      id: 30001,
-      userId: "109513530698162110613",
-      name: "Công Hậu Nguyễn",
-      email: "conghaunguyen909@gmail.com",
-      picture:
-        "https://lh3.googleusercontent.com/a/ACg8ocJ0nTdGS63DZwe4CjBeFwCIvs83KvY8ihCz91szt0v4WaY=s96-c",
-    },
-    listOrder: [
-      {
-        id: 1,
-        customerId: 30001,
-        addressId: 1,
-        status: 1,
-        createdAt: "2023-12-17T09:39:07.000Z",
-        updatedAt: "2023-12-17T09:39:07.000Z",
-        deletedAt: null,
-        paymentData: {
-          id: 1,
-          paymentType: 2,
-          status: 1,
-          total: 390000,
-          transaction: null,
-          discountCode: "NGUYENHAU2",
-          createdAt: "2023-12-17T09:39:07.000Z",
-        },
-        addressData: {
-          id: 1,
-          name: "czx",
-          phone: "0786621",
-          customerId: 1,
-          city: "Tỉnh Lai Châu",
-          district: "Huyện Tân Uyên",
-          commune: "Xã Hố Mít",
-          street: "21.1",
-          createdAt: "2023-12-16T16:42:40.000Z",
-          updatedAt: "2023-12-16T16:42:40.000Z",
-          deletedAt: null,
-        },
-      },
-      {
-        id: 30001,
-        customerId: 30001,
-        addressId: 30001,
-        status: 1,
-        createdAt: "2023-12-17T10:07:01.000Z",
-        updatedAt: "2023-12-17T10:07:01.000Z",
-        deletedAt: null,
-        payment: {
-          id: 30001,
-          paymentType: 2,
-          status: 1,
-          total: 219000,
-          transaction: null,
-          discountCode: "DISCOUNTCODE",
-          createdAt: "2023-12-17T10:07:02.000Z",
-        },
-        address: {
-          id: 30001,
-          name: "Hau",
-          phone: "0123456789",
-          customerId: 30001,
-          city: "Thành phố Hà Nội",
-          district: "Quận Nam Từ Liêm",
-          commune: "Phường Phương Canh",
-          street: "80",
-          createdAt: "2023-12-17T09:57:03.000Z",
-          updatedAt: "2023-12-17T09:57:03.000Z",
-          deletedAt: null,
-        },
-      },
-      {
-        id: 30002,
-        customerId: 30001,
-        addressId: 30001,
-        status: 1,
-        createdAt: "2023-12-17T10:11:13.000Z",
-        updatedAt: "2023-12-17T10:11:13.000Z",
-        deletedAt: null,
-        payment: {
-          id: 30002,
-          paymentType: 2,
-          status: 1,
-          total: 219000,
-          transaction: null,
-          discountCode: "NGUYENHAU2",
-          createdAt: "2023-12-17T10:11:13.000Z",
-        },
-        address: {
-          id: 30001,
-          name: "Hau",
-          phone: "0123456789",
-          customerId: 30001,
-          city: "Thành phố Hà Nội",
-          district: "Quận Nam Từ Liêm",
-          commune: "Phường Phương Canh",
-          street: "80",
-          createdAt: "2023-12-17T09:57:03.000Z",
-          updatedAt: "2023-12-17T09:57:03.000Z",
-          deletedAt: null,
-        },
-      },
-    ],
-  },
-});
 
 const showDetails = async (userId) => {
   isOpenDetailOrder.value = true;
-  await instance.get();
-  console.log("Selected User:", selectedUser.value);
+  const res = await instance
+    .get(API.GETDetailOrder + `${userId}`)
+    .then((res) => {
+      selectedUser.value = res.data.data;
+    });
 };
 
 const closeDetails = () => {
@@ -504,10 +448,53 @@ const LoadCustomerList = async () => {
   ShowLoading.value = false;
 };
 
+const getCustomerDetails = async (userId) => {
+  try {
+    ShowLoading.value = true;
+    const response = await instance.get(
+      `http://localhost:3333/order/admin/${userId}`
+    );
+    selectedUser.value = response.data.data;
+  } catch (error) {
+    const message =
+      error.response.data.message || "Error fetching customer details";
+    showToast(message, true);
+    console.error(message, error);
+  } finally {
+    ShowLoading.value = false;
+  }
+};
 const applyFilter = () => {
-  const term = searchTerm.value.toString().toLowerCase().trim();
-  filteredList.value = users.value;
+  updateList(true);
+};
+const updateList = (isSearch, isDelete) => {
+  const term = searchTerm.value.toLowerCase().trim();
+  const lowerCaseSelectedFilter = selectedFilter.value.toLowerCase();
+  filteredList.value = users.value.filter((person) => {
+    switch (lowerCaseSelectedFilter) {
+      case "userid":
+        return person.customerData.userId
+          .toString()
+          .toLowerCase()
+          .includes(term);
+      case "name":
+        return person.customerData.name.toLowerCase().includes(term);
+      case "email":
+        return person.customerData.email.toLowerCase().includes(term);
+      default:
+        return true; // Hiển thị tất cả nếu không có bộ lọc được chọn
+    }
+  });
+
   totalPages.value = Math.ceil(filteredList.value.length / itemOnPage.value);
-  onPageChange(1);
+  if (isSearch) {
+    onPageChange(1);
+  } else {
+    let page = currentPage.value;
+    if (isDelete) {
+      if (page > totalPages.value) page = totalPages.value;
+    }
+    onPageChange(page);
+  }
 };
 </script>
