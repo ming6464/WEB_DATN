@@ -352,13 +352,13 @@
     <div class="flex justify-center items-center">
       <!-- Phần background với độ mờ -->
       <div class="bg-gray-500" style="
-                            position: absolute;
-                            top: 0;
-                            left: 0;
-                            width: 100%;
-                            height: 100%;
-                            opacity: 0.3;
-                          "></div>
+                              position: absolute;
+                              top: 0;
+                              left: 0;
+                              width: 100%;
+                              height: 100%;
+                              opacity: 0.3;
+                            "></div>
       <!-- Nội dung loading spinner -->
       <div class="spinner-border text-white" role="status">
         <fwb-spinner color="blue" size="12" class="lg:ml-64 mt-10" />
@@ -488,7 +488,6 @@ const loadData = async (isDelete) => {
 };
 
 const canChangeStatus = (id, role) => {
-  if (store.id == id) return false;
   return true;
 };
 
@@ -730,7 +729,6 @@ const onChangeStatus = async () => {
     }
 
     if (statusSelected.value == 1) {
-      console.log("statusSelected_______________ 1", `${API.PUTRestoreAccount}/${IdSelected.value}`)
       await instance
         .put(`${API.PUTRestoreAccount}/${IdSelected.value}`)
         .then((res) => {
@@ -742,10 +740,13 @@ const onChangeStatus = async () => {
           console.error(err);
         });
     } else {
-      console.log("statusSelected_______________ 2")
       await instance
         .delete(`${API.DELAccount}/${IdSelected.value}`)
         .then((res) => {
+          if (IdSelected.value == store.id) {
+            store.onSetGoToLogin(true);
+            return;
+          }
           showToast("Thay đổi trạng thái thành công");
           loadData(true);
         })
