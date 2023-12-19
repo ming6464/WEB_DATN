@@ -138,11 +138,11 @@
       <div class="my-6 border-t border-gray-100">
         <dl class="divide-y divide-gray-100">
           <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-4">
-            <dt class="text-sm font-medium leading-6 text-gray-900">ID</dt>
+            <dt class="text-sm font-medium leading-6 text-gray-900">UserID</dt>
             <dd
               class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0"
             >
-              {{ selectedUser.customer.customerData.id }}
+              {{ selectedUser.customer.customerData.userId }}
             </dd>
           </div>
           <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-4">
@@ -201,7 +201,7 @@
                 scope="col"
                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
               >
-                Trạng thái
+                Phương thức thanh toán
               </th>
               <th
                 scope="col"
@@ -215,6 +215,12 @@
               >
                 Trạng thái thanh toán
               </th>
+              <th
+                scope="col"
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
+                Trạng thái đơn hàng
+              </th>
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-gray-200">
@@ -226,16 +232,16 @@
                 {{ formattedDateTime(item.paymentData.createdAt) }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                {{ item.paymentData.status }}
+                {{ getPaymentType(item.paymentData.paymentType) }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 {{ item.paymentData.total }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                {{ item.paymentData.paymentType }}
+                {{ getPaymentStatus(item.paymentData.status) }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                {{ item.paymentData.transaction }}
+                {{ getStatusOrder(item.statusOrder) }}
               </td>
             </tr>
           </tbody>
@@ -323,6 +329,46 @@ const itemOnPage = ref(10);
 const currentPage = ref(1);
 const totalPages = ref(7);
 const selectedUser = ref([]);
+
+const statusOrder = [
+  { value: 1, label: "Chờ xác nhận" },
+  { value: 2, label: "Đã Xác nhận" },
+  { value: 3, label: "Đang giao" },
+  { value: 4, label: "Đã giao" },
+  { value: 0, label: "Hủy" },
+];
+const paymentType = [
+  { value: 1, label: "Khi nhận hàng" },
+  { value: 2, label: "VNPay" },
+];
+
+const paymentStatus = [
+  { value: 1, label: "Chưa thanh toán" },
+  { value: 2, label: "Đã thanh toán" },
+  { value: 0, label: "Đã huỷ" },
+  { value: -1, label: "Hoàn tiền" },
+];
+const getPaymentType = (value) => {
+  const obj = paymentType.find((x) => x.value == value);
+  if (obj) return obj.label;
+  return "";
+};
+const getPaymentStatus = (value) => {
+  const obj = paymentStatus.find((x) => x.value == value);
+  if (obj) return obj.label;
+  return "";
+};
+const getStatusOrder = (statusOrderValue) => {
+  const statusOrderObj = statusOrder.find(
+    (item) => item.value === statusOrderValue
+  );
+  return statusOrderObj ? statusOrderObj.label : "Chờ xác nhận";
+};
+const filterVal = ref({
+  status: -1,
+  paymentType: -1,
+  paymentStatus: -10,
+});
 onMounted(async () => {
   if (store.role == 1) {
     store.onSetCurrentPage({ index: 1, child: 0 });

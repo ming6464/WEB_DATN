@@ -1,27 +1,49 @@
 <template>
   <div v-if="!isOpenDetailOrder">
-    <div class="-mt-2 bg-white border-b border-gray-200 " style="position: fixed;top : 70px;right: 0px;left: 0px;">
+    <div
+      class="-mt-2 bg-white border-b border-gray-200"
+      style="position: fixed; top: 70px; right: 0px; left: 0px"
+    >
       <div class="lg:ml-72 px-4">
         <div class="flex justify-center items-center border-gray-300 py-4">
           <div class="mr-2">
-            <button class="group flex items-center font-medium mr-2" @click="openFilterModal">
-              <FunnelIcon class="mr-2 h-5 w-5 flex-none text-gray-700 group-hover:text-gray-500" />
+            <button
+              class="group flex items-center font-medium mr-2"
+              @click="openFilterModal"
+            >
+              <FunnelIcon
+                class="mr-2 h-5 w-5 flex-none text-gray-700 group-hover:text-gray-500"
+              />
             </button>
           </div>
           <div
-            class="flex items-center justify-between border border-gray-400 border-r-0 rounded-md shadow-sm md:w-8/12 sm:w-6/12">
-            <input type="text" placeholder="Tìm kiếm ..." v-model="searchTerm"
-              class="rounded-md w-full rounded-r-none border-0 px-3 py-2 text-sm focus:border-gray-50 focus:border-0" />
-            <select v-model="selectedFilter" class="border-0 px-3 py-2 text-sm focus:outline-0">
+            class="flex items-center justify-between border border-gray-400 border-r-0 rounded-md shadow-sm md:w-8/12 sm:w-6/12"
+          >
+            <input
+              type="text"
+              placeholder="Tìm kiếm ..."
+              v-model="searchTerm"
+              class="rounded-md w-full rounded-r-none border-0 px-3 py-2 text-sm focus:border-gray-50 focus:border-0"
+            />
+            <select
+              v-model="selectedFilter"
+              class="border-0 px-3 py-2 text-sm focus:outline-0"
+            >
               <option value="id">ID</option>
             </select>
-            <button type="button" @click="loadFilter()"
-              class="inline-flex items-center rounded-md rounded-l-none bg-indigo-600 px-1 py-1 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+            <button
+              type="button"
+              @click="loadFilter()"
+              class="inline-flex items-center rounded-md rounded-l-none bg-indigo-600 px-1 py-1 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+            >
               <MagnifyingGlassIcon class="h-7 w-7" aria-hidden="true" />
             </button>
           </div>
-          <button type="button" disabled
-            class="inline-flex opacity-0 self-end items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+          <button
+            type="button"
+            disabled
+            class="inline-flex opacity-0 self-end items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+          >
             <PlusIcon class="h-5 w-5" aria-hidden="true" />
             Thêm tài khoản
           </button>
@@ -35,71 +57,129 @@
           <table class="min-w-full divide-y divide-gray-300">
             <thead>
               <tr>
-                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
+                <th
+                  scope="col"
+                  class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
+                >
                   Mã đơn
                 </th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:pl-0">
+                <th
+                  scope="col"
+                  class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:pl-0"
+                >
                   Tên Khách hàng
                 </th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:pl-0">
+                <th
+                  scope="col"
+                  class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:pl-0"
+                >
                   Ngày đặt
                 </th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:pl-0">
+                <th
+                  scope="col"
+                  class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:pl-0"
+                >
                   Số điện thoại
                 </th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:pl-0">
+                <th
+                  scope="col"
+                  class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:pl-0"
+                >
                   Tổng tiền
                 </th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:pl-0">
+                <th
+                  scope="col"
+                  class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:pl-0"
+                >
                   Phương thức thanh toán
                 </th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:pl-0">
+                <th
+                  scope="col"
+                  class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:pl-0"
+                >
                   Trạng thái thanh toán
                 </th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:pl-0">
+                <th
+                  scope="col"
+                  class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:pl-0"
+                >
                   Trạng thái đơn hàng
                 </th>
-                <th scope="col" class="py-3 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
+                <th
+                  scope="col"
+                  class="py-3 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
+                >
                   Hoạt động
                 </th>
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-200 bg-white">
               <tr v-for="(order, index) in filteredOrders" :key="index">
-                <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-900 sm:pl-2">
+                <td
+                  class="whitespace-nowrap px-3 py-5 text-sm text-gray-900 sm:pl-2"
+                >
                   <div class="text-gray-900">{{ order.id }}</div>
                 </td>
-                <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-gray-900 sm:pl-0">
+                <td
+                  class="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-gray-900 sm:pl-0"
+                >
                   {{ order.addressData.name }}
                 </td>
-                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-900 sm:pl-0">
+                <td
+                  class="whitespace-nowrap px-3 py-4 text-sm text-gray-900 sm:pl-0"
+                >
                   {{ formattedDateTime(order.createdAt) }}
                 </td>
-                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-900 sm:pl-0">
+                <td
+                  class="whitespace-nowrap px-3 py-4 text-sm text-gray-900 sm:pl-0"
+                >
                   {{ order.addressData.phone }}
                 </td>
-                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-900 sm:pl-0">
+                <td
+                  class="whitespace-nowrap px-3 py-4 text-sm text-gray-900 sm:pl-0"
+                >
                   {{ FormatCurrencyVND(order.paymentData.total) }}
                 </td>
-                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-900 sm:pl-0">
+                <td
+                  class="whitespace-nowrap px-3 py-4 text-sm text-gray-900 sm:pl-0"
+                >
                   {{ getPaymentType(order.paymentData.paymentType) }}
                 </td>
-                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-900 sm:pl-0">
+                <td
+                  class="whitespace-nowrap px-3 py-4 text-sm text-gray-900 sm:pl-0"
+                >
                   {{ getPaymentStatus(order.paymentData.status) }}
                 </td>
                 <td>
-                  <select v-model="order.status1" @change="onChangeStatusOrder(index, false)"
+                  <select
+                    v-model="order.status1"
+                    @change="onChangeStatusOrder(index, false)"
                     :disabled="order.status == 0"
-                    class="rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring focus:border-indigo-500">
-                    <option v-for="option in statusOrder" :key="option.value" :value="option.value"
-                      :disabled="option.value != 0 && (option.value <= order.status || option.value > order.status + 1)">
+                    class="rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring focus:border-indigo-500"
+                  >
+                    <option
+                      v-for="option in statusOrder"
+                      :key="option.value"
+                      :value="option.value"
+                      :disabled="
+                        option.value != 0 &&
+                        (option.value <= order.status ||
+                          option.value > order.status + 1)
+                      "
+                    >
                       {{ option.label }}
                     </option>
                   </select>
                 </td>
                 <td class="py-4">
-                  <button class=" hover:text-indigo-900 ml-10" @click="showDetails(order.id)">
-                    <AdjustmentsVerticalIcon class="h-5 w-5" aria-hidden="true" />
+                  <button
+                    class="hover:text-indigo-900 ml-10"
+                    @click="showDetails(order.id)"
+                  >
+                    <AdjustmentsVerticalIcon
+                      class="h-5 w-5"
+                      aria-hidden="true"
+                    />
                     <span class="sr-only">, {{ order.id }}</span>
                   </button>
                 </td>
@@ -124,7 +204,9 @@
             <dt class="text-sm font-medium leading-6 text-gray-900">
               Tên khách hàng
             </dt>
-            <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
+            <dd
+              class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0"
+            >
               {{ selectedOrder.addressData.name }}
             </dd>
           </div>
@@ -132,7 +214,9 @@
             <dt class="text-sm font-medium leading-6 text-gray-900">
               Ngày đặt
             </dt>
-            <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
+            <dd
+              class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0"
+            >
               {{ formattedDateTime(selectedOrder.createdAt) }}
             </dd>
           </div>
@@ -140,13 +224,17 @@
             <dt class="text-sm font-medium leading-6 text-gray-900">
               Số điện thoại
             </dt>
-            <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
+            <dd
+              class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0"
+            >
               {{ selectedOrder.addressData.phone }}
             </dd>
           </div>
           <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-4">
             <dt class="text-sm font-medium leading-6 text-gray-900">Địa chỉ</dt>
-            <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
+            <dd
+              class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0"
+            >
               {{ getAddressFull(selectedOrder.addressData) }}
             </dd>
           </div>
@@ -154,7 +242,9 @@
             <dt class="text-sm font-medium leading-6 text-gray-900">
               Tổng tiền
             </dt>
-            <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
+            <dd
+              class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0"
+            >
               {{ FormatCurrencyVND(selectedOrder.paymentData.total) }}
             </dd>
           </div>
@@ -162,7 +252,9 @@
             <dt class="text-sm font-medium leading-6 text-gray-900">
               Loại thanh toán
             </dt>
-            <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
+            <dd
+              class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0"
+            >
               {{ selectedOrder.paymentData.paymentType }}
             </dd>
           </div>
@@ -170,7 +262,9 @@
             <dt class="text-sm font-medium leading-6 text-gray-900">
               Trạng thái thanh toán
             </dt>
-            <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
+            <dd
+              class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0"
+            >
               {{ selectedOrder.paymentData.status }}
             </dd>
           </div>
@@ -179,22 +273,38 @@
               Trạng thái đơn hàng
             </dt>
             <dd v-if="selectedOrder.status != 0">
-              <select v-model="selectedOrder.status1" @change="onChangeStatusOrder(false, true)"
-                class="rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring focus:border-indigo-500">
-                <option v-for="option in statusOrder" :key="option.value" :value="option.value"
-                  :disabled="option.value != 0 && (option.value < selectedOrder.status || option.value > selectedOrder.status + 2)">
+              <select
+                v-model="selectedOrder.status1"
+                @change="onChangeStatusOrder(false, true)"
+                class="rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring focus:border-indigo-500"
+              >
+                <option
+                  v-for="option in statusOrder"
+                  :key="option.value"
+                  :value="option.value"
+                  :disabled="
+                    option.value != 0 &&
+                    (option.value < selectedOrder.status ||
+                      option.value > selectedOrder.status + 2)
+                  "
+                >
                   {{ option.label }}
                 </option>
               </select>
-              <button type="button" v-if="selectedOrder.status1 != selectedOrder.status"
-                class="rounded-md ml-3 bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline  focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+              <button
+                type="button"
+                v-if="selectedOrder.status1 != selectedOrder.status"
+                class="rounded-md ml-3 bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              >
                 Xác nhận
               </button>
             </dd>
-            <dd v-else-if="selectedOrder.status == 0" class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
+            <dd
+              v-else-if="selectedOrder.status == 0"
+              class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0"
+            >
               Hủy
             </dd>
-
           </div>
           <!-- Thêm table mới -->
           <div class="mt-6 overflow-x-auto">
@@ -205,28 +315,52 @@
               <thead class="bg-gray-50">
                 <tr>
                   <!-- Thêm cột hình ảnh vào đầu bảng -->
-                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th
+                    scope="col"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
                     Hình ảnh
                   </th>
-                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th
+                    scope="col"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
                     Tên sản phẩm
                   </th>
-                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th
+                    scope="col"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
                     Loại
                   </th>
-                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th
+                    scope="col"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
                     Giá
                   </th>
-                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th
+                    scope="col"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
                     Màu
                   </th>
-                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th
+                    scope="col"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
                     Size
                   </th>
-                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th
+                    scope="col"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
                     Số lượng
                   </th>
-                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th
+                    scope="col"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
                     Tổng tiền
                   </th>
                 </tr>
@@ -236,10 +370,13 @@
                 <tr v-for="item in selectedOrder.orderItemData" :key="item.id">
                   <!-- Hiển thị hình ảnh ở đầu dòng -->
                   <td class="px-6 py-4 whitespace-nowrap">
-                    <img :src="
-                      item.orderProductSizeColorData.productData.mainImage
-                    " alt="Product Image"
-                      class="h-12 w-12 sm:h-8 sm:w-8 md:h-12 md:w-12 lg:h-16 lg:w-16 object-cover" />
+                    <img
+                      :src="
+                        item.orderProductSizeColorData.productData.mainImage
+                      "
+                      alt="Product Image"
+                      class="h-12 w-12 sm:h-8 sm:w-8 md:h-12 md:w-12 lg:h-16 lg:w-16 object-cover"
+                    />
                   </td>
                   <!-- Các cột thông tin khác -->
                   <td class="px-6 py-4 whitespace-nowrap">
@@ -252,7 +389,9 @@
                     }}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap">
-                    {{ FormatCurrencyVND(item.orderProductSizeColorData.price) }}
+                    {{
+                      FormatCurrencyVND(item.orderProductSizeColorData.price)
+                    }}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap">
                     {{ item.orderProductSizeColorData.colorData.name }}
@@ -261,17 +400,25 @@
                     {{ item.orderProductSizeColorData.sizeData.name }}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap">{{ item.amount }}</td>
-                  <td class="px-6 py-4 whitespace-nowrap">{{ FormatCurrencyVND(item.price) }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    {{ FormatCurrencyVND(item.price) }}
+                  </td>
                 </tr>
               </tbody>
             </table>
           </div>
         </dl>
       </div>
-      <div style="position: fixed; bottom: 0px; right: 0px; left: 0px" class="lg:ml-72">
+      <div
+        style="position: fixed; bottom: 0px; right: 0px; left: 0px"
+        class="lg:ml-72"
+      >
         <div class="bg-gray-50 px-4 py-3 flex justify-end">
-          <button @click="closeDetails" type="button"
-            class="inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring focus:border-indigo-500 sm:w-auto sm:text-sm">
+          <button
+            @click="closeDetails"
+            type="button"
+            class="inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring focus:border-indigo-500 sm:w-auto sm:text-sm"
+          >
             Quay lại
           </button>
         </div>
@@ -280,18 +427,30 @@
   </div>
   <!-- delete modal -->
   <div v-show="isWarningModalOpen">
-    <div :class="{ 'opacity-100': isShowWarningModal }"
-      class="transition-opacity ease-in-out duration-500 opacity-0 relative z-10" aria-labelledby="modal-title"
-      role="dialog" aria-modal="true">
-      <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
+    <div
+      :class="{ 'opacity-100': isShowWarningModal }"
+      class="transition-opacity ease-in-out duration-500 opacity-0 relative z-10"
+      aria-labelledby="modal-title"
+      role="dialog"
+      aria-modal="true"
+    >
+      <div
+        class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+      ></div>
       <div class="fixed inset-0 z-10 w-screen">
-        <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+        <div
+          class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0"
+        >
           <div
-            class="relative transform rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg lg:ml-64 mt-10">
+            class="relative transform rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg lg:ml-64 mt-10"
+          >
             <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
               <div class="sm:flex sm:items-start">
                 <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
-                  <h3 class="text-base font-semibold leading-6 text-gray-900" id="modal-title">
+                  <h3
+                    class="text-base font-semibold leading-6 text-gray-900"
+                    id="modal-title"
+                  >
                     Xác nhận thay đổi trạng thái
                   </h3>
                   <div class="mt-2">
@@ -302,14 +461,21 @@
                 </div>
               </div>
             </div>
-            <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-
-              <button type="button" @click="onChangeStatus"
-                class="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 sm:ml-3 sm:w-auto">
+            <div
+              class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6"
+            >
+              <button
+                type="button"
+                @click="onChangeStatus"
+                class="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 sm:ml-3 sm:w-auto"
+              >
                 Đồng ý
               </button>
-              <button type="button" @click="onCancelChangeStatus"
-                class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto">
+              <button
+                type="button"
+                @click="onCancelChangeStatus"
+                class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
+              >
                 Huỷ
               </button>
             </div>
@@ -325,120 +491,222 @@
       <div class="fixed inset-0 bg-gray-500 bg-opacity-75"></div>
 
       <div class="relative bg-white p-8 rounded-lg lg:ml-64 mt-10">
-        <h3 class="text-lg font-semibold mb-4 text-center">
-          Bộ lọc tìm kiếm
-        </h3>
+        <h3 class="text-lg font-semibold mb-4 text-center">Bộ lọc tìm kiếm</h3>
 
         <form @submit.prevent="applyFilterModal">
           <div class="mb-4">
-            <label for="priceRange" class="block text-base font-medium text-gray-700">
+            <label
+              for="priceRange"
+              class="block text-base font-medium text-gray-700"
+            >
               Khoảng giá trị đơn hàng :
             </label>
-            <div id="priceRange" name='priceRange' class="flex items-center justify-between mt-1 gap-x-3">
+            <div
+              id="priceRange"
+              name="priceRange"
+              class="flex items-center justify-between mt-1 gap-x-3"
+            >
               <div>
-                <label for="minPrice" class="block text-sm font-medium text-gray-700">
+                <label
+                  for="minPrice"
+                  class="block text-sm font-medium text-gray-700"
+                >
                   Tối thiểu :
                 </label>
-                <input v-model="filterVal.minPrice" type="number" min="0" id="minPrice" name="minPrice"
-                  class="mt-1 p-2 w-full border rounded-md" />
-                <p class="text-sm font-normal">Giá tiền: {{ FormatCurrencyVND(filterVal.minPrice) }}</p>
+                <input
+                  v-model="filterVal.minPrice"
+                  type="number"
+                  min="0"
+                  id="minPrice"
+                  name="minPrice"
+                  class="mt-1 p-2 w-full border rounded-md"
+                />
+                <p class="text-sm font-normal">
+                  Giá tiền: {{ FormatCurrencyVND(filterVal.minPrice) }}
+                </p>
               </div>
               <div>
-                <label for="maxPrice" class="block text-sm font-medium text-gray-700">
+                <label
+                  for="maxPrice"
+                  class="block text-sm font-medium text-gray-700"
+                >
                   Tối đa :
                 </label>
-                <input v-model="filterVal.maxPrice" type="number" min="0" id="maxPrice" name="maxPrice"
-                  class="mt-1 p-2 w-full border rounded-md" />
-                <p class="text-sm font-normal">Giá tiền: {{ FormatCurrencyVND(filterVal.maxPrice) }}</p>
+                <input
+                  v-model="filterVal.maxPrice"
+                  type="number"
+                  min="0"
+                  id="maxPrice"
+                  name="maxPrice"
+                  class="mt-1 p-2 w-full border rounded-md"
+                />
+                <p class="text-sm font-normal">
+                  Giá tiền: {{ FormatCurrencyVND(filterVal.maxPrice) }}
+                </p>
               </div>
             </div>
           </div>
           <div class="mb-4">
-            <label for="timeRange" class="block text-base font-medium text-gray-700">
+            <label
+              for="timeRange"
+              class="block text-base font-medium text-gray-700"
+            >
               Khoảng thời gian đặt hàng :
             </label>
             <div id="timeRange" name="timeRange" class="mt-1">
-              <VueDatePicker v-model="filterVal.date" :max-date="new Date()" range multi-calendars :format="'dd/MM/yyyy'"
-                :clearable="true" />
+              <VueDatePicker
+                v-model="filterVal.date"
+                :max-date="new Date()"
+                range
+                multi-calendars
+                :format="'dd/MM/yyyy'"
+                :clearable="true"
+              />
             </div>
           </div>
           <div class="mb-4">
-            <label for="category" class="block text-base font-medium text-gray-700">
+            <label
+              for="category"
+              class="block text-base font-medium text-gray-700"
+            >
               Phương thức thanh toán :
             </label>
-            <div class="mt-1 rounded-md grid grid-cols-7 gap-2" id="category" name="category">
-              <select v-model="filterVal.paymentType"
-                class="rounded-md border col-span-6 border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring focus:border-indigo-500">
-                <option v-for="option in paymentType" :key="option.value" :value="option.value">
+            <div
+              class="mt-1 rounded-md grid grid-cols-7 gap-2"
+              id="category"
+              name="category"
+            >
+              <select
+                v-model="filterVal.paymentType"
+                class="rounded-md border col-span-6 border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring focus:border-indigo-500"
+              >
+                <option
+                  v-for="option in paymentType"
+                  :key="option.value"
+                  :value="option.value"
+                >
                   {{ option.label }}
                 </option>
               </select>
-              <button v-if="filterVal.paymentType >= 0" @click="updatePropertyFilterVal('paymentType', -1)"
-                class="col-span-1 bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-500 text-center">
+              <button
+                v-if="filterVal.paymentType >= 0"
+                @click="updatePropertyFilterVal('paymentType', -1)"
+                class="col-span-1 bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-500 text-center"
+              >
                 <TrashIcon class="h-5 w-5" />
               </button>
-              <span v-else class="col-span-1 bg-gray-600 text-white px-4 py-2 rounded-md ">
+              <span
+                v-else
+                class="col-span-1 bg-gray-600 text-white px-4 py-2 rounded-md"
+              >
                 <TrashIcon class="h-5 w-5" />
               </span>
             </div>
           </div>
           <div class="mb-4">
-            <label for="category" class="block text-base font-medium text-gray-700">
+            <label
+              for="category"
+              class="block text-base font-medium text-gray-700"
+            >
               Trạng thái thanh toán :
             </label>
-            <div class="mt-1 rounded-md grid grid-cols-7 gap-2" id="category" name="category">
-              <select v-model="filterVal.paymentStatus"
-                class="rounded-md border col-span-6 border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring focus:border-indigo-500">
-                <option v-for="option in paymentStatus" :key="option.value" :value="option.value">
+            <div
+              class="mt-1 rounded-md grid grid-cols-7 gap-2"
+              id="category"
+              name="category"
+            >
+              <select
+                v-model="filterVal.paymentStatus"
+                class="rounded-md border col-span-6 border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring focus:border-indigo-500"
+              >
+                <option
+                  v-for="option in paymentStatus"
+                  :key="option.value"
+                  :value="option.value"
+                >
                   {{ option.label }}
                 </option>
               </select>
-              <button v-if="filterVal.paymentStatus >= 0" @click="updatePropertyFilterVal('paymentStatus', -10)"
-                class="col-span-1 bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-500 text-center">
+              <button
+                v-if="filterVal.paymentStatus >= 0"
+                @click="updatePropertyFilterVal('paymentStatus', -10)"
+                class="col-span-1 bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-500 text-center"
+              >
                 <TrashIcon class="h-5 w-5" />
               </button>
-              <span v-else class="col-span-1 bg-gray-600 text-white px-4 py-2 rounded-md ">
+              <span
+                v-else
+                class="col-span-1 bg-gray-600 text-white px-4 py-2 rounded-md"
+              >
                 <TrashIcon class="h-5 w-5" />
               </span>
             </div>
           </div>
           <div class="mb-4">
-            <label for="category" class="block text-base font-medium text-gray-700">
+            <label
+              for="category"
+              class="block text-base font-medium text-gray-700"
+            >
               Trạng thái đơn hàng :
             </label>
-            <div class="mt-1 rounded-md grid grid-cols-7 gap-2" id="category" name="category">
-              <select v-model="filterVal.status"
-                class="rounded-md border col-span-6 border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring focus:border-indigo-500">
-                <option v-for="option in statusOrder" :key="option.value" :value="option.value">
+            <div
+              class="mt-1 rounded-md grid grid-cols-7 gap-2"
+              id="category"
+              name="category"
+            >
+              <select
+                v-model="filterVal.status"
+                class="rounded-md border col-span-6 border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring focus:border-indigo-500"
+              >
+                <option
+                  v-for="option in statusOrder"
+                  :key="option.value"
+                  :value="option.value"
+                >
                   {{ option.label }}
                 </option>
               </select>
-              <button v-if="filterVal.status >= 0" @click="updatePropertyFilterVal('status', -1)"
-                class="col-span-1 bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-500 text-center">
+              <button
+                v-if="filterVal.status >= 0"
+                @click="updatePropertyFilterVal('status', -1)"
+                class="col-span-1 bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-500 text-center"
+              >
                 <TrashIcon class="h-5 w-5" />
               </button>
-              <span v-else class="col-span-1 bg-gray-600 text-white px-4 py-2 rounded-md ">
+              <span
+                v-else
+                class="col-span-1 bg-gray-600 text-white px-4 py-2 rounded-md"
+              >
                 <TrashIcon class="h-5 w-5" />
               </span>
             </div>
           </div>
-
 
           <div class="flex justify-between items-center">
             <div>
-              <button type="button" @click="ResetFilter" class="mr-2 text-gray-500 hover:text-gray-700 mx-6">
+              <button
+                type="button"
+                @click="ResetFilter"
+                class="mr-2 text-gray-500 hover:text-gray-700 mx-6"
+              >
                 Thiết lập lại
               </button>
             </div>
             <div>
-              <button type="button" @click="closeFilterModal" class="mr-2 text-gray-500 hover:text-gray-700 mx-6">
+              <button
+                type="button"
+                @click="closeFilterModal"
+                class="mr-2 text-gray-500 hover:text-gray-700 mx-6"
+              >
                 Hủy
               </button>
-              <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-500">
+              <button
+                type="submit"
+                class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-500"
+              >
                 Áp dụng
               </button>
             </div>
-
           </div>
         </form>
       </div>
@@ -446,14 +714,25 @@
   </div>
   <!-- filter modal -->
 
-
   <!-- loadding -->
-  <div v-if="ShowLoading" class="w-full h-full flex justify-center items-center"
-    style="position: fixed; top: 0; left: 0;z-index: 100;">
+  <div
+    v-if="ShowLoading"
+    class="w-full h-full flex justify-center items-center"
+    style="position: fixed; top: 0; left: 0; z-index: 100"
+  >
     <div class="flex justify-center items-center">
       <!-- Phần background với độ mờ -->
-      <div class="bg-gray-500" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.3;">
-      </div>
+      <div
+        class="bg-gray-500"
+        style="
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          opacity: 0.3;
+        "
+      ></div>
       <!-- Nội dung loading spinner -->
       <div class="spinner-border text-white" role="status">
         <fwb-spinner color="blue" size="12" class="lg:ml-64 mt-10" />
@@ -465,15 +744,29 @@
 
 <script setup>
 import VueApexCharts from "vue3-apexcharts";
-import * as API from '../assets/API'
-import { FwbSpinner } from 'flowbite-vue'
+import * as API from "../assets/API";
+import { FwbSpinner } from "flowbite-vue";
 import moment from "moment";
 import { useToken } from "../store/tokenStore";
 import { ref, watch, computed, onMounted } from "vue";
-import { TrashIcon, PhotoIcon, AdjustmentsVerticalIcon, ExclamationTriangleIcon, PencilSquareIcon, PlusIcon, UserCircleIcon, BookmarkIcon, XCircleIcon, CheckIcon, MagnifyingGlassIcon, AdjustmentsHorizontalIcon, FunnelIcon } from "@heroicons/vue/20/solid";
+import {
+  TrashIcon,
+  PhotoIcon,
+  AdjustmentsVerticalIcon,
+  ExclamationTriangleIcon,
+  PencilSquareIcon,
+  PlusIcon,
+  UserCircleIcon,
+  BookmarkIcon,
+  XCircleIcon,
+  CheckIcon,
+  MagnifyingGlassIcon,
+  AdjustmentsHorizontalIcon,
+  FunnelIcon,
+} from "@heroicons/vue/20/solid";
 import { FormatCurrencyVND } from "../assets/formatCurrency";
 import { instance } from "../assets/axios-instance";
-import { showToast } from '../assets/Toastify';
+import { showToast } from "../assets/Toastify";
 const isOpenFilterModal = ref(false);
 const ShowLoading = ref(false);
 const store = useToken();
@@ -629,23 +922,23 @@ const isOpenDetailOrder = ref(false);
 const selectedFilter = ref("id"); // Giá trị mặc định của bộ lọc
 const searchTerm = ref("");
 const statusOrder = [
-  { value: 1, label: 'Chờ xác nhận' },
-  { value: 2, label: 'Đã Xác nhận' },
-  { value: 3, label: 'Đang giao' },
-  { value: 4, label: 'Đã giao' },
-  { value: 0, label: 'Hủy' },
+  { value: 1, label: "Chờ xác nhận" },
+  { value: 2, label: "Đã Xác nhận" },
+  { value: 3, label: "Đang giao" },
+  { value: 4, label: "Đã giao" },
+  { value: 0, label: "Hủy" },
 ];
 const paymentType = [
-  { value: 1, label: 'Khi nhận hàng' },
-  { value: 2, label: 'VNPay' },
-]
+  { value: 1, label: "Khi nhận hàng" },
+  { value: 2, label: "VNPay" },
+];
 
 const paymentStatus = [
-  { value: 1, label: 'Chưa thanh toán' },
-  { value: 2, label: 'Đã thanh toán' },
-  { value: 0, label: 'Đã huỷ' },
-  { value: -1, label: 'Hoàn tiền' },
-]
+  { value: 1, label: "Chưa thanh toán" },
+  { value: 2, label: "Đã thanh toán" },
+  { value: 0, label: "Đã huỷ" },
+  { value: -1, label: "Hoàn tiền" },
+];
 
 const filteredOrders = ref([]);
 const filterVal = ref({
@@ -655,7 +948,7 @@ const filterVal = ref({
   minPrice: 0,
   maxPrice: 0,
   date: [],
-})
+});
 const formattedDateTime = (time) => {
   // Sử dụng moment để định dạng thời gian
   return moment(time).format("HH:mm - DD/MM/yyyy");
@@ -666,16 +959,15 @@ const getAddressFull = (addressData) => {
 };
 
 const getPaymentType = (value) => {
-  const obj = paymentType.find(x => x.value == value);
+  const obj = paymentType.find((x) => x.value == value);
   if (obj) return obj.label;
-  return '';
-}
+  return "";
+};
 const getPaymentStatus = (value) => {
-  const obj = paymentStatus.find(x => x.value == value);
+  const obj = paymentStatus.find((x) => x.value == value);
   if (obj) return obj.label;
-  return '';
-}
-
+  return "";
+};
 
 onMounted(async () => {
   ShowLoading.value = true;
@@ -687,26 +979,26 @@ onMounted(async () => {
   await loadData();
   loadFilter();
   ShowLoading.value = false;
-})
+});
 
 const loadData = async () => {
-  await instance.get(API.GETOrders)
-    .then(res => {
+  await instance
+    .get(API.GETOrders)
+    .then((res) => {
       orders.value = res.data.data;
-      orders.value.forEach(x => {
+      orders.value.forEach((x) => {
         x.status1 = x.status;
-      })
+      });
     })
-    .catch(err => {
-
+    .catch((err) => {
       try {
         showToast(err.response.data.message, true);
       } catch (error) {
-        showToast('Lỗi', true);
+        showToast("Lỗi", true);
       }
       console.error(err);
-    })
-}
+    });
+};
 
 //search
 
@@ -730,30 +1022,29 @@ const loadFilter = () => {
 
 // filter modal
 
-const ResetFilter = () => { }
+const ResetFilter = () => {};
 
 const updatePropertyFilterVal = (nameProp, value) => {
   filterVal.value[nameProp] = value;
-}
+};
 
 const openFilterModal = () => {
   isOpenFilterModal.value = true;
-}
+};
 
 const applyFilterModal = () => {
   closeFilterModal();
-}
+};
 
 const closeFilterModal = () => {
   isOpenFilterModal.value = false;
-}
+};
 
 // filter modal
 
 const showDetails = async (id) => {
   isOpenDetailOrder.value = true;
   //await instance.get()
-
 };
 
 const closeDetails = () => {
@@ -765,9 +1056,8 @@ const onChangeStatusOrder = (index, isSelectOrder) => {
     indexChangeStatus.value = index;
     showWarningModal();
   }
-}
+};
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
 
 const showWarningModal = async () => {
   isWarningModalOpen.value = true;
@@ -781,28 +1071,29 @@ const onChangeStatus = async () => {
     const order_ = orders.value[indexChangeStatus.value];
     const form = new FormData();
     form.append("status", order_.status1);
-    await instance.put(`${API.PUTStatusOrder}/${order_.id}`, form)
-      .then(res => {
-        orders.value[indexChangeStatus.value].status = orders.value[indexChangeStatus.value].status1;
+    await instance
+      .put(`${API.PUTStatusOrder}/${order_.id}`, form)
+      .then((res) => {
+        orders.value[indexChangeStatus.value].status =
+          orders.value[indexChangeStatus.value].status1;
         showToast("Cập nhật thành công");
       })
-      .catch(err => {
+      .catch((err) => {
         showToast("Lỗi", true);
         console.log(err);
-      })
-  } catch (error) { }
+      });
+  } catch (error) {}
   ShowLoading.value = false;
   closeWarningModal();
 };
 
 const onCancelChangeStatus = () => {
   try {
-    orders.value[indexChangeStatus.value].status1 = orders.value[indexChangeStatus.value].status;
+    orders.value[indexChangeStatus.value].status1 =
+      orders.value[indexChangeStatus.value].status;
     closeWarningModal();
-  } catch (error) {
-
-  }
-}
+  } catch (error) {}
+};
 
 const closeWarningModal = async () => {
   indexChangeStatus.value = null;
@@ -810,5 +1101,4 @@ const closeWarningModal = async () => {
   await delay(500);
   isWarningModalOpen.value = false;
 };
-
 </script>
