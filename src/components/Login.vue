@@ -116,6 +116,10 @@ const login = async (toMain, form) => {
 
   await instance.post(API.SignIn, form)
     .then(res => {
+      if (res.data.data.admin.deletedAt) {
+        showToast('Tài khoản đã ngừng hoạt động', true);
+        return;
+      }
       if (toMain) {
         if (store.role == 1) {
           router.push("/admin/home");
@@ -130,11 +134,7 @@ const login = async (toMain, form) => {
     })
     .catch(err => {
 
-      try {
-        showToast(err.response.data.message, true);
-      } catch (error) {
-        showToast('Lỗi', true);
-      }
+      showToast('Tài khoản hoặc mật khẩu không đúng', true);
       console.error(err);
       return;
     })

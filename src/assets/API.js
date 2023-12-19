@@ -58,6 +58,7 @@ export const GETAccount = `${http}/admin`;
 export const POSTAccount = `${http}/admin/signup`;
 export const PUTAccount = `${http}/admin`;
 export const DELAccount = `${http}/admin`;
+export const PUTRestoreAccount = `${http}/admin/restore`;
 export const SignIn = `${http}/admin/signin`;
 // } account
 
