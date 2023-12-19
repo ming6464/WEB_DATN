@@ -5,17 +5,18 @@
         <div class="flex justify-center items-center border-gray-300 py-4">
           <div class="mr-2">
             <button class="group flex items-center font-medium mr-2" @click="openFilterModal">
-              <FunnelIcon class="mr-2 h-5 w-5 flex-none text-gray-700 group-hover:text-gray-500" />
+              <FunnelIcon class="mr-2 h-5 w-5 flex-none text-gray-700 group-hover:text-gray-500"
+                :class="{ 'group-hover:text-orange-500 text-orange-600': numberFilter > 0 }" />
             </button>
           </div>
           <div
             class="flex items-center justify-between border border-gray-400 border-r-0 rounded-md shadow-sm md:w-8/12 sm:w-6/12">
-            <input type="text" placeholder="Tìm kiếm ..." v-model="searchTerm"
+            <input type="text" placeholder="Tìm kiếm ..." v-model="filterVal.searchTerm"
               class="rounded-md w-full rounded-r-none border-0 px-3 py-2 text-sm focus:border-gray-50 focus:border-0" />
-            <select v-model="selectedFilter" class="border-0 px-3 py-2 text-sm focus:outline-0">
-              <option value="id">ID</option>
+            <select v-model="filterVal.selectedFilter" class="border-0 px-3 py-2 text-sm focus:outline-0">
+              <option value="id">Mã đơn</option>
             </select>
-            <button type="button" @click="loadFilter()"
+            <button type="button" @click="loadFilter(true)"
               class="inline-flex items-center rounded-md rounded-l-none bg-indigo-600 px-1 py-1 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
               <MagnifyingGlassIcon class="h-7 w-7" aria-hidden="true" />
             </button>
@@ -108,6 +109,10 @@
           </table>
         </div>
       </div>
+      <nav class="flex justify-end t-5" v-if='filterVal.totalPages > 1'>
+        <v-pagination v-model="filterVal.page" :pages="filterVal.totalPages" :range-size="1" active-color="#DCEDFF"
+          @update:modelValue="loadFilter(false)" />
+      </nav>
     </div>
   </div>
   <!-- Modal for Details -->
@@ -329,7 +334,7 @@
           Bộ lọc tìm kiếm
         </h3>
 
-        <form @submit.prevent="applyFilterModal">
+        <form @submit.prevent="loadFilter(true)">
           <div class="mb-4">
             <label for="priceRange" class="block text-base font-medium text-gray-700">
               Khoảng giá trị đơn hàng :
@@ -474,6 +479,8 @@ import { TrashIcon, PhotoIcon, AdjustmentsVerticalIcon, ExclamationTriangleIcon,
 import { FormatCurrencyVND } from "../assets/formatCurrency";
 import { instance } from "../assets/axios-instance";
 import { showToast } from '../assets/Toastify';
+import VPagination from "@hennge/vue3-pagination";
+import "@hennge/vue3-pagination/dist/vue3-pagination.css";
 const isOpenFilterModal = ref(false);
 const ShowLoading = ref(false);
 const store = useToken();
@@ -626,15 +633,14 @@ const selectedOrder = ref({
   },
 });
 const isOpenDetailOrder = ref(false);
-const selectedFilter = ref("id"); // Giá trị mặc định của bộ lọc
-const searchTerm = ref("");
 const statusOrder = [
   { value: 1, label: 'Chờ xác nhận' },
   { value: 2, label: 'Đã Xác nhận' },
   { value: 3, label: 'Đang giao' },
-  { value: 4, label: 'Đã giao' },
-  { value: 0, label: 'Hủy' },
+  { value: 4, label: 'Thành công' },
+  { value: 0, label: 'Đơn đã hủy' },
 ];
+const numberFilter = ref([0]);
 const paymentType = [
   { value: 1, label: 'Khi nhận hàng' },
   { value: 2, label: 'VNPay' },
@@ -655,6 +661,11 @@ const filterVal = ref({
   minPrice: 0,
   maxPrice: 0,
   date: [],
+  searchTerm: '',
+  selectedFilter: 'id',
+  page: 1,
+  pageSize: 10,
+  totalPages: 1,
 })
 const formattedDateTime = (time) => {
   // Sử dụng moment để định dạng thời gian
@@ -685,7 +696,7 @@ onMounted(async () => {
     store.onSetCurrentPage({ index: 1, child: 0 });
   }
   await loadData();
-  loadFilter();
+  loadFilter(true);
   ShowLoading.value = false;
 })
 
@@ -710,27 +721,38 @@ const loadData = async () => {
 
 //search
 
-const loadFilter = () => {
-  const term = searchTerm.value.toString().toLowerCase().trim();
-  switch (selectedFilter.value) {
-    case "id":
-      filteredOrders.value = orders.value.filter((order) =>
-        order.id.toString().toLowerCase().includes(term)
-      );
-      break;
-    case "name":
-      filteredOrders.value = orders.value.filter((order) =>
-        order.name.toString().toLowerCase().includes(term)
-      );
-      break;
-  }
-};
 
 //search
 
 // filter modal
 
-const ResetFilter = () => { }
+const onPageChange = () => {
+  const size = filterVal.value.pageSize;
+  const start = (filterVal.value.page - 1) * size; // Giả sử mỗi trang có x phần tử
+  let end = start + size;
+  if (start < filteredOrders.value.length) {
+    if (end > filteredOrders.value.length) end = filteredOrders.value.length;
+    filteredOrders.value = filteredOrders.value.slice(start, end);
+  } else {
+    filteredOrders.value = [];
+  }
+}
+
+const ResetFilter = () => {
+  filterVal.value = {
+    status: -1,
+    paymentType: -1,
+    paymentStatus: -10,
+    minPrice: 0,
+    maxPrice: 0,
+    date: [],
+    searchTerm: '',
+    selectedFilter: 'id',
+    page: 1,
+    pageSize: 10,
+    totalPages: 1,
+  }
+}
 
 const updatePropertyFilterVal = (nameProp, value) => {
   filterVal.value[nameProp] = value;
@@ -740,9 +762,67 @@ const openFilterModal = () => {
   isOpenFilterModal.value = true;
 }
 
-const applyFilterModal = () => {
+const loadFilter = (resetPage) => {
+  if (resetPage) {
+    filterVal.value.page = 1;
+  }
+  numberFilter.value = 0;
+  try {
+    if (!filterVal.value.minPrice) filterVal.value.minPrice = 0;
+    if (!filterVal.value.maxPrice) filterVal.value.maxPrice = 0;
+    if (filterVal.value.maxPrice <= filterVal.value.minPrice) {
+      filterVal.value.minPrice = 0;
+      filterVal.value.maxPrice = 0;
+    }
+    const filterVal_ = filterVal.value;
+    const term = filterVal_.searchTerm.toString().toLowerCase().trim();
+    filteredOrders.value = orders.value.filter((order) => {
+      const keyword = order.id.toString().toLowerCase().includes(term);
+      let priceRageCondition = true;
+      let timeRangeCondition = true;
+      let paymentTypeCondition = true;
+      let paymentStatusCondition = true;
+      let orderStatusCondition = true;
+
+      if (filterVal_.maxPrice > filterVal_.minPrice) {
+        numberFilter.value++;
+        priceRageCondition = filterVal_.maxPrice >= order.paymentData.total && order.paymentData.total >= filterVal_.minPrice;
+      }
+      if (filterVal_.date && filterVal_.date.length > 0) {
+        numberFilter.value++;
+        const time = new Date(order.createdAt);
+        const time1 = new Date(filterVal_.date[0]);
+        const time2 = new Date(filterVal_.date[1]);
+        time1.setHours(0, 0, 0, 1);
+        time2.setHours(23, 59, 59, 1);
+        timeRangeCondition = time1 <= time && time <= time2;
+      }
+
+      if (filterVal_.paymentType >= 0) {
+        numberFilter.value++;
+        paymentTypeCondition = filterVal_.paymentType == order.paymentData.paymentType;
+      }
+
+      if (filterVal_.paymentStatus >= -1) {
+        numberFilter.value++;
+        paymentStatusCondition = filterVal_.paymentStatus == order.paymentData.status;
+      }
+
+      if (filterVal_.status >= 0) {
+        numberFilter.value++;
+        orderStatusCondition = filterVal_.status == order.status;
+      }
+      return keyword && priceRageCondition && timeRangeCondition && paymentTypeCondition && paymentStatusCondition && orderStatusCondition;
+    }
+    );
+  } catch (error) {
+    filteredOrders.value = [];
+  }
+
+  filterVal.value.totalPages = Math.ceil(filteredOrders.value.length / filterVal.value.pageSize);
+  onPageChange();
   closeFilterModal();
-}
+};
 
 const closeFilterModal = () => {
   isOpenFilterModal.value = false;
